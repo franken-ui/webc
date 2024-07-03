@@ -1,0 +1,25 @@
+{
+  "name": "franken-wc",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite -c config/wc.js build && vite -c config/css.js build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "franken-ui": "^0.1.0-next.1",
+    "lit": "^3.1.4",
+    "postcss": "^8.4.39",
+    "tailwindcss": "^3.4.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "vite": "^5.3.1"
+  },
+  "files": ["dist"],
+  "exports": {
+    ".": "./dist/js/wc.js"
+  }
+}
