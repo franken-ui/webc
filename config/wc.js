@@ -2,11 +2,11 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   build: {
-    rollupOptions: {
-      output: {
-        entryFileNames: "js/wc.js",
-        format: "iife",
-      },
+    lib: {
+      entry: "src/js/index.ts",
+      name: "FRANKENWC",
+      fileName: "js/wc",
+      formats: ["iife"],
     },
   },
 });
