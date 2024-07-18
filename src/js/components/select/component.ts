@@ -280,7 +280,27 @@ export class Select extends LitElement {
                 this.select(this.$focused);
                 break;
 
+              case "Tab":
+                if (this.searchable === false) {
+                  this.$isOpen = false;
+                }
+                break;
+
               default:
+                break;
+            }
+          } else {
+            switch (e.key) {
+              case "ArrowDown":
+                e.preventDefault();
+                this.$focused = this.navigate("down");
+                this.$isOpen = true;
+                break;
+
+              case "ArrowUp":
+                e.preventDefault();
+                this.$focused = this.navigate("up");
+                this.$isOpen = true;
                 break;
             }
           }
@@ -331,6 +351,7 @@ export class Select extends LitElement {
                         switch (e.key) {
                           case "Escape":
                             this.$isOpen = false;
+                            this.renderRoot.querySelector("button")?.focus();
                             break;
 
                           case "ArrowDown":
@@ -346,6 +367,17 @@ export class Select extends LitElement {
                           case "Enter":
                             e.preventDefault();
                             this.select(this.$focused);
+                            break;
+
+                          case "Tab":
+                            if (
+                              !e.altKey &&
+                              !e.shiftKey &&
+                              !e.ctrlKey &&
+                              !e.metaKey
+                            ) {
+                              this.$isOpen = false;
+                            }
                             break;
 
                           default:
@@ -475,6 +507,7 @@ export class Select extends LitElement {
   private select(index: number | undefined) {
     if (index === -1) {
       this.$isOpen = false;
+      this.renderRoot.querySelector("button")?.focus();
 
       return;
     }
