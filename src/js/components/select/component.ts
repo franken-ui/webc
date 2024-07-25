@@ -1,6 +1,7 @@
 import { LitElement, PropertyValues, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { repeat } from "lit/directives/repeat.js";
+import { parseOptions } from "../../helpers/common";
 
 type Option = {
   type: "option" | "label";
@@ -8,6 +9,10 @@ type Option = {
   text: string;
   disabled?: boolean;
   selected?: boolean;
+};
+
+type I18N = {
+  "selection-count-text": string;
 };
 
 @customElement("uk-select")
@@ -30,6 +35,9 @@ export class Select extends LitElement {
   @property({ type: Boolean })
   error: boolean = false;
 
+  @property({ type: String })
+  i18n: string = "";
+
   @state()
   $term: string = "";
 
@@ -47,6 +55,11 @@ export class Select extends LitElement {
 
   @state()
   $isOpen: Boolean = false;
+
+  @state()
+  $i18n: I18N = {
+    "selection-count-text": ":n: options selected",
+  };
 
   private navigate(direction: "up" | "down") {
     const isValidOption = (item: Option) =>
@@ -141,6 +154,10 @@ export class Select extends LitElement {
       this.$focused = this.$options.findIndex(
         (a) => a.value === this.$selected[0]
       );
+    }
+
+    if (this.i18n) {
+      this.$i18n = parseOptions(this.i18n) as I18N;
     }
 
     document.addEventListener("click", this.onClickAway.bind(this));
@@ -463,7 +480,10 @@ export class Select extends LitElement {
       return this.$options.find((a) => a.value === this.$selected[0])?.text;
     }
 
-    return `${this.$selected.length} options selected`;
+    return this.$i18n["selection-count-text"].replace(
+      ":n:",
+      this.$selected.length.toString()
+    );
   }
 
   private toggle() {
