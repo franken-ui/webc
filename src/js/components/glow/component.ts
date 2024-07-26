@@ -111,11 +111,16 @@ export class Glow extends LitElement {
     const result: { [key: string]: any } = {};
 
     [
+      { name: "border-color", value: this["border-color"] },
       { name: "background-color", value: this["background-color"] },
       { name: "glow-color", value: this["glow-color"] },
       { name: "color", value: this.color },
     ].forEach((a) => {
-      const property = a.name as "background-color" | "glow-color" | "color";
+      const property = a.name as
+        | "border-color"
+        | "background-color"
+        | "glow-color"
+        | "color";
 
       if (a.value.includes(":")) {
         const colors = parseOptions(a.value) as { light: string; dark: string };
@@ -147,10 +152,6 @@ export class Glow extends LitElement {
   }
 
   private validateBorder() {
-    if (validateHex(this["border-color"]) === undefined) {
-      throw new Error(`Invalid "border-color" value`);
-    }
-
     if (validateBorderStyle(this["border-style"]) === undefined) {
       throw new Error(`Invalid "border-style" value`);
     }
@@ -172,7 +173,6 @@ export class Glow extends LitElement {
       /(px|cm|mm|in|pt|pc|em|ex|ch|rem|vw|vh|vmin|vmax|%)/
     );
 
-    result["color"] = this["border-color"];
     result["style"] = this["border-style"];
     result["radius"] = {
       parent: `${Number(value) * 1.25}${unit}`,
@@ -248,7 +248,7 @@ export class Glow extends LitElement {
               border-radius: ${border.radius.parent};
               border-width: ${border.width};
               border-style: ${border.style};
-              border-color: ${border.color};
+              border-color: ${colors["border-color"][this.$mode]};
             }
 
             .p::before {
