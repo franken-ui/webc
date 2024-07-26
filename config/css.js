@@ -5,6 +5,7 @@ export default defineConfig({
     emptyOutDir: false,
     rollupOptions: {
       input: [
+        "src/css/blue.css",
         "src/css/gray.css",
         "src/css/green.css",
         "src/css/neutral.css",
