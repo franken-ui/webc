@@ -1,23 +1,23 @@
 {
   "name": "franken-wc",
   "author": "Sveltecult <leader@sveltecult.com>",
-	"description": "Franken WC is a project designed to complement UIkit, filling in the gaps with the missing components of Franken UI.",
-	"keywords": [
-		"franken-ui",
-		"web-components",
-		"shadcn-ui",
-		"uikit",
+  "description": "Franken WC is a project designed to complement UIkit, filling in the gaps with the missing components of Franken UI.",
+  "keywords": [
+    "franken-ui",
+    "web-components",
+    "shadcn-ui",
+    "uikit",
     "ui"
-	],
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/franken-ui/wc.git"
-	},
-	"bugs": {
-		"url": "https://github.com/franken-ui/wc/issues"
-	},
-	"homepage": "https://www.franken-ui.dev",
-	"license": "MIT",
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/franken-ui/wc.git"
+  },
+  "bugs": {
+    "url": "https://github.com/franken-ui/wc/issues"
+  },
+  "homepage": "https://www.franken-ui.dev",
+  "license": "MIT",
   "version": "0.0.5",
   "type": "module",
   "scripts": {
@@ -31,13 +31,16 @@
     "franken-ui": "^0.1.2",
     "lit": "^3.1.4",
     "postcss": "^8.4.39",
+    "slugify": "^1.6.6",
     "tailwindcss": "^3.4.4"
   },
   "devDependencies": {
     "typescript": "^5.2.2",
     "vite": "^5.3.1"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "exports": {
     ".": "./dist/js/wc.iife.js"
   }
