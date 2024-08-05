@@ -1,4 +1,4 @@
-import { LitElement, html } from "lit";
+import { LitElement, PropertyValues, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 
 @customElement("uk-input-pin")
@@ -35,6 +35,20 @@ export class InputPin extends LitElement {
 
   protected createRenderRoot(): HTMLElement | DocumentFragment {
     return this;
+  }
+
+  protected updated(_changedProperties: PropertyValues): void {
+    if (_changedProperties.has("$value")) {
+      if (_changedProperties.get("$value") !== this.$value) {
+        this.dispatchEvent(
+          new CustomEvent("uk-input-pin:input", {
+            detail: { value: this.$value },
+            bubbles: true,
+            composed: true,
+          })
+        );
+      }
+    }
   }
 
   render() {

@@ -107,6 +107,14 @@ export class InputTag extends LitElement {
       this.$tags.push(tag);
       this.$input = "";
     }
+
+    this.dispatchEvent(
+      new CustomEvent("uk-input-tag:input", {
+        detail: { value: this.$tags },
+        bubbles: true,
+        composed: true,
+      })
+    );
   }
 
   render() {

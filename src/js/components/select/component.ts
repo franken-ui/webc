@@ -246,21 +246,6 @@ export class Select extends LitElement {
         );
       });
     }
-
-    if (_changedProperties.has("$selected")) {
-      if (
-        JSON.stringify(_changedProperties.get("$selected")) !==
-        JSON.stringify(this.$selected)
-      ) {
-        this.dispatchEvent(
-          new CustomEvent("uk-select:input", {
-            detail: { value: this.$selected },
-            bubbles: true,
-            composed: true,
-          })
-        );
-      }
-    }
   }
 
   render() {
@@ -550,6 +535,14 @@ export class Select extends LitElement {
 
       this.$isOpen = false;
       this.renderRoot.querySelector("button")?.focus();
+
+      this.dispatchEvent(
+        new CustomEvent("uk-select:input", {
+          detail: { value: this.$selected[0] },
+          bubbles: true,
+          composed: true,
+        })
+      );
     } else {
       if (index !== undefined) {
         if (this.$selected.findIndex((a) => a === selected?.value) === -1) {
@@ -560,6 +553,14 @@ export class Select extends LitElement {
 
         this.requestUpdate();
       }
+
+      this.dispatchEvent(
+        new CustomEvent("uk-select:input", {
+          detail: { value: this.$selected },
+          bubbles: true,
+          composed: true,
+        })
+      );
     }
   }
 
