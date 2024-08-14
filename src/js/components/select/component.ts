@@ -233,16 +233,15 @@ export class Select extends LitElement {
     }
 
     if (_changedProperties.has("$term")) {
-      if (this.$term === "") {
-        this.updateComplete.then(() => {
-          this.$filteredOptions = this.$options;
-        });
-        return;
-      }
-
       this.updateComplete.then(() => {
+        if (this.$term === "") {
+          this.$filteredOptions = this.$options;
+
+          return;
+        }
+
         this.$filteredOptions = this.$options.filter((a) =>
-          a.value?.toLowerCase().includes(this.$term)
+          a.value?.toLowerCase().includes(this.$term.toLowerCase())
         );
       });
     }
