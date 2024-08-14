@@ -56,3 +56,11 @@ export function validateDuration(duration: string): string | undefined {
     return duration;
   }
 }
+
+export function id(length = 5) {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  return Array.from({ length }, () =>
+    characters.charAt(Math.floor(Math.random() * characters.length))
+  ).join("");
+}

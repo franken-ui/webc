@@ -37,6 +37,8 @@ export default {
     "font-geist-sans",
     "font-geist-mono",
 
+    "opacity-50",
+
     "text-background",
     "text-foreground",
     "text-card",
