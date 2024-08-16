@@ -1,7 +1,7 @@
-import { LitElement, PropertyValues, html } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { LitElement, PropertyValues, html } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 
-@customElement("uk-input-pin")
+@customElement('uk-input-pin')
 export class InputPin extends LitElement {
   @property({ type: Boolean })
   autofocus: boolean = false;
@@ -16,7 +16,7 @@ export class InputPin extends LitElement {
   length: number = 6;
 
   @property({ type: String })
-  name: string = "";
+  name: string = '';
 
   @property({ type: Boolean })
   separated: boolean = false;
@@ -25,12 +25,12 @@ export class InputPin extends LitElement {
   $focus: undefined | number;
 
   @state()
-  $value: string = "";
+  $value: string = '';
 
   connectedCallback(): void {
     super.connectedCallback();
 
-    this.removeAttribute("uk-cloak");
+    this.removeAttribute('uk-cloak');
   }
 
   protected createRenderRoot(): HTMLElement | DocumentFragment {
@@ -38,14 +38,14 @@ export class InputPin extends LitElement {
   }
 
   protected updated(_changedProperties: PropertyValues): void {
-    if (_changedProperties.has("$value")) {
-      if (_changedProperties.get("$value") !== this.$value) {
+    if (_changedProperties.has('$value')) {
+      if (_changedProperties.get('$value') !== this.$value) {
         this.dispatchEvent(
-          new CustomEvent("uk-input-pin:input", {
+          new CustomEvent('uk-input-pin:input', {
             detail: { value: this.$value },
             bubbles: true,
             composed: true,
-          })
+          }),
         );
       }
     }
@@ -55,14 +55,14 @@ export class InputPin extends LitElement {
     return html`
       <div
         class="uk-input-pin ${this.separated === true
-          ? "uk-input-pin-separated"
-          : ""} ${this.disabled === true ? "uk-disabled" : ""} ${this.error ===
+          ? 'uk-input-pin-separated'
+          : ''} ${this.disabled === true ? 'uk-disabled' : ''} ${this.error ===
         true
-          ? "uk-form-danger"
-          : ""}"
+          ? 'uk-form-danger'
+          : ''}"
       >
         ${Array(this.length)
-          .fill("")
+          .fill('')
           .map(
             (_, i) =>
               html`<input
@@ -76,7 +76,7 @@ export class InputPin extends LitElement {
                     this.renderRoot.querySelectorAll('input[type="text"]');
 
                   switch (e.key) {
-                    case "Backspace":
+                    case 'Backspace':
                       const input = e.target as HTMLInputElement;
 
                       if (this.$focus !== undefined) {
@@ -97,9 +97,9 @@ export class InputPin extends LitElement {
                 @input="${(e: InputEvent) => {
                   const inputs =
                     this.renderRoot.querySelectorAll('input[type="text"]');
-                  let value = "";
+                  let value = '';
 
-                  inputs.forEach((a) => {
+                  inputs.forEach(a => {
                     const b = a as HTMLInputElement;
 
                     value += b.value;
@@ -123,7 +123,7 @@ export class InputPin extends LitElement {
                 }}"
                 @focus="${() => (this.$focus = i)}"
                 @blur="${() => (this.$focus = undefined)}"
-              />`
+              />`,
           )}
       </div>
       <input type="hidden" name="${this.name}" .value=${this.$value} />
@@ -133,6 +133,6 @@ export class InputPin extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "uk-input-pin": InputPin;
+    'uk-input-pin': InputPin;
   }
 }

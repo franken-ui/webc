@@ -1,16 +1,16 @@
-import { LitElement, PropertyValues, html } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
-import { repeat } from "lit/directives/repeat.js";
-import { unsafeHTML } from "lit/directives/unsafe-html.js";
-import { id } from "../../helpers/common";
+import { LitElement, PropertyValues, html } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { repeat } from 'lit/directives/repeat.js';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
+import { id } from '../../helpers/common';
 
-@customElement("uk-command")
+@customElement('uk-command')
 export class Command extends LitElement {
   @property({ type: String })
   key: string | undefined;
 
   @property({ type: String })
-  placeholder: string = "Search";
+  placeholder: string = 'Search';
 
   @property({ type: String })
   toggle: string;
@@ -24,7 +24,7 @@ export class Command extends LitElement {
   $filteredItems = this.$items;
 
   @state()
-  $term: string = "";
+  $term: string = '';
 
   @state()
   $focused: number = -1;
@@ -43,10 +43,10 @@ export class Command extends LitElement {
     super.connectedCallback();
 
     Array.from(this.children).map((a: Element) => {
-      if (a.nodeName === "A") {
-        const group = a.hasAttribute("data-group")
-          ? (a.getAttribute("data-group") as string)
-          : "__";
+      if (a.nodeName === 'A') {
+        const group = a.hasAttribute('data-group')
+          ? (a.getAttribute('data-group') as string)
+          : '__';
 
         if (this.$items[group] === undefined) {
           this.$items[group] = [];
@@ -54,19 +54,19 @@ export class Command extends LitElement {
 
         let keywords = [a.textContent?.toLocaleLowerCase().trim()];
 
-        if (a.hasAttribute("data-keywords")) {
+        if (a.hasAttribute('data-keywords')) {
           const _keywords = a
-            .getAttribute("data-keywords")
-            ?.split(",")
-            .map((a) => a.trim())
-            .filter((a) => a !== "") as string[];
+            .getAttribute('data-keywords')
+            ?.split(',')
+            .map(a => a.trim())
+            .filter(a => a !== '') as string[];
 
           keywords = [...keywords, ..._keywords];
         }
 
         this.$items[group].push({
           disabled:
-            a.hasAttribute("href") === false || a.getAttribute("href") === ""
+            a.hasAttribute('href') === false || a.getAttribute('href') === ''
               ? true
               : false,
           element: a.outerHTML,
@@ -76,16 +76,16 @@ export class Command extends LitElement {
     });
 
     if (this.key !== undefined) {
-      document.addEventListener("keydown", this.onKeydown.bind(this));
+      document.addEventListener('keydown', this.onKeydown.bind(this));
     }
 
-    this.innerHTML = "";
-    this.removeAttribute("uk-cloak");
+    this.innerHTML = '';
+    this.removeAttribute('uk-cloak');
   }
 
   disconnectedCallback() {
     if (this.key !== undefined) {
-      document.removeEventListener("keydown", this.onKeydown);
+      document.removeEventListener('keydown', this.onKeydown);
     }
   }
 
@@ -94,27 +94,27 @@ export class Command extends LitElement {
   }
 
   protected updated(_changedProperties: PropertyValues): void {
-    if (_changedProperties.has("$focused")) {
+    if (_changedProperties.has('$focused')) {
       const e = document.getElementById(this.toggle);
 
       if (e) {
-        const ul = e.querySelector("ul");
+        const ul = e.querySelector('ul');
 
         if (ul) {
-          const li = ul.querySelectorAll("li");
+          const li = ul.querySelectorAll('li');
 
-          li.forEach((li) => {
-            li.classList.remove("uk-active");
+          li.forEach(li => {
+            li.classList.remove('uk-active');
           });
 
           const options = Array.from(li).filter(
-            (li) => !li.classList.contains("uk-nav-header")
+            li => !li.classList.contains('uk-nav-header'),
           );
 
           if (this.$focused >= 0 && this.$focused < options.length) {
             const focused = options[this.$focused];
 
-            focused.classList.add("uk-active");
+            focused.classList.add('uk-active');
 
             const rects = {
               ul: ul.getBoundingClientRect(),
@@ -128,18 +128,18 @@ export class Command extends LitElement {
 
             ul.scrollTo({
               top: scrollTop,
-              behavior: "smooth",
+              behavior: 'smooth',
             });
           }
         }
       }
     }
 
-    if (_changedProperties.has("$term")) {
+    if (_changedProperties.has('$term')) {
       this.updateComplete.then(() => {
         this.$focused = -1;
 
-        if (this.$term === "") {
+        if (this.$term === '') {
           this.$filteredItems = this.$items;
 
           return;
@@ -148,22 +148,22 @@ export class Command extends LitElement {
         this.$filteredItems = Object.fromEntries(
           Object.entries(this.$items).map(([key, value]) => [
             key,
-            value.filter((item) =>
+            value.filter(item =>
               item.keywords.some((keyword: string) =>
-                keyword.toLowerCase().includes(this.$term.toLowerCase())
-              )
+                keyword.toLowerCase().includes(this.$term.toLowerCase()),
+              ),
             ),
-          ])
+          ]),
         );
       });
     }
   }
 
-  private navigate(direction: "up" | "down") {
+  private navigate(direction: 'up' | 'down') {
     const isValidOption = (item: any) => item.disabled !== true;
 
     let focused = this.$focused;
-    const increment = direction === "up" ? -1 : 1;
+    const increment = direction === 'up' ? -1 : 1;
 
     do {
       focused += increment;
@@ -195,17 +195,17 @@ export class Command extends LitElement {
     const e = document.getElementById(this.toggle);
 
     if (e) {
-      const ul = e.querySelector("ul");
+      const ul = e.querySelector('ul');
 
       if (ul) {
-        const li = ul.querySelectorAll("li");
+        const li = ul.querySelectorAll('li');
         const options = Array.from(li).filter(
-          (li) => !li.classList.contains("uk-nav-header")
+          li => !li.classList.contains('uk-nav-header'),
         );
 
         if (options[this.$focused]) {
           const a = options[this.$focused].querySelector(
-            "a"
+            'a',
           ) as HTMLAnchorElement;
 
           a.click();
@@ -215,90 +215,91 @@ export class Command extends LitElement {
   }
 
   render() {
-    return html` <div id=${this.toggle} class="uk-modal uk-flex-top" uk-modal>
-      <div class="uk-margin-auto-vertical uk-modal-dialog">
-        <div class="uk-inline uk-width-1-1">
-          <span class="uk-form-icon uk-form-icon-flip uk-text-muted">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="lucide lucide-search"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.3-4.3" />
-            </svg>
-          </span>
-          <input
-            autofocus
-            class="uk-input uk-form-blank"
-            placeholder="${this.placeholder}"
-            type="text"
-            @keydown=${(e: KeyboardEvent) => {
-              switch (e.key) {
-                case "ArrowDown":
-                  e.preventDefault();
-                  this.$focused = this.navigate("down");
-                  break;
+    return html`
+      <div id=${this.toggle} class="uk-modal uk-flex-top" uk-modal>
+        <div class="uk-margin-auto-vertical uk-modal-dialog">
+          <div class="uk-inline uk-width-1-1">
+            <span class="uk-form-icon uk-form-icon-flip uk-text-muted">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-search"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+            </span>
+            <input
+              autofocus
+              class="uk-input uk-form-blank"
+              placeholder="${this.placeholder}"
+              type="text"
+              @keydown=${(e: KeyboardEvent) => {
+                switch (e.key) {
+                  case 'ArrowDown':
+                    e.preventDefault();
+                    this.$focused = this.navigate('down');
+                    break;
 
-                case "ArrowUp":
-                  e.preventDefault();
-                  this.$focused = this.navigate("up");
-                  break;
+                  case 'ArrowUp':
+                    e.preventDefault();
+                    this.$focused = this.navigate('up');
+                    break;
 
-                case "Enter":
-                  e.preventDefault();
-                  this.go();
-                  break;
+                  case 'Enter':
+                    e.preventDefault();
+                    this.go();
+                    break;
 
-                default:
-                  break;
-              }
-            }}
-            @input=${(e: InputEvent) => {
-              const input = e.target as HTMLInputElement;
+                  default:
+                    break;
+                }
+              }}
+              @input=${(e: InputEvent) => {
+                const input = e.target as HTMLInputElement;
 
-              this.$term = input.value;
-            }}
-          />
-        </div>
-        <hr class="uk-hr" />
-        <ul class="uk-height-medium uk-overflow-auto uk-nav uk-nav-secondary">
-          ${repeat(
-            Object.entries(this.$filteredItems),
-            ([key]) => key,
-            ([key, items]) =>
-              items.length
-                ? html`
-                    ${key !== "__"
-                      ? html`<li class="uk-nav-header">${key}</li>`
-                      : ""}
-                    ${repeat(
-                      items,
-                      (_, index) => index,
-                      (item) =>
-                        html`
+                this.$term = input.value;
+              }}
+            />
+          </div>
+          <hr class="uk-hr" />
+          <ul class="uk-height-medium uk-overflow-auto uk-nav uk-nav-secondary">
+            ${repeat(
+              Object.entries(this.$filteredItems),
+              ([key]) => key,
+              ([key, items]) =>
+                items.length
+                  ? html`
+                      ${key !== '__'
+                        ? html`<li class="uk-nav-header">${key}</li>`
+                        : ''}
+                      ${repeat(
+                        items,
+                        (_, index) => index,
+                        item => html`
                           <li
                             class="${item.disabled === true
-                              ? "uk-disabled opacity-50"
-                              : ""}"
+                              ? 'uk-disabled opacity-50'
+                              : ''}"
                           >
                             ${unsafeHTML(item.element)}
                           </li>
-                        `
-                    )}
-                  `
-                : ""
-          )}
-        </ul>
+                        `,
+                      )}
+                    `
+                  : '',
+            )}
+          </ul>
+        </div>
       </div>
-    </div>`;
+    `;
   }
 
   onKeydown(e: KeyboardEvent) {
@@ -311,6 +312,6 @@ export class Command extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "uk-command": Command;
+    'uk-command': Command;
   }
 }

@@ -1,16 +1,19 @@
 export function parseOptions(value: string): object {
   try {
-    if (value.startsWith("{")) {
+    if (value.startsWith('{')) {
       return JSON.parse(value);
     }
 
     const result: { [key: string]: string } = {};
 
-    value.split(";").forEach((a) => {
-      const b = a.trim().split(/:(.*)/);
+    value
+      .replace(/[;\s]+$/, '')
+      .split(';')
+      .forEach(a => {
+        const b = a.trim().split(/:(.*)/);
 
-      result[b[0].trim()] = b[1].trim();
-    });
+        result[b[0].trim()] = b[1].trim();
+      });
 
     return result;
   } catch (e) {
@@ -35,16 +38,16 @@ export function validateSize(size: string): string | undefined {
 export function validateBorderStyle(style: string): string | undefined {
   if (
     [
-      "none",
-      "hidden",
-      "dotted",
-      "dashed",
-      "solid",
-      "double",
-      "groove",
-      "ridge",
-      "inset",
-      "outset",
+      'none',
+      'hidden',
+      'dotted',
+      'dashed',
+      'solid',
+      'double',
+      'groove',
+      'ridge',
+      'inset',
+      'outset',
     ].includes(style)
   ) {
     return style;
@@ -59,8 +62,8 @@ export function validateDuration(duration: string): string | undefined {
 
 export function id(length = 5) {
   const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   return Array.from({ length }, () =>
-    characters.charAt(Math.floor(Math.random() * characters.length))
-  ).join("");
+    characters.charAt(Math.floor(Math.random() * characters.length)),
+  ).join('');
 }

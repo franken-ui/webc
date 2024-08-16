@@ -1,7 +1,7 @@
-import { LitElement, html } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
-import { parseOptions } from "../../helpers/common";
-import slugify from "slugify";
+import { LitElement, html } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { parseOptions } from '../../helpers/common';
+import slugify from 'slugify';
 
 type SlugOptions = {
   replacement: string;
@@ -12,7 +12,7 @@ type SlugOptions = {
   trim: boolean;
 };
 
-@customElement("uk-input-tag")
+@customElement('uk-input-tag')
 export class InputTag extends LitElement {
   @property({ type: Number })
   maxlength: number = 20;
@@ -21,25 +21,25 @@ export class InputTag extends LitElement {
   minlength: number = 1;
 
   @property({ type: String })
-  name: string = "";
+  name: string = '';
 
   @property({ type: String })
-  placeholder: string = "";
+  placeholder: string = '';
 
   @property({ type: Boolean })
   slugify: boolean = false;
 
   @property({ type: String })
-  "slugify-options": string = "";
+  'slugify-options': string = '';
 
   @property({ type: String })
-  state: "primary" | "secondary" | "danger" = "secondary";
+  state: 'primary' | 'secondary' | 'danger' = 'secondary';
 
   @property({ type: String })
-  value: string = "";
+  value: string = '';
 
   @state()
-  $input: string = "";
+  $input: string = '';
 
   @state()
   $slugOptions: Partial<SlugOptions> = {
@@ -55,7 +55,7 @@ export class InputTag extends LitElement {
 
     this.initializeDefaults();
 
-    this.removeAttribute("uk-cloak");
+    this.removeAttribute('uk-cloak');
   }
 
   protected createRenderRoot(): HTMLElement | DocumentFragment {
@@ -63,35 +63,35 @@ export class InputTag extends LitElement {
   }
 
   private initializeDefaults() {
-    this.$tags = this.value === "" ? [] : this.value.split(",");
+    this.$tags = this.value === '' ? [] : this.value.split(',');
 
-    if (this["slugify-options"]) {
-      const options = parseOptions(this["slugify-options"]) as {
+    if (this['slugify-options']) {
+      const options = parseOptions(this['slugify-options']) as {
         [key: string]: string;
       };
 
-      if ("replacement" in options) {
-        this.$slugOptions["replacement"] = options["replacement"];
+      if ('replacement' in options) {
+        this.$slugOptions['replacement'] = options['replacement'];
       }
 
-      if ("remove" in options) {
-        this.$slugOptions["remove"] = new RegExp(options.remove, "g");
+      if ('remove' in options) {
+        this.$slugOptions['remove'] = new RegExp(options.remove, 'g');
       }
 
-      if ("lower" in options) {
-        this.$slugOptions["lower"] = options.lower === "true" ? true : false;
+      if ('lower' in options) {
+        this.$slugOptions['lower'] = options.lower === 'true' ? true : false;
       }
 
-      if ("strict" in options) {
-        this.$slugOptions["strict"] = options.strict === "true" ? true : false;
+      if ('strict' in options) {
+        this.$slugOptions['strict'] = options.strict === 'true' ? true : false;
       }
 
-      if ("locale" in options) {
-        this.$slugOptions["locale"] = options["locale"];
+      if ('locale' in options) {
+        this.$slugOptions['locale'] = options['locale'];
       }
 
-      if ("trim" in options) {
-        this.$slugOptions["trim"] = options.trim === "true" ? true : false;
+      if ('trim' in options) {
+        this.$slugOptions['trim'] = options.trim === 'true' ? true : false;
       }
     }
   }
@@ -105,91 +105,90 @@ export class InputTag extends LitElement {
 
     if (this.$input.length >= this.minlength && !this.$tags.includes(tag)) {
       this.$tags.push(tag);
-      this.$input = "";
+      this.$input = '';
     }
 
     this.dispatchEvent(
-      new CustomEvent("uk-input-tag:input", {
+      new CustomEvent('uk-input-tag:input', {
         detail: { value: this.$tags },
         bubbles: true,
         composed: true,
-      })
+      }),
     );
   }
 
   render() {
-    return html`<div class="uk-input-tag">
-      ${this.$tags.map(
-        (tag, i) =>
-          html`<div class="uk-tag ${`uk-tag-${this.state}`}">
-            <span
-              @click=${() => {
-                this.$input = this.$tags[i];
-                this.$tags = this.$tags.filter((_, b) => b !== i);
+    return html`
+      <div class="uk-input-tag">
+        ${this.$tags.map(
+          (tag, i) =>
+            html`<div class="uk-tag ${`uk-tag-${this.state}`}">
+              <span
+                @click=${() => {
+                  this.$input = this.$tags[i];
+                  this.$tags = this.$tags.filter((_, b) => b !== i);
 
-                this.renderRoot.querySelector("input")?.focus();
-              }}
-            >
-              ${tag}
-            </span>
-            <a
-              @click=${() => {
-                this.$tags = this.$tags.filter((_, b) => b !== i);
-              }}
-              class="uk-close"
-              uk-close="ratio: 0.8"
-            ></a>
-          </div>`
-      )}
+                  this.renderRoot.querySelector('input')?.focus();
+                }}
+              >
+                ${tag}
+              </span>
+              <a
+                @click=${() => {
+                  this.$tags = this.$tags.filter((_, b) => b !== i);
+                }}
+                class="uk-close"
+                uk-close="ratio: 0.8"
+              ></a>
+            </div>`,
+        )}
 
-      <input
-        autocomplete="off"
-        type="text"
-        placeholder="${this.placeholder}"
-        @keydown=${(e: KeyboardEvent) => {
-          switch (e.key) {
-            case "Backspace":
-              if (this.$tags.length > 0 && this.$input.length === 0) {
+        <input
+          autocomplete="off"
+          type="text"
+          placeholder="${this.placeholder}"
+          @keydown=${(e: KeyboardEvent) => {
+            switch (e.key) {
+              case 'Backspace':
+                if (this.$tags.length > 0 && this.$input.length === 0) {
+                  e.preventDefault();
+
+                  this.$input = this.$tags.slice(-1)[0];
+                  this.$tags.pop();
+                }
+                break;
+
+              case ',':
                 e.preventDefault();
+                this.push();
+                break;
 
-                this.$input = this.$tags.slice(-1)[0];
-                this.$tags.pop();
-              }
-              break;
+              case 'Enter':
+                e.preventDefault();
+                this.push();
+                break;
+            }
+          }}
+          @input=${(e: InputEvent) => {
+            const input = e.target as HTMLInputElement;
 
-            case ",":
-              e.preventDefault();
-              this.push();
-              break;
+            this.$input = input.value;
+          }}
+          .maxLength=${this.maxlength}
+          .value=${this.$input}
+        />
 
-            case "Enter":
-              e.preventDefault();
-              this.push();
-              break;
-          }
-        }}
-        @input=${(e: InputEvent) => {
-          const input = e.target as HTMLInputElement;
-
-          this.$input = input.value;
-        }}
-        .maxLength=${this.maxlength}
-        .value=${this.$input}
-      />
-
-      ${this.$tags.map(
-        (tag) => html`<input
-          name="${this.name}[]"
-          type="hidden"
-          value="${tag}"
-        />`
-      )}
-    </div>`;
+        ${this.$tags.map(
+          tag =>
+            html`<input name="${this.name}[]" type="hidden" value="${tag}" />`,
+        )}
+      </div>
+    `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "uk-input-tag": InputTag;
+    'uk-input-tag': InputTag;
   }
 }

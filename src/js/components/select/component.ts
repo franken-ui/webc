@@ -1,10 +1,10 @@
-import { LitElement, PropertyValues, html } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
-import { repeat } from "lit/directives/repeat.js";
-import { parseOptions } from "../../helpers/common";
+import { LitElement, PropertyValues, html } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { repeat } from 'lit/directives/repeat.js';
+import { parseOptions } from '../../helpers/common';
 
 type Option = {
-  type: "option" | "label";
+  type: 'option' | 'label';
   value?: string;
   text: string;
   disabled?: boolean;
@@ -12,13 +12,13 @@ type Option = {
 };
 
 type I18N = {
-  "selection-count-text": string;
+  'selection-count-text': string;
 };
 
-@customElement("uk-select")
+@customElement('uk-select')
 export class Select extends LitElement {
   @property({ type: String })
-  name: string = "";
+  name: string = '';
 
   @property({ type: Boolean })
   multiple: boolean = false;
@@ -27,7 +27,7 @@ export class Select extends LitElement {
   disabled: boolean = false;
 
   @property({ type: String })
-  placeholder: string = "";
+  placeholder: string = '';
 
   @property({ type: Boolean })
   searchable: boolean = false;
@@ -36,10 +36,10 @@ export class Select extends LitElement {
   error: boolean = false;
 
   @property({ type: String })
-  i18n: string = "";
+  i18n: string = '';
 
   @state()
-  $term: string = "";
+  $term: string = '';
 
   @state()
   $options: Option[] = [];
@@ -58,15 +58,15 @@ export class Select extends LitElement {
 
   @state()
   $i18n: I18N = {
-    "selection-count-text": ":n: options selected",
+    'selection-count-text': ':n: options selected',
   };
 
-  private navigate(direction: "up" | "down") {
+  private navigate(direction: 'up' | 'down') {
     const isValidOption = (item: Option) =>
-      item.type !== "label" && item.disabled !== true;
+      item.type !== 'label' && item.disabled !== true;
 
     let focused = this.$focused;
-    const increment = direction === "up" ? -1 : 1;
+    const increment = direction === 'up' ? -1 : 1;
 
     do {
       focused += increment;
@@ -96,7 +96,7 @@ export class Select extends LitElement {
 
   private addOption(
     option: HTMLOptionElement,
-    isOptGroupDisabled?: boolean | undefined
+    isOptGroupDisabled?: boolean | undefined,
   ) {
     if (option.selected === true) {
       if (this.multiple === false) {
@@ -108,16 +108,16 @@ export class Select extends LitElement {
 
     let value: string | undefined;
 
-    if (option.hasAttribute("value")) {
-      value = option.getAttribute("value") || "";
+    if (option.hasAttribute('value')) {
+      value = option.getAttribute('value') || '';
     } else {
-      value = option.textContent || "";
+      value = option.textContent || '';
     }
 
     this.$options.push({
-      type: "option",
+      type: 'option',
       value: value,
-      text: option.textContent || "",
+      text: option.textContent || '',
       disabled: isOptGroupDisabled === true ? true : option.disabled,
       selected: option.selected,
     });
@@ -126,23 +126,23 @@ export class Select extends LitElement {
   connectedCallback(): void {
     super.connectedCallback();
 
-    Array.from(this.children).map((a) => {
-      if (a.nodeName === "OPTGROUP") {
+    Array.from(this.children).map(a => {
+      if (a.nodeName === 'OPTGROUP') {
         const group = a as HTMLOptGroupElement;
 
         this.$options.push({
-          type: "label",
-          text: group.getAttribute("label") || "",
+          type: 'label',
+          text: group.getAttribute('label') || '',
         });
 
-        Array.from(group.children).map((b) => {
+        Array.from(group.children).map(b => {
           const option = b as HTMLOptionElement;
 
           this.addOption(option, group.disabled);
         });
       }
 
-      if (a.nodeName === "OPTION") {
+      if (a.nodeName === 'OPTION') {
         const option = a as HTMLOptionElement;
 
         this.addOption(option);
@@ -152,7 +152,7 @@ export class Select extends LitElement {
     // scroll the ul tag once page load
     if (this.multiple === false && this.$selected.length === 1) {
       this.$focused = this.$options.findIndex(
-        (a) => a.value === this.$selected[0]
+        a => a.value === this.$selected[0],
       );
     }
 
@@ -160,16 +160,16 @@ export class Select extends LitElement {
       this.$i18n = parseOptions(this.i18n) as I18N;
     }
 
-    document.addEventListener("click", this.onClickAway.bind(this));
+    document.addEventListener('click', this.onClickAway.bind(this));
 
-    this.innerHTML = "";
-    this.removeAttribute("uk-cloak");
+    this.innerHTML = '';
+    this.removeAttribute('uk-cloak');
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
 
-    document.removeEventListener("click", this.onClickAway);
+    document.removeEventListener('click', this.onClickAway);
   }
 
   protected createRenderRoot(): HTMLElement | DocumentFragment {
@@ -177,21 +177,21 @@ export class Select extends LitElement {
   }
 
   protected updated(_changedProperties: PropertyValues): void {
-    if (_changedProperties.has("$focused")) {
+    if (_changedProperties.has('$focused')) {
       if (this.$isOpen === true) {
         this.focusLi();
       }
     }
 
-    if (_changedProperties.has("$isOpen")) {
+    if (_changedProperties.has('$isOpen')) {
       if (this.$isOpen === true) {
         this.focusLi(false);
 
         const windowHeight = window.innerHeight;
         const dropdown = this.renderRoot.querySelector(
-          "div.uk-dropdown"
+          'div.uk-dropdown',
         ) as HTMLElement;
-        const button = this.renderRoot.querySelector("button") as HTMLElement;
+        const button = this.renderRoot.querySelector('button') as HTMLElement;
 
         const rects = {
           dropdown: dropdown.getBoundingClientRect(),
@@ -203,19 +203,19 @@ export class Select extends LitElement {
         }
 
         this.dispatchEvent(
-          new CustomEvent("uk-select:shown", {
+          new CustomEvent('uk-select:shown', {
             detail: { value: true },
             bubbles: true,
             composed: true,
-          })
+          }),
         );
       } else {
         this.updateComplete.then(() => {
-          this.$term = "";
+          this.$term = '';
 
           if (this.multiple === false) {
             this.$focused = this.$options.findIndex(
-              (a) => a.value === this.$selected[0]
+              a => a.value === this.$selected[0],
             );
           } else {
             this.$focused = -1;
@@ -223,250 +223,254 @@ export class Select extends LitElement {
         });
 
         this.dispatchEvent(
-          new CustomEvent("uk-select:hidden", {
+          new CustomEvent('uk-select:hidden', {
             detail: { value: true },
             bubbles: true,
             composed: true,
-          })
+          }),
         );
       }
     }
 
-    if (_changedProperties.has("$term")) {
+    if (_changedProperties.has('$term')) {
       this.updateComplete.then(() => {
-        if (this.$term === "") {
+        if (this.$term === '') {
           this.$filteredOptions = this.$options;
 
           return;
         }
 
-        this.$filteredOptions = this.$options.filter((a) =>
-          a.value?.toLowerCase().includes(this.$term.toLowerCase())
+        this.$filteredOptions = this.$options.filter(a =>
+          a.value?.toLowerCase().includes(this.$term.toLowerCase()),
         );
       });
     }
   }
 
   render() {
-    return html` <div class="uk-combobox">
-      <button
-        class="uk-combobox-input ${this.error === true ? "uk-form-danger" : ""}"
-        type="button"
-        .disabled=${this.disabled}
-        @click="${this.toggle}"
-        @keydown=${(e: KeyboardEvent) => {
-          if (this.$isOpen === true) {
-            switch (e.key) {
-              case "Escape":
-                this.$isOpen = false;
-                break;
-
-              case "ArrowDown":
-                e.preventDefault();
-                this.$focused = this.navigate("down");
-                break;
-
-              case "ArrowUp":
-                e.preventDefault();
-                this.$focused = this.navigate("up");
-                break;
-
-              case "Enter":
-                e.preventDefault();
-                this.select(this.$focused);
-                break;
-
-              case " ":
-                e.preventDefault();
-                this.select(this.$focused);
-                break;
-
-              case "Tab":
-                if (this.searchable === false) {
+    return html`
+      <div class="uk-combobox">
+        <button
+          class="uk-combobox-input ${this.error === true
+            ? 'uk-form-danger'
+            : ''}"
+          type="button"
+          .disabled=${this.disabled}
+          @click="${this.toggle}"
+          @keydown=${(e: KeyboardEvent) => {
+            if (this.$isOpen === true) {
+              switch (e.key) {
+                case 'Escape':
                   this.$isOpen = false;
-                }
-                break;
+                  break;
 
-              default:
-                break;
-            }
-          } else {
-            switch (e.key) {
-              case "ArrowDown":
-                e.preventDefault();
-                this.$focused = this.navigate("down");
-                this.$isOpen = true;
-                break;
+                case 'ArrowDown':
+                  e.preventDefault();
+                  this.$focused = this.navigate('down');
+                  break;
 
-              case "ArrowUp":
-                e.preventDefault();
-                this.$focused = this.navigate("up");
-                this.$isOpen = true;
-                break;
+                case 'ArrowUp':
+                  e.preventDefault();
+                  this.$focused = this.navigate('up');
+                  break;
+
+                case 'Enter':
+                  e.preventDefault();
+                  this.select(this.$focused);
+                  break;
+
+                case ' ':
+                  e.preventDefault();
+                  this.select(this.$focused);
+                  break;
+
+                case 'Tab':
+                  if (this.searchable === false) {
+                    this.$isOpen = false;
+                  }
+                  break;
+
+                default:
+                  break;
+              }
+            } else {
+              switch (e.key) {
+                case 'ArrowDown':
+                  e.preventDefault();
+                  this.$focused = this.navigate('down');
+                  this.$isOpen = true;
+                  break;
+
+                case 'ArrowUp':
+                  e.preventDefault();
+                  this.$focused = this.navigate('up');
+                  this.$isOpen = true;
+                  break;
+              }
             }
-          }
-        }}
-      >
-        <span> ${this.text()} </span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="lucide lucide-chevrons-up-down"
+          }}
         >
-          <path d="m7 15 5 5 5-5" />
-          <path d="m7 9 5-5 5 5" />
-        </svg>
-      </button>
-      ${this.$isOpen === true
-        ? html`<div class="uk-drop uk-dropdown uk-open" tabindex="-1">
-            ${this.searchable === true
-              ? html`<div class="uk-combobox-search">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="lucide lucide-search"
-                  >
-                    <circle cx="11" cy="11" r="8" />
-                    <path d="m21 21-4.3-4.3" />
-                  </svg>
-                  <input
-                    placeholder="Search"
-                    type="text"
-                    .value="${this.$term}"
-                    @keydown=${(e: KeyboardEvent) => {
-                      if (this.$isOpen === true) {
-                        switch (e.key) {
-                          case "Escape":
-                            this.$isOpen = false;
-                            this.renderRoot.querySelector("button")?.focus();
-                            break;
-
-                          case "ArrowDown":
-                            e.preventDefault();
-                            this.$focused = this.navigate("down");
-                            break;
-
-                          case "ArrowUp":
-                            e.preventDefault();
-                            this.$focused = this.navigate("up");
-                            break;
-
-                          case "Enter":
-                            e.preventDefault();
-                            this.select(this.$focused);
-                            break;
-
-                          case "Tab":
-                            if (
-                              !e.altKey &&
-                              !e.shiftKey &&
-                              !e.ctrlKey &&
-                              !e.metaKey
-                            ) {
+          <span> ${this.text()} </span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-chevrons-up-down"
+          >
+            <path d="m7 15 5 5 5-5" />
+            <path d="m7 9 5-5 5 5" />
+          </svg>
+        </button>
+        ${this.$isOpen === true
+          ? html`<div class="uk-drop uk-dropdown uk-open" tabindex="-1">
+              ${this.searchable === true
+                ? html`<div class="uk-combobox-search">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-search"
+                    >
+                      <circle cx="11" cy="11" r="8" />
+                      <path d="m21 21-4.3-4.3" />
+                    </svg>
+                    <input
+                      placeholder="Search"
+                      type="text"
+                      .value="${this.$term}"
+                      @keydown=${(e: KeyboardEvent) => {
+                        if (this.$isOpen === true) {
+                          switch (e.key) {
+                            case 'Escape':
                               this.$isOpen = false;
-                            }
-                            break;
+                              this.renderRoot.querySelector('button')?.focus();
+                              break;
 
-                          default:
-                            break;
+                            case 'ArrowDown':
+                              e.preventDefault();
+                              this.$focused = this.navigate('down');
+                              break;
+
+                            case 'ArrowUp':
+                              e.preventDefault();
+                              this.$focused = this.navigate('up');
+                              break;
+
+                            case 'Enter':
+                              e.preventDefault();
+                              this.select(this.$focused);
+                              break;
+
+                            case 'Tab':
+                              if (
+                                !e.altKey &&
+                                !e.shiftKey &&
+                                !e.ctrlKey &&
+                                !e.metaKey
+                              ) {
+                                this.$isOpen = false;
+                              }
+                              break;
+
+                            default:
+                              break;
+                          }
                         }
-                      }
-                    }}
-                    @input=${(e: InputEvent) => {
-                      const input = e.target as HTMLInputElement;
+                      }}
+                      @input=${(e: InputEvent) => {
+                        const input = e.target as HTMLInputElement;
 
-                      this.$term = input.value;
-                    }}
-                  />
-                </div>`
-              : ""}
-            <ul class="uk-dropdown-nav" tabindex="-1">
-              ${repeat(
-                this.$filteredOptions,
-                (option) => option.value,
-                (option, index) =>
-                  html`${option.type === "label"
-                    ? html`<li class="uk-nav-header">${option.text}</li>`
-                    : html`<li
-                        class="${option.disabled === true
-                          ? "uk-disabled"
-                          : ""} ${this.$focused === index ? "uk-active" : ""}"
-                        tabindex="-1"
-                        @click=${() => this.select(index)}
-                      >
-                        <a tabindex="-1">
-                          <span>${option.text}</span>
-                          ${this.$selected.includes(option.value)
-                            ? html`<svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                class="lucide lucide-check"
-                              >
-                                <path d="M20 6 9 17l-5-5" />
-                              </svg>`
-                            : ""}
-                        </a>
-                      </li>`}`
-              )}
-            </ul>
-          </div>`
-        : ""}
-      ${this.name
-        ? html`${this.multiple === false
-            ? html`<input
-                name="${this.name}"
-                type="hidden"
-                value="${this.$selected[0]}"
-              />`
-            : this.$selected.map(
-                (a) =>
-                  html`<input
-                    name="${this.name}[]"
-                    type="hidden"
-                    value="${a}"
-                  />`
-              )}`
-        : ""}
-    </div>`;
+                        this.$term = input.value;
+                      }}
+                    />
+                  </div>`
+                : ''}
+              <ul class="uk-dropdown-nav" tabindex="-1">
+                ${repeat(
+                  this.$filteredOptions,
+                  option => option.value,
+                  (option, index) =>
+                    html`${option.type === 'label'
+                      ? html`<li class="uk-nav-header">${option.text}</li>`
+                      : html`<li
+                          class="${option.disabled === true
+                            ? 'uk-disabled'
+                            : ''} ${this.$focused === index ? 'uk-active' : ''}"
+                          tabindex="-1"
+                          @click=${() => this.select(index)}
+                        >
+                          <a tabindex="-1">
+                            <span>${option.text}</span>
+                            ${this.$selected.includes(option.value)
+                              ? html`<svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  class="lucide lucide-check"
+                                >
+                                  <path d="M20 6 9 17l-5-5" />
+                                </svg>`
+                              : ''}
+                          </a>
+                        </li>`}`,
+                )}
+              </ul>
+            </div>`
+          : ''}
+        ${this.name
+          ? html`${this.multiple === false
+              ? html`<input
+                  name="${this.name}"
+                  type="hidden"
+                  value="${this.$selected[0]}"
+                />`
+              : this.$selected.map(
+                  a =>
+                    html`<input
+                      name="${this.name}[]"
+                      type="hidden"
+                      value="${a}"
+                    />`,
+                )}`
+          : ''}
+      </div>
+    `;
   }
 
   private text() {
     if (this.$selected.length === 0) {
-      return this.placeholder !== "" ? this.placeholder : "Select an option";
+      return this.placeholder !== '' ? this.placeholder : 'Select an option';
     }
 
     if (this.multiple === false) {
-      return this.$options.find((a) => a.value === this.$selected[0])?.text;
+      return this.$options.find(a => a.value === this.$selected[0])?.text;
     }
 
     if (this.$selected.length === 1) {
-      return this.$options.find((a) => a.value === this.$selected[0])?.text;
+      return this.$options.find(a => a.value === this.$selected[0])?.text;
     }
 
-    return this.$i18n["selection-count-text"].replace(
-      ":n:",
-      this.$selected.length.toString()
+    return this.$i18n['selection-count-text'].replace(
+      ':n:',
+      this.$selected.length.toString(),
     );
   }
 
@@ -479,10 +483,10 @@ export class Select extends LitElement {
   }
 
   private focusLi(smooth = true) {
-    const ul = this.renderRoot.querySelector("ul");
+    const ul = this.renderRoot.querySelector('ul');
 
     if (ul) {
-      const options = ul.querySelectorAll("li");
+      const options = ul.querySelectorAll('li');
 
       if (this.$focused >= 0 && this.$focused < options.length) {
         const focused = options[this.$focused];
@@ -499,7 +503,7 @@ export class Select extends LitElement {
         if (smooth === true) {
           ul.scrollTo({
             top: scrollTop,
-            behavior: "smooth",
+            behavior: 'smooth',
           });
         } else {
           ul.scrollTop = scrollTop;
@@ -511,7 +515,7 @@ export class Select extends LitElement {
   private select(index: number | undefined) {
     if (index === -1) {
       this.$isOpen = false;
-      this.renderRoot.querySelector("button")?.focus();
+      this.renderRoot.querySelector('button')?.focus();
 
       return;
     }
@@ -522,7 +526,7 @@ export class Select extends LitElement {
       selected = this.$filteredOptions[index];
     }
 
-    if (selected && (selected.type === "label" || selected.disabled === true)) {
+    if (selected && (selected.type === 'label' || selected.disabled === true)) {
       return;
     }
 
@@ -533,32 +537,32 @@ export class Select extends LitElement {
       }
 
       this.$isOpen = false;
-      this.renderRoot.querySelector("button")?.focus();
+      this.renderRoot.querySelector('button')?.focus();
 
       this.dispatchEvent(
-        new CustomEvent("uk-select:input", {
+        new CustomEvent('uk-select:input', {
           detail: { value: this.$selected[0] },
           bubbles: true,
           composed: true,
-        })
+        }),
       );
     } else {
       if (index !== undefined) {
-        if (this.$selected.findIndex((a) => a === selected?.value) === -1) {
+        if (this.$selected.findIndex(a => a === selected?.value) === -1) {
           this.$selected.push(selected?.value);
         } else {
-          this.$selected = this.$selected.filter((a) => a !== selected?.value);
+          this.$selected = this.$selected.filter(a => a !== selected?.value);
         }
 
         this.requestUpdate();
       }
 
       this.dispatchEvent(
-        new CustomEvent("uk-select:input", {
+        new CustomEvent('uk-select:input', {
           detail: { value: this.$selected },
           bubbles: true,
           composed: true,
-        })
+        }),
       );
     }
   }
@@ -572,6 +576,6 @@ export class Select extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "uk-select": Select;
+    'uk-select': Select;
   }
 }

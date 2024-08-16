@@ -5,12 +5,12 @@ class DarkModeObserver {
 
   constructor() {
     this.observer = new MutationObserver(() => {
-      const isDark = document.documentElement.classList.contains("dark");
-      this.subscribers.forEach((subscriber) => subscriber(isDark));
+      const isDark = document.documentElement.classList.contains('dark');
+      this.subscribers.forEach(subscriber => subscriber(isDark));
     });
 
     this.observer.observe(document.documentElement, {
-      attributeFilter: ["class"],
+      attributeFilter: ['class'],
       attributeOldValue: true,
     });
   }
