@@ -249,9 +249,9 @@ export class Select extends LitElement {
 
   render() {
     return html`
-      <div class="uk-combobox">
+      <div class="uk-custom-select">
         <button
-          class="uk-combobox-input ${this.error === true
+          class="uk-fake-input uk-flex uk-flex-between ${this.error === true
             ? 'uk-form-danger'
             : ''}"
           type="button"
@@ -312,6 +312,7 @@ export class Select extends LitElement {
         >
           <span> ${this.text()} </span>
           <svg
+            class="opacity-50"
             xmlns="http://www.w3.org/2000/svg"
             width="16"
             height="16"
@@ -328,127 +329,141 @@ export class Select extends LitElement {
           </svg>
         </button>
         ${this.$isOpen === true
-          ? html`<div class="uk-drop uk-dropdown uk-open" tabindex="-1">
-              ${this.searchable === true
-                ? html`<div class="uk-combobox-search">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="lucide lucide-search"
-                    >
-                      <circle cx="11" cy="11" r="8" />
-                      <path d="m21 21-4.3-4.3" />
-                    </svg>
-                    <input
-                      placeholder="Search"
-                      type="text"
-                      .value="${this.$term}"
-                      @keydown=${(e: KeyboardEvent) => {
-                        if (this.$isOpen === true) {
-                          switch (e.key) {
-                            case 'Escape':
-                              this.$isOpen = false;
-                              this.renderRoot.querySelector('button')?.focus();
-                              break;
-
-                            case 'ArrowDown':
-                              e.preventDefault();
-                              this.$focused = this.navigate('down');
-                              break;
-
-                            case 'ArrowUp':
-                              e.preventDefault();
-                              this.$focused = this.navigate('up');
-                              break;
-
-                            case 'Enter':
-                              e.preventDefault();
-                              this.select(this.$focused);
-                              break;
-
-                            case 'Tab':
-                              if (
-                                !e.altKey &&
-                                !e.shiftKey &&
-                                !e.ctrlKey &&
-                                !e.metaKey
-                              ) {
-                                this.$isOpen = false;
-                              }
-                              break;
-
-                            default:
-                              break;
-                          }
-                        }
-                      }}
-                      @input=${(e: InputEvent) => {
-                        const input = e.target as HTMLInputElement;
-
-                        this.$term = input.value;
-                      }}
-                    />
-                  </div>`
-                : ''}
-              <ul class="uk-dropdown-nav" tabindex="-1">
-                ${repeat(
-                  this.$filteredOptions,
-                  option => option.value,
-                  (option, index) =>
-                    html`${option.type === 'label'
-                      ? html`<li class="uk-nav-header">${option.text}</li>`
-                      : html`<li
-                          class="${option.disabled === true
-                            ? 'uk-disabled'
-                            : ''} ${this.$focused === index ? 'uk-active' : ''}"
-                          tabindex="-1"
-                          @click=${() => this.select(index)}
+          ? html`
+              <div class="uk-drop uk-dropdown uk-open" tabindex="-1">
+                ${this.searchable === true
+                  ? html`
+                      <div class="uk-custom-select-search">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="lucide lucide-search"
                         >
-                          <a tabindex="-1">
-                            <span>${option.text}</span>
-                            ${this.$selected.includes(option.value)
-                              ? html`<svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  class="lucide lucide-check"
+                          <circle cx="11" cy="11" r="8" />
+                          <path d="m21 21-4.3-4.3" />
+                        </svg>
+                        <input
+                          placeholder="Search"
+                          type="text"
+                          .value="${this.$term}"
+                          @keydown=${(e: KeyboardEvent) => {
+                            if (this.$isOpen === true) {
+                              switch (e.key) {
+                                case 'Escape':
+                                  this.$isOpen = false;
+                                  this.renderRoot
+                                    .querySelector('button')
+                                    ?.focus();
+                                  break;
+
+                                case 'ArrowDown':
+                                  e.preventDefault();
+                                  this.$focused = this.navigate('down');
+                                  break;
+
+                                case 'ArrowUp':
+                                  e.preventDefault();
+                                  this.$focused = this.navigate('up');
+                                  break;
+
+                                case 'Enter':
+                                  e.preventDefault();
+                                  this.select(this.$focused);
+                                  break;
+
+                                case 'Tab':
+                                  if (
+                                    !e.altKey &&
+                                    !e.shiftKey &&
+                                    !e.ctrlKey &&
+                                    !e.metaKey
+                                  ) {
+                                    this.$isOpen = false;
+                                  }
+                                  break;
+
+                                default:
+                                  break;
+                              }
+                            }
+                          }}
+                          @input=${(e: InputEvent) => {
+                            const input = e.target as HTMLInputElement;
+
+                            this.$term = input.value;
+                          }}
+                        />
+                      </div>
+                    `
+                  : ''}
+                ${this.$filteredOptions.length > 0
+                  ? html`
+                      <hr class="uk-hr" />
+                      <ul class="uk-dropdown-nav" tabindex="-1">
+                        ${repeat(
+                          this.$filteredOptions,
+                          option => option.value,
+                          (option, index) =>
+                            html`${option.type === 'label'
+                              ? html`<li class="uk-nav-header">
+                                  ${option.text}
+                                </li>`
+                              : html`<li
+                                  class="${option.disabled === true
+                                    ? 'uk-disabled opacity-50'
+                                    : ''} ${this.$focused === index
+                                    ? 'uk-active'
+                                    : ''}"
+                                  tabindex="-1"
+                                  @click=${() => this.select(index)}
                                 >
-                                  <path d="M20 6 9 17l-5-5" />
-                                </svg>`
-                              : ''}
-                          </a>
-                        </li>`}`,
-                )}
-              </ul>
-            </div>`
+                                  <a tabindex="-1">
+                                    <span>${option.text}</span>
+                                    ${this.$selected.includes(option.value)
+                                      ? html`<svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          width="16"
+                                          height="16"
+                                          viewBox="0 0 24 24"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          stroke-width="2"
+                                          stroke-linecap="round"
+                                          stroke-linejoin="round"
+                                          class="lucide lucide-check"
+                                        >
+                                          <path d="M20 6 9 17l-5-5" />
+                                        </svg>`
+                                      : ''}
+                                  </a>
+                                </li>`}`,
+                        )}
+                      </ul>
+                    `
+                  : ''}
+              </div>
+            `
           : ''}
-        ${this.name
+        ${this.name && this.$selected.length > 0
           ? html`${this.multiple === false
-              ? html`<input
-                  name="${this.name}"
-                  type="hidden"
-                  value="${this.$selected[0]}"
-                />`
+              ? html`
+                  <input
+                    name="${this.name}"
+                    type="hidden"
+                    value="${this.$selected[0]}"
+                  />
+                `
               : this.$selected.map(
-                  a =>
-                    html`<input
-                      name="${this.name}[]"
-                      type="hidden"
-                      value="${a}"
-                    />`,
+                  a => html`
+                    <input name="${this.name}[]" type="hidden" value="${a}" />
+                  `,
                 )}`
           : ''}
       </div>
