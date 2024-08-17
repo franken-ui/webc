@@ -14,6 +14,9 @@ type SlugOptions = {
 
 @customElement('uk-input-tag')
 export class InputTag extends LitElement {
+  @property({ type: Boolean })
+  disabled: boolean = false;
+
   @property({ type: Number })
   maxlength: number = 20;
 
@@ -119,31 +122,50 @@ export class InputTag extends LitElement {
 
   render() {
     return html`
-      <div class="uk-input-tag">
+      <div class="uk-input-tag ${this.disabled === true ? 'opacity-50' : ''}">
         ${this.$tags.map(
-          (tag, i) =>
-            html`<div class="uk-tag ${`uk-tag-${this.state}`}">
+          (tag, i) => html`
+            <div class="uk-tag ${`uk-tag-${this.state}`}">
               <span
                 @click=${() => {
-                  this.$input = this.$tags[i];
-                  this.$tags = this.$tags.filter((_, b) => b !== i);
+                  if (this.disabled === false) {
+                    this.$input = this.$tags[i];
+                    this.$tags = this.$tags.filter((_, b) => b !== i);
 
-                  this.renderRoot.querySelector('input')?.focus();
+                    this.renderRoot.querySelector('input')?.focus();
+                  }
                 }}
               >
                 ${tag}
               </span>
               <a
-                @click=${() => {
-                  this.$tags = this.$tags.filter((_, b) => b !== i);
-                }}
-                class="uk-close"
-                uk-close="ratio: 0.8"
-              ></a>
-            </div>`,
+                @click="${() => {
+                  if (this.disabled === false) {
+                    this.$tags = this.$tags.filter((_, b) => b !== i);
+                  }
+                }}"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </svg>
+              </a>
+            </div>
+          `,
         )}
 
         <input
+          .disabled=${this.disabled}
           autocomplete="off"
           type="text"
           placeholder="${this.placeholder}"
@@ -179,8 +201,9 @@ export class InputTag extends LitElement {
         />
 
         ${this.$tags.map(
-          tag =>
-            html`<input name="${this.name}[]" type="hidden" value="${tag}" />`,
+          tag => html`
+            <input name="${this.name}[]" type="hidden" value="${tag}" />
+          `,
         )}
       </div>
     `;
