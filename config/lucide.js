@@ -4,9 +4,9 @@ export default defineConfig({
   build: {
     emptyOutDir: false,
     lib: {
-      entry: 'src/js/icons.ts',
+      entry: 'src/js/lucide.ts',
       name: 'LUCIDEICONS',
-      fileName: 'js/icons',
+      fileName: 'js/lucide',
       formats: ['iife'],
     },
   },

@@ -3,8 +3,8 @@ import { customElement, property } from 'lit/decorators.js';
 import * as icons from 'lucide';
 import { createElement } from 'lucide';
 
-@customElement('uk-icon')
-export class Icon extends LitElement {
+@customElement('uk-lucide')
+export class Lucide extends LitElement {
   @property({ type: String })
   'custom-class': string = '';
 
@@ -57,6 +57,6 @@ export class Icon extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'uk-icon': Icon;
+    'uk-lucide': Lucide;
   }
 }

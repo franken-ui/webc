@@ -23,9 +23,9 @@
   "scripts": {
     "dev": "vite",
     "build:js": "tsc && vite -c config/wc.js build",
-    "build:icons": "tsc && vite -c config/icons.js build",
+    "build:lucide": "tsc && vite -c config/lucide.js build",
     "build:css": "vite -c config/css.js build",
-    "prepublishOnly": "npm run build:js & npm run build:icons & npm run build:css",
+    "prepublishOnly": "npm run build:js & npm run build:lucide & npm run build:css",
     "preview": "vite preview"
   },
   "dependencies": {
