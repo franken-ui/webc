@@ -23,13 +23,15 @@
   "scripts": {
     "dev": "vite",
     "build:js": "tsc && vite -c config/wc.js build",
+    "build:icons": "tsc && vite -c config/icons.js build",
     "build:css": "vite -c config/css.js build",
-    "prepublishOnly": "npm run build:js & npm run build:css",
+    "prepublishOnly": "npm run build:js & npm run build:icons & npm run build:css",
     "preview": "vite preview"
   },
   "dependencies": {
     "franken-ui": "^0.1.3",
     "lit": "^3.1.4",
+    "lucide": "^0.428.0",
     "postcss": "^8.4.39",
     "slugify": "^1.6.6",
     "tailwindcss": "^3.4.4"
@@ -51,7 +53,9 @@
   "prettier": {
     "singleQuote": true,
     "arrowParens": "avoid",
-    "plugins": ["prettier-plugin-tailwindcss"]
+    "plugins": [
+      "prettier-plugin-tailwindcss"
+    ]
   },
   "files": [
     "dist"
