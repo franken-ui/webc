@@ -18,7 +18,7 @@
   },
   "homepage": "https://www.franken-ui.dev",
   "license": "MIT",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -61,6 +61,9 @@
     "dist"
   ],
   "exports": {
-    ".": "./dist/js/wc.iife.js"
+    ".": "./dist/js/wc.iife.js",
+		"./dist/*": {
+			"default": "./dist/*.js"
+		}
   }
 }
