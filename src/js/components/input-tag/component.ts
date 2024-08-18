@@ -17,6 +17,9 @@ export class InputTag extends LitElement {
   @property({ type: Boolean })
   disabled: boolean = false;
 
+  @property({ type: Boolean })
+  error: boolean = false;
+
   @property({ type: Number })
   maxlength: number = 20;
 
@@ -122,7 +125,12 @@ export class InputTag extends LitElement {
 
   render() {
     return html`
-      <div class="uk-input-tag ${this.disabled === true ? 'opacity-50' : ''}">
+      <div
+        class="uk-input-tag ${this.disabled === true ? 'opacity-50' : ''} ${this
+          .error === true
+          ? 'uk-form-danger'
+          : ''}"
+      >
         ${this.$tags.map(
           (tag, i) => html`
             <div class="uk-tag ${`uk-tag-${this.state}`}">
