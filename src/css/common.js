@@ -39,6 +39,9 @@ export default {
 
     'opacity-50',
 
+    'ProseMirror',
+    'ProseMirror-focused',
+
     'text-background',
     'text-foreground',
     'text-card',
@@ -55,6 +58,8 @@ export default {
     'text-accent-foreground',
     'text-destructive',
     'text-destructive-foreground',
+
+    'tiptap',
 
     'ring-ring',
   ],
