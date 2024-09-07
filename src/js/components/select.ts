@@ -1,7 +1,7 @@
 import { LitElement, PropertyValues, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
-import { parseOptions } from '../../helpers/common';
+import { parseOptions } from '../helpers/common';
 
 type Option = {
   type: 'option' | 'label';
@@ -251,7 +251,7 @@ export class Select extends LitElement {
     return html`
       <div class="uk-custom-select">
         <button
-          class="uk-fake-input uk-flex uk-flex-between ${this.error === true
+          class="uk-input-fake uk-flex uk-flex-between ${this.error === true
             ? 'uk-form-danger'
             : ''}"
           type="button"

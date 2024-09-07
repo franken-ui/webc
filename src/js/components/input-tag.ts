@@ -1,6 +1,6 @@
 import { LitElement, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { parseOptions } from '../../helpers/common';
+import { parseOptions } from '../helpers/common';
 import slugify from 'slugify';
 
 type SlugOptions = {

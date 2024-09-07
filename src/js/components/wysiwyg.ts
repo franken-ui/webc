@@ -7,10 +7,10 @@ import CharacterCount from '@tiptap/extension-character-count';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import Link from '@tiptap/extension-link';
-import { id } from '../../helpers/common';
+import { id } from '../helpers/common';
 
-@customElement('uk-tiptap')
-export class Tiptap extends LitElement {
+@customElement('uk-wysiwyg')
+export class Wysiwyg extends LitElement {
   @property({ type: String })
   'custom-class': string = '';
 
@@ -540,6 +540,6 @@ export class Tiptap extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'uk-tiptap': Tiptap;
+    'uk-wysiwyg': Wysiwyg;
   }
 }

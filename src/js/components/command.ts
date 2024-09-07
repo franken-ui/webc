@@ -2,7 +2,7 @@ import { LitElement, PropertyValues, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import { id } from '../../helpers/common';
+import { id } from '../helpers/common';
 
 @customElement('uk-command')
 export class Command extends LitElement {
@@ -75,17 +75,13 @@ export class Command extends LitElement {
       }
     });
 
-    if (this.key !== undefined) {
-      document.addEventListener('keydown', this.onKeydown.bind(this));
-    }
-
     this.innerHTML = '';
     this.removeAttribute('uk-cloak');
   }
 
-  disconnectedCallback() {
+  protected firstUpdated(_changedProperties: PropertyValues): void {
     if (this.key !== undefined) {
-      document.removeEventListener('keydown', this.onKeydown);
+      document.addEventListener('keydown', this.onKeydown.bind(this));
     }
   }
 

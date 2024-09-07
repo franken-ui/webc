@@ -1,16 +1,18 @@
 import { defineConfig } from 'vite';
+import shared from './shared.js';
 
 export default defineConfig({
   build: {
     emptyOutDir: false,
+    ...shared,
     lib: {
-      entry: 'src/js/tiptap.ts',
-      name: 'TIPTAP',
-      fileName: 'js/tiptap',
+      entry: 'src/js/wysiwyg.ts',
+      name: 'FRANKENUIWYSIWYG',
+      fileName: 'js/wysiwyg',
       formats: ['iife'],
     },
   },
   esbuild: {
-    legalComments: 'eof',
+    legalComments: 'none',
   },
 });

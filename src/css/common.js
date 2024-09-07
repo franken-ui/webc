@@ -42,6 +42,8 @@ export default {
     'ProseMirror',
     'ProseMirror-focused',
 
+    'size-4',
+
     'text-background',
     'text-foreground',
     'text-card',
