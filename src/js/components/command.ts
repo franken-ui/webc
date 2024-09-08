@@ -2,7 +2,6 @@ import { LitElement, PropertyValues, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import { id } from '../helpers/common';
 
 @customElement('uk-command')
 export class Command extends LitElement {
@@ -13,7 +12,7 @@ export class Command extends LitElement {
   placeholder: string = 'Search';
 
   @property({ type: String })
-  toggle: string;
+  toggle: string = 'fkcmd';
 
   @state()
   $items: {
@@ -31,12 +30,6 @@ export class Command extends LitElement {
 
   get flattenedItems() {
     return Object.values(this.$filteredItems).flat();
-  }
-
-  constructor() {
-    super();
-
-    this.toggle = id();
   }
 
   connectedCallback(): void {
@@ -75,14 +68,18 @@ export class Command extends LitElement {
       }
     });
 
-    this.innerHTML = '';
-    this.removeAttribute('uk-cloak');
-  }
-
-  protected firstUpdated(_changedProperties: PropertyValues): void {
-    if (this.key !== undefined) {
+    if (this.key !== undefined && window.UIkit) {
       document.addEventListener('keydown', this.onKeydown.bind(this));
     }
+
+    if (this.hasAttribute('toggle') === false) {
+      console.error(
+        'To suppress this message, set the `toggle` attribute to a unique name on your `<uk-command>`. Please see https://franken-ui.dev/docs/command for more details.',
+      );
+    }
+
+    this.innerHTML = '';
+    this.removeAttribute('uk-cloak');
   }
 
   protected createRenderRoot(): HTMLElement | DocumentFragment {

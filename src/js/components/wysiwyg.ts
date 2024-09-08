@@ -7,7 +7,6 @@ import CharacterCount from '@tiptap/extension-character-count';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import Link from '@tiptap/extension-link';
-import { id } from '../helpers/common';
 
 @customElement('uk-wysiwyg')
 export class Wysiwyg extends LitElement {
@@ -23,20 +22,22 @@ export class Wysiwyg extends LitElement {
   @state()
   content: string = '';
 
-  private modal: string;
+  private modal: string = '';
 
   private editor: Editor | null = null;
 
   private url: string = '';
 
-  constructor() {
-    super();
-
-    this.modal = id();
-  }
-
   connectedCallback(): void {
     super.connectedCallback();
+
+    this.modal = `${this.name}-wysiwyg-link`;
+
+    if (this.hasAttribute('name') === false) {
+      console.error(
+        'To suppress this message, set the `name` attribute to a unique name on your `<uk-wysiwyg>`. Please see https://franken-ui.dev/docs/wysiwyg for more details.',
+      );
+    }
 
     this.content = this.innerHTML.trim();
     this.innerHTML = '';
