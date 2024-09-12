@@ -3,6 +3,7 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   build: {
     emptyOutDir: false,
+    cssMinify: 'lightningcss',
     rollupOptions: {
       input: [
         'src/css/blue.css',

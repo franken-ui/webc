@@ -26,7 +26,7 @@
     "build:icon": "tsc && vite -c config/icon.js build",
     "build:wysiwyg": "tsc && vite -c config/wysiwyg.js build",
     "build:css": "vite -c config/css.js build",
-    "prepublishOnly": "npm run build:core && npm run build:icon && npm run build:wysiwyg && npm run build:css",
+    "prepublishOnly": "npm run build:core && npm run build:icon && npm run build:css",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -49,6 +49,7 @@
     "@open-wc/eslint-config": "^12.0.3",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
+    "lightningcss": "^1.27.0",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.6",
     "typescript": "^5.2.2"
