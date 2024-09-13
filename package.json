@@ -49,7 +49,6 @@
     "@open-wc/eslint-config": "^12.0.3",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
-    "lightningcss": "^1.27.0",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.6",
     "typescript": "^5.2.2"

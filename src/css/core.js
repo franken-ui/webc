@@ -1,5 +1,8 @@
+import franken from 'franken-ui/shadcn-ui/preset-quick';
+
 /** @type {import('tailwindcss').Config} */
 export default {
+  presets: [franken()],
   safelist: [
     {
       pattern: /^uk-/,
@@ -65,4 +68,8 @@ export default {
 
     'ring-ring',
   ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
 };
