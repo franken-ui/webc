@@ -4,7 +4,10 @@ export default defineConfig({
   build: {
     emptyOutDir: false,
     rollupOptions: {
-      input: ['src/css/core.css'],
+      input: [
+        'src/css/core.css',
+        // 'src/css/utilities.css',
+      ],
       output: {
         assetFileNames: ({ name }) => {
           if (name.endsWith('.css')) {
