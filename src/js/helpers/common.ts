@@ -1,24 +1,34 @@
-export function parseOptions(value: string): object {
-  try {
-    if (value.startsWith('{')) {
+export function parseOptions(value: string): object | string {
+  if (value.startsWith('{')) {
+    try {
       return JSON.parse(value);
+    } catch (e) {
+      console.error('Error parsing', value);
+      return {};
     }
-
-    const result: { [key: string]: string } = {};
-
-    value
-      .replace(/[;\s]+$/, '')
-      .split(';')
-      .forEach(a => {
-        const b = a.trim().split(/:(.*)/);
-
-        result[b[0].trim()] = b[1].trim();
-      });
-
-    return result;
-  } catch (e) {
-    return {};
   }
+
+  if (value.includes(':')) {
+    try {
+      const result: { [key: string]: string } = {};
+
+      value
+        .replace(/[;\s]+$/, '')
+        .split(';')
+        .forEach(a => {
+          const b = a.trim().split(/:(.*)/);
+
+          result[b[0].trim()] = b[1].trim();
+        });
+
+      return result;
+    } catch (e) {
+      console.error('Error parsing', value);
+      return {};
+    }
+  }
+
+  return value;
 }
 
 export function validateHex(hex: string): string | undefined {

@@ -1,549 +1,327 @@
-import { LitElement, PropertyValues, html } from 'lit';
+import { html, PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { repeat } from 'lit/directives/repeat.js';
+import { GroupedOptionsItem, BaseSelect } from './shared/BaseSelect';
 import { parseOptions } from '../helpers/common';
 
-type Option = {
-  type: 'option' | 'label';
-  value?: string;
-  text: string;
-  disabled?: boolean;
-  selected?: boolean;
+type I18N = {
+  'search-placeholder': string;
+  'selection-count': string;
 };
 
-type I18N = {
-  'selection-count-text': string;
+type Cls = {
+  button: string;
+  icon: string;
+  dropdown: string;
 };
 
 @customElement('uk-select')
-export class Select extends LitElement {
+export class Select extends BaseSelect {
   @property({ type: String })
-  name: string = '';
-
-  @property({ type: Boolean })
-  multiple: boolean = false;
-
-  @property({ type: Boolean })
-  disabled: boolean = false;
-
-  @property({ type: String })
-  placeholder: string = '';
+  drop: string = 'mode: click';
 
   @property({ type: Boolean })
   searchable: boolean = false;
 
   @property({ type: Boolean })
-  error: boolean = false;
+  multiple: boolean = false;
+
+  @property({ type: String })
+  placeholder: string = 'Select an option';
+
+  @property({ type: String })
+  name: string = '';
+
+  @property({ type: String })
+  cls: string = '';
 
   @property({ type: String })
   i18n: string = '';
 
-  @state()
-  $term: string = '';
+  @property({ type: String })
+  icon: string = '';
 
   @state()
-  $options: Option[] = [];
+  $open: boolean = false;
 
   @state()
-  $filteredOptions: Option[] = this.$options;
-
-  @state()
-  $focused: number = -1;
-
-  @state()
-  $selected: any[] = [];
-
-  @state()
-  $isOpen: Boolean = false;
+  $selected: string[] = [];
 
   @state()
   $i18n: I18N = {
-    'selection-count-text': ':n: options selected',
+    'search-placeholder': 'Search',
+    'selection-count': ':n: options selected',
   };
 
-  private navigate(direction: 'up' | 'down') {
-    const isValidOption = (item: Option) =>
-      item.type !== 'label' && item.disabled !== true;
+  @state()
+  $cls: Cls = {
+    button: '',
+    icon: '',
+    dropdown: '',
+  };
 
-    let focused = this.$focused;
-    const increment = direction === 'up' ? -1 : 1;
+  private _icon: boolean | string = false;
 
-    do {
-      focused += increment;
+  private HTMLDrop: Element | null = null;
 
-      if (focused < 0) {
-        // If we've gone past the start, find the last valid option
-        focused = this.$filteredOptions.length - 1;
-        while (focused >= 0 && !isValidOption(this.$filteredOptions[focused])) {
-          focused--;
-        }
-        break;
-      } else if (focused >= this.$filteredOptions.length) {
-        // If we've gone past the end, find the first valid option
-        focused = 0;
-        while (
-          focused < this.$filteredOptions.length &&
-          !isValidOption(this.$filteredOptions[focused])
-        ) {
-          focused++;
-        }
-        break;
-      }
-    } while (!isValidOption(this.$filteredOptions[focused]));
-
-    return focused;
-  }
-
-  private addOption(
-    option: HTMLOptionElement,
-    isOptGroupDisabled?: boolean | undefined,
-  ) {
-    if (option.selected === true) {
-      if (this.multiple === false) {
-        this.$selected = [option.value];
-      } else {
-        this.$selected.push(option.value);
-      }
-    }
-
-    let value: string | undefined;
-
-    if (option.hasAttribute('value')) {
-      value = option.getAttribute('value') || '';
-    } else {
-      value = option.textContent || '';
-    }
-
-    this.$options.push({
-      type: 'option',
-      value: value,
-      text: option.textContent || '',
-      disabled: isOptGroupDisabled === true ? true : option.disabled,
-      selected: option.selected,
-    });
-  }
-
-  connectedCallback(): void {
-    super.connectedCallback();
-
-    Array.from(this.children).map(a => {
-      if (a.nodeName === 'OPTGROUP') {
-        const group = a as HTMLOptGroupElement;
-
-        this.$options.push({
-          type: 'label',
-          text: group.getAttribute('label') || '',
-        });
-
-        Array.from(group.children).map(b => {
-          const option = b as HTMLOptionElement;
-
-          this.addOption(option, group.disabled);
-        });
-      }
-
-      if (a.nodeName === 'OPTION') {
-        const option = a as HTMLOptionElement;
-
-        this.addOption(option);
-      }
-    });
-
-    // scroll the ul tag once page load
-    if (this.multiple === false && this.$selected.length === 1) {
-      this.$focused = this.$options.findIndex(
-        a => a.value === this.$selected[0],
-      );
-    }
-
-    if (this.i18n) {
-      this.$i18n = parseOptions(this.i18n) as I18N;
-    }
-
-    document.addEventListener('click', this.onClickAway.bind(this));
-
-    this.innerHTML = '';
-    this.removeAttribute('uk-cloak');
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-
-    document.removeEventListener('click', this.onClickAway);
-  }
-
-  protected createRenderRoot(): HTMLElement | DocumentFragment {
-    return this;
-  }
-
-  protected updated(_changedProperties: PropertyValues): void {
-    if (_changedProperties.has('$focused')) {
-      if (this.$isOpen === true) {
-        this.focusLi();
-      }
-    }
-
-    if (_changedProperties.has('$isOpen')) {
-      if (this.$isOpen === true) {
-        this.focusLi(false);
-
-        const windowHeight = window.innerHeight;
-        const dropdown = this.renderRoot.querySelector(
-          'div.uk-dropdown',
-        ) as HTMLElement;
-        const button = this.renderRoot.querySelector('button') as HTMLElement;
-
-        const rects = {
-          dropdown: dropdown.getBoundingClientRect(),
-          button: button.getBoundingClientRect(),
-        };
-
-        if (rects.button.bottom + rects.dropdown?.height > windowHeight) {
-          dropdown.style.bottom = `${rects.button.height + 4}px`;
-        }
-
-        this.dispatchEvent(
-          new CustomEvent('uk-select:shown', {
-            detail: { value: true },
-            bubbles: true,
-            composed: true,
-          }),
-        );
-      } else {
-        this.updateComplete.then(() => {
-          this.$term = '';
-
-          if (this.multiple === false) {
-            this.$focused = this.$options.findIndex(
-              a => a.value === this.$selected[0],
-            );
-          } else {
-            this.$focused = -1;
-          }
-        });
-
-        this.dispatchEvent(
-          new CustomEvent('uk-select:hidden', {
-            detail: { value: true },
-            bubbles: true,
-            composed: true,
-          }),
-        );
-      }
-    }
-
-    if (_changedProperties.has('$term')) {
-      this.updateComplete.then(() => {
-        if (this.$term === '') {
-          this.$filteredOptions = this.$options;
-
-          return;
-        }
-
-        this.$filteredOptions = this.$options.filter(a =>
-          a.value?.toLowerCase().includes(this.$term.toLowerCase()),
-        );
-      });
-    }
-  }
-
-  render() {
-    return html`
-      <div class="uk-custom-select">
-        <button
-          class="uk-input-fake uk-flex uk-flex-between ${this.error === true
-            ? 'uk-form-danger'
-            : ''}"
-          type="button"
-          .disabled=${this.disabled}
-          @click="${this.toggle}"
-          @keydown=${(e: KeyboardEvent) => {
-            if (this.$isOpen === true) {
-              switch (e.key) {
-                case 'Escape':
-                  this.$isOpen = false;
-                  break;
-
-                case 'ArrowDown':
-                  e.preventDefault();
-                  this.$focused = this.navigate('down');
-                  break;
-
-                case 'ArrowUp':
-                  e.preventDefault();
-                  this.$focused = this.navigate('up');
-                  break;
-
-                case 'Enter':
-                  e.preventDefault();
-                  this.select(this.$focused);
-                  break;
-
-                case ' ':
-                  e.preventDefault();
-                  this.select(this.$focused);
-                  break;
-
-                case 'Tab':
-                  if (this.searchable === false) {
-                    this.$isOpen = false;
-                  }
-                  break;
-
-                default:
-                  break;
-              }
-            } else {
-              switch (e.key) {
-                case 'ArrowDown':
-                  e.preventDefault();
-                  this.$focused = this.navigate('down');
-                  this.$isOpen = true;
-                  break;
-
-                case 'ArrowUp':
-                  e.preventDefault();
-                  this.$focused = this.navigate('up');
-                  this.$isOpen = true;
-                  break;
-              }
-            }
-          }}
-        >
-          <span> ${this.text()} </span>
-          <uk-icon class="opacity-50" icon="chevrons-up-down"></uk-icon>
-        </button>
-        ${this.$isOpen === true
-          ? html`
-              <div class="uk-drop uk-dropdown uk-open" tabindex="-1">
-                ${this.searchable === true
-                  ? html`
-                      <div class="uk-custom-select-search">
-                        <uk-icon icon="search"></uk-icon>
-                        <input
-                          placeholder="Search"
-                          type="text"
-                          .value="${this.$term}"
-                          @keydown=${(e: KeyboardEvent) => {
-                            if (this.$isOpen === true) {
-                              switch (e.key) {
-                                case 'Escape':
-                                  this.$isOpen = false;
-                                  this.renderRoot
-                                    .querySelector('button')
-                                    ?.focus();
-                                  break;
-
-                                case 'ArrowDown':
-                                  e.preventDefault();
-                                  this.$focused = this.navigate('down');
-                                  break;
-
-                                case 'ArrowUp':
-                                  e.preventDefault();
-                                  this.$focused = this.navigate('up');
-                                  break;
-
-                                case 'Enter':
-                                  e.preventDefault();
-                                  this.select(this.$focused);
-                                  break;
-
-                                case 'Tab':
-                                  if (
-                                    !e.altKey &&
-                                    !e.shiftKey &&
-                                    !e.ctrlKey &&
-                                    !e.metaKey
-                                  ) {
-                                    this.$isOpen = false;
-                                  }
-                                  break;
-
-                                default:
-                                  break;
-                              }
-                            }
-                          }}
-                          @input=${(e: InputEvent) => {
-                            const input = e.target as HTMLInputElement;
-
-                            this.$term = input.value;
-                          }}
-                        />
-                      </div>
-                    `
-                  : ''}
-                ${this.$filteredOptions.length > 0
-                  ? html`
-                      <hr class="uk-hr" />
-                      <ul class="uk-dropdown-nav" tabindex="-1">
-                        ${repeat(
-                          this.$filteredOptions,
-                          option => option.value,
-                          (option, index) =>
-                            html`${option.type === 'label'
-                              ? html`<li class="uk-nav-header">
-                                  ${option.text}
-                                </li>`
-                              : html`<li
-                                  class="${option.disabled === true
-                                    ? 'uk-disabled opacity-50'
-                                    : ''} ${this.$focused === index
-                                    ? 'uk-active'
-                                    : ''}"
-                                  tabindex="-1"
-                                  @click=${() => this.select(index)}
-                                >
-                                  <a tabindex="-1">
-                                    <span>${option.text}</span>
-                                    ${this.$selected.includes(option.value)
-                                      ? html`<uk-icon icon="check"></uk-icon>`
-                                      : ''}
-                                  </a>
-                                </li>`}`,
-                        )}
-                      </ul>
-                    `
-                  : ''}
-              </div>
-            `
-          : ''}
-        ${this.name && this.$selected.length > 0
-          ? html`${this.multiple === false
-              ? html`
-                  <input
-                    name="${this.name}"
-                    type="hidden"
-                    value="${this.$selected[0]}"
-                  />
-                `
-              : this.$selected.map(
-                  a => html`
-                    <input name="${this.name}[]" type="hidden" value="${a}" />
-                  `,
-                )}`
-          : ''}
-      </div>
-    `;
-  }
-
-  private text() {
+  get text() {
     if (this.$selected.length === 0) {
       return this.placeholder !== '' ? this.placeholder : 'Select an option';
     }
 
     if (this.multiple === false) {
-      return this.$options.find(a => a.value === this.$selected[0])?.text;
+      return this._options.find(a => a.value === this.$selected[0])?.text;
     }
 
     if (this.$selected.length === 1) {
-      return this.$options.find(a => a.value === this.$selected[0])?.text;
+      return this._options.find(a => a.value === this.$selected[0])?.text;
     }
 
-    return this.$i18n['selection-count-text'].replace(
+    return this.$i18n['selection-count'].replace(
       ':n:',
       this.$selected.length.toString(),
     );
   }
 
-  private toggle() {
-    if (this.$options.length === 0) {
-      return;
+  connectedCallback(): void {
+    super.connectedCallback();
+
+    if (this.i18n) {
+      this.$i18n = parseOptions(this.i18n) as I18N;
     }
 
-    this.$isOpen = !this.$isOpen;
-  }
+    if (this.cls) {
+      const cls = parseOptions(this.cls) as Cls | string;
 
-  private focusLi(smooth = true) {
-    const ul = this.renderRoot.querySelector('ul');
+      if (typeof cls === 'string') {
+        this.$cls['button'] = cls;
+      } else {
+        Object.keys(this.$cls).forEach(a => {
+          const key = a as 'button' | 'icon' | 'dropdown';
 
-    if (ul) {
-      const options = ul.querySelectorAll('li');
-
-      if (this.$focused >= 0 && this.$focused < options.length) {
-        const focused = options[this.$focused];
-        const rects = {
-          ul: ul.getBoundingClientRect(),
-          li: focused.getBoundingClientRect(),
-        };
-        const scrollTop =
-          focused.offsetTop -
-          ul.offsetTop -
-          rects.ul.height / 2 +
-          rects.li.height / 2;
-
-        if (smooth === true) {
-          ul.scrollTo({
-            top: scrollTop,
-            behavior: 'smooth',
-          });
-        } else {
-          ul.scrollTop = scrollTop;
-        }
+          if (cls[key]) {
+            this.$cls[key] = cls[key];
+          }
+        });
       }
     }
-  }
 
-  private select(index: number | undefined) {
-    if (index === -1) {
-      this.$isOpen = false;
-      this.renderRoot.querySelector('button')?.focus();
+    if (this.hasAttribute('icon')) {
+      const icon = this.getAttribute('icon');
 
-      return;
+      if (icon === '') {
+        this._icon = true;
+      } else {
+        this._icon = icon as string;
+      }
     }
 
-    let selected: Option | null = null;
-
-    if (index !== undefined) {
-      selected = this.$filteredOptions[index];
-    }
-
-    if (selected && (selected.type === 'label' || selected.disabled === true)) {
-      return;
-    }
+    this.$selected = this.options
+      .filter(a => a.selected === true)
+      .map(a => a.value);
 
     if (this.multiple === false) {
-      if (index !== undefined) {
-        this.$focused = index;
-        this.$selected = [selected?.value];
-      }
-
-      this.$isOpen = false;
-      this.renderRoot.querySelector('button')?.focus();
-
-      this.dispatchEvent(
-        new CustomEvent('uk-select:input', {
-          detail: { value: this.$selected[0] },
-          bubbles: true,
-          composed: true,
-        }),
-      );
-    } else {
-      if (index !== undefined) {
-        if (this.$selected.findIndex(a => a === selected?.value) === -1) {
-          this.$selected.push(selected?.value);
-        } else {
-          this.$selected = this.$selected.filter(a => a !== selected?.value);
-        }
-
-        this.requestUpdate();
-      }
-
-      this.dispatchEvent(
-        new CustomEvent('uk-select:input', {
-          detail: { value: this.$selected },
-          bubbles: true,
-          composed: true,
-        }),
+      this.$focused = this.options.findIndex(
+        a => a.value === this.$selected[0],
       );
     }
   }
 
-  private onClickAway(e: any) {
-    if (this.$isOpen && !this.renderRoot.contains(e.target)) {
-      this.$isOpen = false;
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    this.HTMLDrop = this.renderRoot.querySelector('.uk-drop');
+
+    if (this.HTMLDrop) {
+      this.HTMLRectParent = this.renderRoot.querySelector('ul');
+
+      window.UIkit.util.on(this.HTMLDrop, 'hidden', () => {
+        this.$open = false;
+        this.$focused = -1;
+        this.$term = '';
+      });
+
+      window.UIkit.util.on(this.HTMLDrop, 'shown', () => {
+        this.$open = true;
+      });
     }
+  }
+
+  private select(index: number) {
+    if (index === -1) {
+      return;
+    }
+
+    let selected = this.options[index];
+
+    if (this.multiple === false) {
+      // this.$focused = index;
+      this.$selected = [selected.value];
+    } else {
+      if (this.$selected.findIndex(a => a === selected?.value) === -1) {
+        this.$selected.push(selected?.value);
+      } else {
+        this.$selected = this.$selected.filter(a => a !== selected?.value);
+      }
+
+      this.requestUpdate();
+    }
+
+    this.dispatchEvent(
+      new CustomEvent('uk-select:input', {
+        detail: {
+          value: this.multiple === false ? this.$selected[0] : this.$selected,
+        },
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
+
+  protected override onKeydown(e: KeyboardEvent) {
+    if (this.$open === true) {
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          this.navigate('d');
+          break;
+
+        case 'ArrowUp':
+          e.preventDefault();
+          this.navigate('t');
+          break;
+
+        case 'Enter':
+          e.preventDefault();
+          this.select(this.$focused);
+          break;
+      }
+    }
+  }
+
+  private onInputKeydown(e: KeyboardEvent) {
+    this.onKeydown(e);
+
+    if (this.$open === true) {
+      switch (e.key) {
+        case 'Tab':
+          if (!e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+          }
+          break;
+      }
+    }
+  }
+
+  protected override _cls(options?: {
+    item: GroupedOptionsItem;
+    index: number;
+  }): {
+    parent: string;
+    item: string;
+    'item-header': string;
+    'item-link': string;
+    'item-wrapper': string;
+    'item-icon': string;
+    'item-text': string;
+    [key: string]: string;
+  } {
+    return {
+      parent: 'uk-nav uk-dropdown-nav uk-overflow-auto uk-height-max-medium',
+      item: options?.item.disabled === true ? 'uk-disabled opacity-50' : '',
+      'item-header': 'uk-nav-header',
+      'item-link': this.multiple === false ? 'uk-drop-close' : '',
+      'item-icon': 'uk-flex-none uk-margin-small-right',
+      'item-wrapper': 'uk-flex-1 uk-flex uk-flex-middle',
+      'item-text': 'uk-flex-1',
+    };
+  }
+
+  protected override onClick(options: {
+    item: GroupedOptionsItem;
+    index: number;
+  }): void {
+    const { index } = options;
+
+    this.select(index);
+  }
+
+  protected override renderCheck(options: {
+    item: GroupedOptionsItem;
+    index: number;
+  }) {
+    return this.$selected.includes(options.item.value)
+      ? html`
+          <uk-icon
+            class="uk-margin-small-left uk-flex-none"
+            icon="check"
+          ></uk-icon>
+        `
+      : '';
+  }
+
+  private renderSearch() {
+    return this.searchable === true
+      ? html`
+          <div class="uk-custom-select-search">
+            <uk-icon icon="search"></uk-icon>
+            <input
+              placeholder=${this.$i18n['search-placeholder']}
+              type="text"
+              .value="${this.$term}"
+              @input="${(e: InputEvent) => {
+                const input = e.target as HTMLInputElement;
+
+                this.$term = input.value;
+              }}"
+              @keydown="${this.onInputKeydown}"
+            />
+          </div>
+          ${Object.keys(this.groupedOptions).length > 0
+            ? html`<hr class="uk-hr" />`
+            : ''}
+        `
+      : '';
+  }
+
+  private renderHidden() {
+    return this.name && this.$selected.length > 0
+      ? html`${this.multiple === false
+          ? this.renderInput(this.name, this.$selected[0])
+          : this.$selected.map(a => this.renderInput(`${this.name}[]`, a))}`
+      : '';
+  }
+
+  private renderInput(name: string, value: string) {
+    return html`<input name="${name}" type="hidden" value="${value}" />`;
+  }
+
+  render() {
+    return html`
+      <div class="uk-position-relative">
+        <button
+          class="${this.$cls['button']}"
+          type="button"
+          @keydown="${this.onKeydown}"
+        >
+          ${this.text}
+          ${this._icon === true
+            ? html`
+                <span class="${this.$cls['icon']}" uk-drop-parent-icon></span>
+              `
+            : html`
+                <uk-icon
+                  class="${this.$cls['icon']}"
+                  icon="${this.icon}"
+                ></uk-icon>
+              `}
+        </button>
+        <div
+          class="${`uk-drop uk-dropdown ${this.$cls['dropdown']}`}"
+          uk-dropdown="${this.drop}"
+        >
+          ${this.renderSearch()} ${this.renderList()}
+        </div>
+        ${this.renderHidden()}
+      </div>
+    `;
   }
 }
 

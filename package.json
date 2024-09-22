@@ -1,24 +1,7 @@
 {
   "name": "franken-wc",
-  "author": "Sveltecult <leader@sveltecult.com>",
-  "description": "Franken WC is a project designed to complement UIkit, filling in the gaps with the missing components of Franken UI.",
-  "keywords": [
-    "franken-ui",
-    "web-components",
-    "shadcn-ui",
-    "uikit",
-    "ui"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/franken-ui/wc.git"
-  },
-  "bugs": {
-    "url": "https://github.com/franken-ui/wc/issues"
-  },
-  "homepage": "https://www.franken-ui.dev",
-  "license": "MIT",
-  "version": "0.1.1-next.0",
+  "private": "true",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -26,8 +9,7 @@
     "build:icon": "tsc && vite -c config/icon.js build",
     "build:wysiwyg": "tsc && vite -c config/wysiwyg.js build",
     "build:css": "vite -c config/css.js build",
-    "prepublishOnly": "npm run build:core && npm run build:icon && npm run build:css",
-    "preview": "vite preview"
+    "build": "npm run build:core && npm run build:icon && npm run build:wysiwyg"
   },
   "dependencies": {
     "@tiptap/core": "^2.6.6",
