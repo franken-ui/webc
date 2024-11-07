@@ -19,7 +19,7 @@ export default {
     gridRowEnd: false,
     float: false,
     clear: false,
-    margin: false,
+    margin: true,
     boxSizing: false,
     lineClamp: false,
     display: false,
