@@ -35,6 +35,10 @@ export class Icon extends LitElement {
   }
 
   render() {
+    if (this.renderRoot.children.length >= 1) {
+      return;
+    }
+
     const icon = this.icon
       .trim()
       .split('-')
