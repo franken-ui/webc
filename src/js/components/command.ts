@@ -77,13 +77,13 @@ export class Command extends BaseSelect {
     [key: string]: string;
   } {
     return {
-      parent: 'uk-height-medium uk-overflow-auto uk-nav uk-nav-secondary',
+      parent: 'uk-overflow-auto uk-nav uk-nav-secondary uk-cmd-body',
       item: options?.item.disabled === true ? 'uk-disabled opacity-50' : '',
       'item-header': 'uk-nav-header',
       'item-link': options?.item.disabled === false ? 'uk-modal-close' : '',
-      'item-icon': 'uk-flex-none uk-margin-small-right',
-      'item-wrapper': 'uk-flex-1 uk-flex uk-flex-middle',
-      'item-text': 'uk-flex-1',
+      'item-icon': 'uk-cmd-item-icon',
+      'item-wrapper': 'uk-cmd-item-wrapper',
+      'item-text': 'uk-cmd-item-text',
     };
   }
 
@@ -111,23 +111,31 @@ export class Command extends BaseSelect {
 
   private renderSearch() {
     return html`
-      <div class="uk-inline uk-width-1-1">
-        <span class="uk-form-icon uk-form-icon-flip uk-text-muted">
+      <div class="uk-cmd-header">
+        <div class="uk-cmd-header-icon">
           <uk-icon icon="search"></uk-icon>
-        </span>
-        <input
-          autofocus
-          class="uk-input uk-form-blank"
-          placeholder="${this.placeholder}"
-          type="text"
-          .value="${this.$term}"
-          @keydown=${this.onKeydown}
-          @input=${(e: InputEvent) => {
-            const input = e.target as HTMLInputElement;
+        </div>
+        <div class="uk-cmd-header-input">
+          <input
+            autofocus
+            placeholder="${this.placeholder}"
+            type="text"
+            .value="${this.$term}"
+            @keydown=${this.onKeydown}
+            @input=${(e: InputEvent) => {
+              const input = e.target as HTMLInputElement;
 
-            this.$term = input.value;
-          }}
-        />
+              this.$term = input.value;
+            }}
+          />
+        </div>
+        <div class="uk-cmd-header-esc">
+          <button
+            class="uk-button uk-button-sm uk-button-default uk-modal-close"
+          >
+            Esc
+          </button>
+        </div>
       </div>
       ${Object.keys(this.groupedOptions).length > 0
         ? html`<hr class="uk-hr" />`

@@ -164,11 +164,13 @@ export class BaseSelect extends LitElement {
 
         const data: OptionData = { keywords: [] };
 
-        Object.keys(option.dataset).map(attr => {
+        data['keywords'] = [value];
+
+        Object.keys(option.dataset).forEach(attr => {
           if (attr !== 'keywords') {
             data[attr] = option.dataset[attr];
           } else {
-            data.keywords = [
+            data['keywords'] = [
               value,
               ...(option.getAttribute('data-keywords') as string).split(','),
             ];
