@@ -88,7 +88,6 @@ export class BaseSelect extends LitElement {
 
       if (this.reactive) {
         this.observer = new MutationObserver(() => {
-          console.log('reacting');
           this.createOptions();
           this.requestUpdate();
         });
