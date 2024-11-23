@@ -130,9 +130,7 @@ export class Command extends BaseSelect {
           />
         </div>
         <div class="uk-cmd-header-esc">
-          <button
-            class="uk-button uk-button-sm uk-button-default uk-modal-close"
-          >
+          <button class="uk-btn uk-btn-sm uk-btn-default uk-modal-close">
             Esc
           </button>
         </div>

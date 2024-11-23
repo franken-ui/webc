@@ -20,6 +20,7 @@ type Config = {
   mode: string;
   theme: string;
   radii: string;
+  shadows: string;
 };
 
 @customElement('uk-theme-switcher')
@@ -29,6 +30,7 @@ export class ThemeSwitcher extends LitElement {
     mode: 'light',
     theme: 'uk-theme-zinc',
     radii: 'uk-radii-md',
+    shadows: 'uk-shadows-sm',
   };
 
   private HTMLSelect: HTMLSelectElement | null = null;
@@ -44,6 +46,7 @@ export class ThemeSwitcher extends LitElement {
         : 'light',
       theme: localStorage.getItem('theme') || 'uk-theme-zinc',
       radii: localStorage.getItem('radii') || 'uk-radii-md',
+      shadows: localStorage.getItem('shadows') || 'uk-shadows-sm',
     };
 
     this.HTMLSelect = this.renderRoot.querySelector('select');
@@ -127,10 +130,20 @@ export class ThemeSwitcher extends LitElement {
       document.documentElement.classList.add('dark');
       localStorage.setItem('mode', 'dark');
     }
+
+    this.dispatchEvent(
+      new CustomEvent('uk-theme-switcher:mode', {
+        detail: {
+          value: mode,
+        },
+        bubbles: true,
+        composed: true,
+      }),
+    );
   }
 
   private renderKeys(item: OptionItem) {
-    const key = item.data.key as 'mode' | 'theme' | 'radii';
+    const key = item.data.key as 'mode' | 'theme' | 'radii' | 'shadows';
 
     return html`
       <button
@@ -178,7 +191,7 @@ export class ThemeSwitcher extends LitElement {
   render() {
     return html`
       <div class="uk-ts">
-        ${['Theme', 'Radii'].map(
+        ${['Theme', 'Radii', 'Shadows'].map(
           a => html`
             ${this._options[a]
               ? html`
