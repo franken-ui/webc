@@ -7,14 +7,7 @@ export default {
     {
       pattern: /^uk-/,
     },
-    {
-      pattern: /^block$/,
-      variants: ['dark'],
-    },
-    {
-      pattern: /^hidden$/,
-      variants: ['dark'],
-    },
+
     'bg-background',
     'bg-foreground',
     'bg-card',
@@ -44,8 +37,6 @@ export default {
 
     'ProseMirror',
     'ProseMirror-focused',
-
-    'size-4',
 
     'text-background',
     'text-foreground',
