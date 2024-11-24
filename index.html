@@ -21,10 +21,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Franken WC</title>
-    <!-- <link rel="stylesheet" href="/src/css/core.css" /> -->
+    <link rel="stylesheet" href="/src/css/core.css" />
     <script type="module" src="/src/js/core.ts"></script>
     <script type="module" src="/src/js/icon.ts"></script>
-    <link rel="stylesheet" href="/dist/css/utilities.min.css" />
   </head>
   <body class="bg-background text-foreground">
     <div class="uk-container uk-margin-large-top">
@@ -38,8 +37,48 @@
           class="uk-card uk-card-body uk-card-default uk-drop uk-width-large"
           uk-drop="mode: click; offset: 8"
         >
-          <div class="uk-card-title uk-margin-medium-bottom">Customize</div>
-          <uk-theme-switcher></uk-theme-switcher>
+          <uk-theme-switcher>
+            <select hidden>
+              <optgroup label="Theme">
+                <option data-hex="#52525b" value="uk-theme-zinc">Zinc</option>
+                <option data-hex="#64748b" value="uk-theme-slate">Slate</option>
+                <option data-hex="#78716c" value="uk-theme-stone">Stone</option>
+                <option data-hex="#6b7280" value="uk-theme-gray">Gray</option>
+                <option data-hex="#737373" value="uk-theme-neutral">
+                  Neutral
+                </option>
+                <option data-hex="#dc2626" value="uk-theme-red">Red</option>
+                <option data-hex="#e11d48" value="uk-theme-rose">Rose</option>
+                <option data-hex="#f97316" value="uk-theme-orange">
+                  Orange
+                </option>
+                <option data-hex="#16a34a" value="uk-theme-green">Green</option>
+                <option data-hex="#2563eb" value="uk-theme-blue">Blue</option>
+                <option data-hex="#facc15" value="uk-theme-yellow">
+                  Yellow
+                </option>
+                <option data-hex="#7c3aed" value="uk-theme-violet">
+                  Violet
+                </option>
+              </optgroup>
+              <optgroup label="Radii">
+                <option value="uk-radii-none">None</option>
+                <option value="uk-radii-sm">Small</option>
+                <option value="uk-radii-md">Medium</option>
+                <option value="uk-radii-lg">Large</option>
+              </optgroup>
+              <optgroup label="Shadows">
+                <option value="uk-shadows-none">None</option>
+                <option value="uk-shadows-sm">Small</option>
+                <option value="uk-shadows-md">Medium</option>
+                <option value="uk-shadows-lg">Large</option>
+              </optgroup>
+              <optgroup label="Mode">
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+              </optgroup>
+            </select>
+          </uk-theme-switcher>
         </div>
       </div>
 

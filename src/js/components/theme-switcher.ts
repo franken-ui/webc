@@ -1,6 +1,7 @@
 import { LitElement, html } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
+import { parseOptions } from '../helpers/common';
 
 type OptionItemData = { key: string; [key: string]: any };
 
@@ -23,8 +24,18 @@ type Config = {
   shadows: string;
 };
 
+type I18N = {
+  theme: string;
+  radii: string;
+  shadows: string;
+  mode: string;
+};
+
 @customElement('uk-theme-switcher')
 export class ThemeSwitcher extends LitElement {
+  @property({ type: String })
+  i18n: string = '';
+
   @state()
   $config: Config = {
     mode: 'light',
@@ -33,12 +44,24 @@ export class ThemeSwitcher extends LitElement {
     shadows: 'uk-shadows-sm',
   };
 
+  @state()
+  $i18n: I18N = {
+    theme: 'Theme',
+    radii: 'Radii',
+    shadows: 'Shadows',
+    mode: 'Mode',
+  };
+
   private HTMLSelect: HTMLSelectElement | null = null;
 
   private _options: Option = {};
 
   connectedCallback(): void {
     super.connectedCallback();
+
+    if (this.i18n) {
+      this.$i18n = parseOptions(this.i18n) as I18N;
+    }
 
     this.$config = {
       mode: document.documentElement.classList.contains('dark')
@@ -196,7 +219,11 @@ export class ThemeSwitcher extends LitElement {
             ${this._options[a]
               ? html`
                   <div class="uk-ts-key">
-                    <div class="uk-form-label">${a}</div>
+                    <div class="uk-form-label">
+                      ${this.$i18n[
+                        a.toLocaleLowerCase() as 'theme' | 'radii' | 'shadows'
+                      ]}
+                    </div>
                     <div class="uk-ts-value">
                       ${repeat(
                         this._options[a],
@@ -212,7 +239,7 @@ export class ThemeSwitcher extends LitElement {
         ${this._options['Mode']
           ? html`
               <div class="uk-ts-key">
-                <div class="uk-form-label">Mode</div>
+                <div class="uk-form-label">${this.$i18n['mode']}</div>
                 <div class="uk-ts-value">${this.renderModes()}</div>
               </div>
             `
