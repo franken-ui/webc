@@ -16,6 +16,9 @@ type Cls = {
 
 @customElement('uk-select')
 export class Select extends BaseSelect {
+  @property({ type: Boolean })
+  disabled: boolean = false;
+
   @property({ type: String })
   drop: string = 'mode: click';
 
@@ -157,6 +160,10 @@ export class Select extends BaseSelect {
 
     let selected = this.options[index];
 
+    if (selected.disabled) {
+      return;
+    }
+
     if (this.multiple === false) {
       // this.$focused = index;
       this.$selected = [selected.value];
@@ -230,13 +237,13 @@ export class Select extends BaseSelect {
     [key: string]: string;
   } {
     return {
-      parent: 'uk-nav uk-dropdown-nav uk-overflow-auto uk-height-max-medium',
+      parent: 'uk-nav uk-dropdown-nav uk-overflow-auto uk-cs-options',
       item: options?.item.disabled === true ? 'uk-disabled opacity-50' : '',
       'item-header': 'uk-nav-header',
       'item-link': this.multiple === false ? 'uk-drop-close' : '',
-      'item-icon': 'uk-flex-none uk-margin-small-right',
-      'item-wrapper': 'uk-flex-1 uk-flex uk-flex-middle',
-      'item-text': 'uk-flex-1',
+      'item-icon': 'uk-cs-item-icon',
+      'item-wrapper': 'uk-cs-item-wrapper',
+      'item-text': 'uk-cs-item-text',
     };
   }
 
@@ -244,7 +251,9 @@ export class Select extends BaseSelect {
     item: GroupedOptionsItem;
     index: number;
   }): void {
-    const { index } = options;
+    const { item } = options;
+
+    const index = this.options.findIndex(a => a.value === item.value);
 
     this.select(index);
   }
@@ -253,20 +262,15 @@ export class Select extends BaseSelect {
     item: GroupedOptionsItem;
     index: number;
   }) {
-    return this.$selected.includes(options.item.value)
-      ? html`
-          <uk-icon
-            class="uk-margin-small-left uk-flex-none"
-            icon="check"
-          ></uk-icon>
-        `
-      : '';
+    if (this.$selected.includes(options.item.value)) {
+      return html`<uk-icon class="uk-cs-check" icon="check"></uk-icon>`;
+    }
   }
 
   private renderSearch() {
     return this.searchable === true
       ? html`
-          <div class="uk-custom-select-search">
+          <div class="uk-cs-search">
             <uk-icon icon="search"></uk-icon>
             <input
               placeholder=${this.$i18n['search-placeholder']}
@@ -305,6 +309,7 @@ export class Select extends BaseSelect {
         <button
           class="${this.$cls['button']}"
           type="button"
+          .disabled=${this.disabled}
           @keydown="${this.onKeydown}"
         >
           ${this.text}

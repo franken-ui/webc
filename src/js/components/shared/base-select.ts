@@ -282,9 +282,7 @@ export class BaseSelect extends LitElement {
   protected renderCheck(_: {
     item: GroupedOptionsItem;
     index: number;
-  }): TemplateResult | string {
-    return html``;
-  }
+  }): TemplateResult | void {}
 
   protected renderList() {
     const cls = this._cls();
