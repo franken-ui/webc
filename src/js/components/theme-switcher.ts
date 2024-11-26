@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit';
+import { LitElement, PropertyValues, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { parseOptions } from '../helpers/common';
@@ -56,11 +56,19 @@ export class ThemeSwitcher extends LitElement {
 
   private _options: Option = {};
 
+  private _rendered: boolean = false;
+
   connectedCallback(): void {
     super.connectedCallback();
 
     if (this.i18n) {
-      this.$i18n = parseOptions(this.i18n) as I18N;
+      const i18n = parseOptions(this.i18n) as I18N;
+
+      if (typeof i18n === 'string') {
+        this.$i18n['theme'] = i18n;
+      } else {
+        this.$i18n = Object.assign(this.$i18n, i18n);
+      }
     }
 
     this.$config = {
@@ -80,6 +88,10 @@ export class ThemeSwitcher extends LitElement {
   }
 
   protected createOptions() {
+    if (this._rendered === true) {
+      return;
+    }
+
     if (this.HTMLSelect) {
       const add = (
         group: string,
@@ -121,6 +133,10 @@ export class ThemeSwitcher extends LitElement {
         }
       });
     }
+  }
+
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    this._rendered = true;
   }
 
   protected createRenderRoot(): HTMLElement | DocumentFragment {

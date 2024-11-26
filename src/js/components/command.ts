@@ -1,6 +1,6 @@
 import { html, PropertyValues } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { BaseSelect, GroupedOptionsItem } from './shared/BaseSelect';
+import { BaseSelect, GroupedOptionsItem } from './shared/base-select';
 
 @customElement('uk-command')
 export class Command extends BaseSelect {
@@ -39,6 +39,8 @@ export class Command extends BaseSelect {
         this.$term = '';
       });
     }
+
+    this._rendered = true;
   }
 
   protected override onKeydown(e: KeyboardEvent) {

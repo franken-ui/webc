@@ -1,6 +1,6 @@
 import { html, PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { GroupedOptionsItem, BaseSelect } from './shared/BaseSelect';
+import { GroupedOptionsItem, BaseSelect } from './shared/base-select';
 import { parseOptions } from '../helpers/common';
 
 type I18N = {
@@ -32,7 +32,7 @@ export class Select extends BaseSelect {
   name: string = '';
 
   @property({ type: String })
-  cls: string = '';
+  'cls-custom': string = '';
 
   @property({ type: String })
   i18n: string = '';
@@ -86,11 +86,15 @@ export class Select extends BaseSelect {
     super.connectedCallback();
 
     if (this.i18n) {
-      this.$i18n = parseOptions(this.i18n) as I18N;
+      const i18n = parseOptions(this.i18n) as I18N;
+
+      if (typeof i18n === 'object') {
+        this.$i18n = Object.assign(this.$i18n, i18n);
+      }
     }
 
-    if (this.cls) {
-      const cls = parseOptions(this.cls) as Cls | string;
+    if (this['cls-custom']) {
+      const cls = parseOptions(this['cls-custom']) as Cls | string;
 
       if (typeof cls === 'string') {
         this.$cls['button'] = cls;
@@ -142,6 +146,8 @@ export class Select extends BaseSelect {
         this.$open = true;
       });
     }
+
+    this._rendered = true;
   }
 
   private select(index: number) {

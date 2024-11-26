@@ -78,6 +78,8 @@ export class BaseSelect extends LitElement {
 
   protected observer: MutationObserver | null = null;
 
+  protected _rendered: boolean = false;
+
   connectedCallback(): void {
     super.connectedCallback();
 
@@ -145,6 +147,10 @@ export class BaseSelect extends LitElement {
   }
 
   protected createOptions() {
+    if (this._rendered === true) {
+      return;
+    }
+
     if (this.HTMLSelect) {
       this._options = [];
 
