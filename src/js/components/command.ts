@@ -57,7 +57,7 @@ export class Command extends BaseSelect {
 
       case 'Enter':
         e.preventDefault();
-        this.onClick({ index: this.$focused });
+        this.select(this.$focused);
         break;
 
       default:
@@ -89,21 +89,32 @@ export class Command extends BaseSelect {
     };
   }
 
-  protected override onClick(options: { index: number }): void {
-    const { index } = options;
+  protected override onClick(options: {
+    item: GroupedOptionsItem;
+    index: number;
+  }): void {
+    const { item } = options;
 
+    const index = this.options.findIndex(a => a.value === item.value);
+
+    this.select(index);
+  }
+
+  private select(index: number): void {
     if (index === -1) {
       return;
     }
 
-    if (this.options[index].disabled === true) {
+    let selected = this.options[index];
+
+    if (selected.disabled) {
       return;
     }
 
     this.dispatchEvent(
       new CustomEvent('uk-command:click', {
         detail: {
-          value: this.options[index],
+          value: selected,
         },
         bubbles: true,
         composed: true,
