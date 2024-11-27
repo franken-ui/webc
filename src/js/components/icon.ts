@@ -20,6 +20,8 @@ export class Icon extends LitElement {
   @property({ type: String })
   width: string = '16';
 
+  private _svg: SVGElement | string = '';
+
   constructor() {
     super();
   }
@@ -36,7 +38,7 @@ export class Icon extends LitElement {
 
   render() {
     if (this.renderRoot.children.length >= 1) {
-      return;
+      return this._svg;
     }
 
     const icon = this.icon
@@ -53,6 +55,8 @@ export class Icon extends LitElement {
       e.setAttribute('height', this.height);
       e.setAttribute('stroke-width', this['stroke-width']);
       e.setAttribute('width', this.width);
+
+      this._svg = e;
 
       return e;
     } catch (e) {}
