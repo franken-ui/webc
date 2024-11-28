@@ -188,6 +188,18 @@ export class Select extends BaseSelect {
     );
   }
 
+  protected override termUpdated(): void {
+    this.dispatchEvent(
+      new CustomEvent('uk-select:search', {
+        detail: {
+          value: this.$term,
+        },
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
+
   protected override onKeydown(e: KeyboardEvent) {
     if (this.$open === true) {
       switch (e.key) {

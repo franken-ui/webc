@@ -119,6 +119,8 @@ export class BaseSelect extends LitElement {
       _changedProperties.has('$term') &&
       _changedProperties.get('$term') !== undefined
     ) {
+      this.termUpdated();
+
       this.updateComplete.then(() => {
         this.$focused = -1;
       });
@@ -141,6 +143,8 @@ export class BaseSelect extends LitElement {
       }
     }
   }
+
+  protected termUpdated(): void {}
 
   protected createRenderRoot(): HTMLElement | DocumentFragment {
     return this;
