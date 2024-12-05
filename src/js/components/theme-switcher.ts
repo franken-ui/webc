@@ -29,6 +29,8 @@ type I18N = {
   radii: string;
   shadows: string;
   mode: string;
+  light: string;
+  dark: string;
 };
 
 @customElement('uk-theme-switcher')
@@ -50,6 +52,8 @@ export class ThemeSwitcher extends LitElement {
     radii: 'Radii',
     shadows: 'Shadows',
     mode: 'Mode',
+    light: 'Light',
+    dark: 'Dark',
   };
 
   private HTMLSelect: HTMLSelectElement | null = null;
@@ -221,7 +225,9 @@ export class ThemeSwitcher extends LitElement {
           ${a === 'Light'
             ? html`<uk-icon icon="sun"></uk-icon>`
             : html`<uk-icon icon="moon"></uk-icon>`}
-          <span class="uk-ts-text">${a}</span>
+          <span class="uk-ts-text"
+            >${this.$i18n[a.toLowerCase() as 'light' | 'dark']}</span
+          >
         </button>
       `,
     )}`;
