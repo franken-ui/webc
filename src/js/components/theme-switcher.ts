@@ -47,6 +47,9 @@ export class ThemeSwitcher extends LitElement {
   };
 
   @state()
+  '__FRANKEN__': string;
+
+  @state()
   $i18n: I18N = {
     theme: 'Theme',
     radii: 'Radii',
@@ -75,13 +78,16 @@ export class ThemeSwitcher extends LitElement {
       }
     }
 
+    const __FRANKEN__ = JSON.parse(localStorage.getItem('__FRANKEN__') || '{}');
+    const mode = document.documentElement.classList.contains('dark')
+      ? 'dark'
+      : 'light';
+
     this.$config = {
-      mode: document.documentElement.classList.contains('dark')
-        ? 'dark'
-        : 'light',
-      theme: localStorage.getItem('theme') || 'uk-theme-zinc',
-      radii: localStorage.getItem('radii') || 'uk-radii-md',
-      shadows: localStorage.getItem('shadows') || 'uk-shadows-sm',
+      mode: mode,
+      theme: __FRANKEN__.theme || 'uk-theme-zinc',
+      radii: __FRANKEN__.radii || 'uk-radii-md',
+      shadows: __FRANKEN__.shadows || 'uk-shadows-sm',
     };
 
     this.HTMLSelect = this.renderRoot.querySelector('select');
@@ -143,6 +149,22 @@ export class ThemeSwitcher extends LitElement {
     this._rendered = true;
   }
 
+  protected updated(_changedProperties: PropertyValues): void {
+    if (_changedProperties.has('__FRANKEN__')) {
+      localStorage.setItem('__FRANKEN__', JSON.stringify(this.$config));
+
+      this.dispatchEvent(
+        new CustomEvent(`uk-theme-switcher:change`, {
+          detail: {
+            value: this.$config,
+          },
+          bubbles: true,
+          composed: true,
+        }),
+      );
+    }
+  }
+
   protected createRenderRoot(): HTMLElement | DocumentFragment {
     return this;
   }
@@ -150,39 +172,29 @@ export class ThemeSwitcher extends LitElement {
   private setKey(key: string, value: string) {
     const head = document.documentElement;
 
-    const current = Array.from(head.classList).find(cls =>
-      cls.startsWith(`uk-${key}-`),
-    );
+    this.$config[key as 'mode' | 'theme' | 'radii' | 'shadows'] = value;
 
-    if (current) {
-      head.classList.remove(current);
-    }
+    if (key === 'mode') {
+      this.$config['mode'] = value;
 
-    head.classList.add(value);
-
-    localStorage.setItem(key, value);
-  }
-
-  private setMode(mode: 'light' | 'dark') {
-    this.$config['mode'] = mode;
-
-    if (mode === 'light') {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('mode', 'light');
+      if (value === 'light') {
+        head.classList.remove('dark');
+      } else {
+        head.classList.add('dark');
+      }
     } else {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('mode', 'dark');
+      const current = Array.from(head.classList).find(cls =>
+        cls.startsWith(`uk-${key}-`),
+      );
+
+      if (current) {
+        head.classList.remove(current);
+      }
+
+      head.classList.add(value);
     }
 
-    this.dispatchEvent(
-      new CustomEvent('uk-theme-switcher:mode', {
-        detail: {
-          value: mode,
-        },
-        bubbles: true,
-        composed: true,
-      }),
-    );
+    this.__FRANKEN__ = JSON.stringify(this.$config);
   }
 
   private renderKeys(item: OptionItem) {
@@ -218,16 +230,16 @@ export class ThemeSwitcher extends LitElement {
         <button
           class="${this.$config['mode'] === a.toLowerCase() ? 'uk-active' : ''}"
           @click="${() => {
-            this.setMode(a.toLowerCase() as 'light' | 'dark');
+            this.setKey('mode', a.toLowerCase());
             this.requestUpdate();
           }}"
         >
           ${a === 'Light'
             ? html`<uk-icon icon="sun"></uk-icon>`
             : html`<uk-icon icon="moon"></uk-icon>`}
-          <span class="uk-ts-text"
-            >${this.$i18n[a.toLowerCase() as 'light' | 'dark']}</span
-          >
+          <span class="uk-ts-text">
+            ${this.$i18n[a.toLowerCase() as 'light' | 'dark']}
+          </span>
         </button>
       `,
     )}`;
@@ -243,7 +255,7 @@ export class ThemeSwitcher extends LitElement {
                   <div class="uk-ts-key">
                     <div class="uk-form-label">
                       ${this.$i18n[
-                        a.toLocaleLowerCase() as 'theme' | 'radii' | 'shadows'
+                        a.toLowerCase() as 'theme' | 'radii' | 'shadows'
                       ]}
                     </div>
                     <div class="uk-ts-value">
