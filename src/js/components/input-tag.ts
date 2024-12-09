@@ -12,13 +12,17 @@ type SlugOptions = {
   trim: boolean;
 };
 
+type Cls = {
+  div: string;
+};
+
 @customElement('uk-input-tag')
 export class InputTag extends LitElement {
-  @property({ type: Boolean })
-  disabled: boolean = false;
+  @property({ type: String })
+  'cls-custom': string = '';
 
   @property({ type: Boolean })
-  error: boolean = false;
+  disabled: boolean = false;
 
   @property({ type: Number })
   maxlength: number = 20;
@@ -45,6 +49,11 @@ export class InputTag extends LitElement {
   value: string = '';
 
   @state()
+  $cls: Cls = {
+    div: '',
+  };
+
+  @state()
   $input: string = '';
 
   @state()
@@ -61,7 +70,21 @@ export class InputTag extends LitElement {
 
     this.initializeDefaults();
 
-    this.removeAttribute('uk-cloak');
+    if (this['cls-custom']) {
+      const cls = parseOptions(this['cls-custom']) as Cls | string;
+
+      if (typeof cls === 'string') {
+        this.$cls['div'] = cls;
+      } else {
+        Object.keys(this.$cls).forEach(a => {
+          const key = a as 'div';
+
+          if (cls[key]) {
+            this.$cls[key] = cls[key];
+          }
+        });
+      }
+    }
   }
 
   protected createRenderRoot(): HTMLElement | DocumentFragment {
@@ -126,10 +149,9 @@ export class InputTag extends LitElement {
   render() {
     return html`
       <div
-        class="uk-input-tag ${this.disabled === true ? 'opacity-50' : ''} ${this
-          .error === true
-          ? 'uk-form-danger'
-          : ''}"
+        class="uk-input-tag ${this.disabled === true
+          ? 'uk-disabled'
+          : ''} ${this.$cls['div']}"
       >
         ${this.$tags.map(
           (tag, i) => html`
@@ -195,11 +217,15 @@ export class InputTag extends LitElement {
           .value=${this.$input}
         />
 
-        ${this.$tags.map(
-          tag => html`
-            <input name="${this.name}[]" type="hidden" value="${tag}" />
-          `,
-        )}
+        ${this.name
+          ? html`
+              ${this.$tags.map(
+                tag => html`
+                  <input name="${this.name}[]" type="hidden" value="${tag}" />
+                `,
+              )}
+            `
+          : ''}
       </div>
     `;
   }
