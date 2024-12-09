@@ -4,7 +4,7 @@ This is a project designed to complement UIkit, filling in the gaps with the mis
 
 ## Documentation
 
-- [Version 2](https://next.franken-ui.dev) (latest)
+- [Version 2](https://next.franken-ui.dev) (preview)
 - [Version 1](https://franken-ui.dev)
 
 ## Sponsors
@@ -14,8 +14,13 @@ Franken UI is an independent, MIT-licensed open source project with its ongoing 
 Thanks to the following:
 
 <p align="center">
+  <a target="_blank" href="https://answer.ai">
+    <img alt="Atuin" src="https://next.franken-ui.dev/images/sponsors/answerdotai.jpg" width="150" />
+  </a>
+</p>
+<p align="center">
   <a target="_blank" href="https://atuin.sh">
-    <img alt="Atuin" src="https://next.franken-ui.dev/images/sponsors/atuin.png" width="300" />
+    <img alt="Atuin" src="https://next.franken-ui.dev/images/sponsors/atuin.png" width="150" />
   </a>
 </p>
 
@@ -23,7 +28,7 @@ And the amazing individuals from [Ko-Fi](https://ko-fi.com/sveltecult) who helpe
 
 ## Development
 
-Code contributions are now accepted from the community. To ensure effective collaboration and minimize potential conflicts, contributors are requested to reach out before starting work on any new features or bug fixes. This allows discussion of proposed changes, guidance on project architecture and coding standards, and ensures all contributions align with the project's overall vision.
+Code contributions are now accepted from the community. To ensure effective collaboration and minimize potential conflicts, contributors are requested to [reach out](mailto:sveltecult@proton.me) before starting work on any new features or bug fixes. This allows discussion of proposed changes, guidance on project architecture and coding standards, and ensures all contributions align with the project's overall vision.
 
 To get started with development, please follow these steps:
 

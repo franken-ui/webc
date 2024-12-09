@@ -43,6 +43,9 @@ export class Select extends BaseSelect {
   @property({ type: String })
   icon: string = '';
 
+  @property({ type: String })
+  value: string = '';
+
   @state()
   $open: boolean = false;
 
@@ -122,14 +125,18 @@ export class Select extends BaseSelect {
       }
     }
 
-    this.$selected = this.options
-      .filter(a => a.selected === true)
-      .map(a => a.value);
+    if (this.hasAttribute('value')) {
+      this.$selected = this.value.split(',');
+    } else {
+      this.$selected = this.options
+        .filter(a => a.selected === true)
+        .map(a => a.value);
 
-    if (this.multiple === false) {
-      this.$focused = this.options.findIndex(
-        a => a.value === this.$selected[0],
-      );
+      if (this.multiple === false) {
+        this.$focused = this.options.findIndex(
+          a => a.value === this.$selected[0],
+        );
+      }
     }
   }
 

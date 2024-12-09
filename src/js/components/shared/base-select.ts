@@ -151,7 +151,7 @@ export class BaseSelect extends LitElement {
   }
 
   protected createOptions() {
-    if (this._rendered === true) {
+    if (this.reactive === false && this._rendered === true) {
       return;
     }
 
