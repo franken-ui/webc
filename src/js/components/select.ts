@@ -336,12 +336,14 @@ export class Select extends BaseSelect {
             ? html`
                 <span class="${this.$cls['icon']}" uk-drop-parent-icon></span>
               `
-            : html`
-                <uk-icon
-                  class="${this.$cls['icon']}"
-                  icon="${this.icon}"
-                ></uk-icon>
-              `}
+            : this.icon !== ''
+              ? html`
+                  <uk-icon
+                    class="${this.$cls['icon']}"
+                    icon="${this.icon}"
+                  ></uk-icon>
+                `
+              : ''}
         </button>
         <div
           class="${`uk-drop uk-dropdown ${this.$cls['dropdown']}`}"

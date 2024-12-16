@@ -43,7 +43,7 @@ export class InputTag extends LitElement {
   'slugify-options': string = '';
 
   @property({ type: String })
-  state: 'primary' | 'secondary' | 'danger' = 'secondary';
+  state: 'primary' | 'secondary' | 'destructive' = 'secondary';
 
   @property({ type: String })
   value: string = '';
