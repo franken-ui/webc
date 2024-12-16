@@ -1,7 +1,6 @@
 import { LitElement, PropertyValues, html } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
-import { parseOptions } from '../helpers/common';
 
 type OptionItemData = { key: string; [key: string]: any };
 
@@ -14,50 +13,29 @@ type OptionItem = {
 };
 
 type Option = {
-  [key: string]: OptionItem[];
+  [key: string]: {
+    text: string;
+    options: OptionItem[];
+  };
 };
 
 type Config = {
-  mode: string;
-  theme: string;
-  radii: string;
-  shadows: string;
-};
-
-type I18N = {
-  theme: string;
-  radii: string;
-  shadows: string;
-  mode: string;
-  light: string;
-  dark: string;
+  [key: string]: string;
 };
 
 @customElement('uk-theme-switcher')
 export class ThemeSwitcher extends LitElement {
-  @property({ type: String })
-  i18n: string = '';
-
   @state()
   $config: Config = {
     mode: 'light',
     theme: 'uk-theme-zinc',
     radii: 'uk-radii-md',
     shadows: 'uk-shadows-sm',
+    font: 'uk-font-sm',
   };
 
   @state()
   '__FRANKEN__': string;
-
-  @state()
-  $i18n: I18N = {
-    theme: 'Theme',
-    radii: 'Radii',
-    shadows: 'Shadows',
-    mode: 'Mode',
-    light: 'Light',
-    dark: 'Dark',
-  };
 
   private HTMLSelect: HTMLSelectElement | null = null;
 
@@ -68,27 +46,11 @@ export class ThemeSwitcher extends LitElement {
   connectedCallback(): void {
     super.connectedCallback();
 
-    if (this.i18n) {
-      const i18n = parseOptions(this.i18n) as I18N;
-
-      if (typeof i18n === 'string') {
-        this.$i18n['theme'] = i18n;
-      } else {
-        this.$i18n = Object.assign(this.$i18n, i18n);
-      }
-    }
-
     const __FRANKEN__ = JSON.parse(localStorage.getItem('__FRANKEN__') || '{}');
-    const mode = document.documentElement.classList.contains('dark')
-      ? 'dark'
-      : 'light';
 
-    this.$config = {
-      mode: mode,
-      theme: __FRANKEN__.theme || 'uk-theme-zinc',
-      radii: __FRANKEN__.radii || 'uk-radii-md',
-      shadows: __FRANKEN__.shadows || 'uk-shadows-sm',
-    };
+    Object.keys(__FRANKEN__).forEach(a => {
+      this.$config[a] = __FRANKEN__[a];
+    });
 
     this.HTMLSelect = this.renderRoot.querySelector('select');
 
@@ -116,13 +78,14 @@ export class ThemeSwitcher extends LitElement {
           value = option.textContent as string;
         }
 
-        const data: OptionItemData = { key: group.toLowerCase() };
+        const data: OptionItemData = { key: group };
 
         Object.keys(option.dataset).forEach(attr => {
           data[attr] = option.dataset[attr];
         });
 
-        (this._options[group] = this._options[group] || []).push({
+        (this._options[group]['options'] =
+          this._options[group]['options'] || []).push({
           value: value,
           text: option.textContent as string,
           disabled: isOptGroupDisabled === true ? true : option.disabled,
@@ -133,13 +96,20 @@ export class ThemeSwitcher extends LitElement {
 
       Array.from(this.HTMLSelect.children).map(a => {
         if (a.nodeName === 'OPTGROUP') {
-          const group = a as HTMLOptGroupElement;
+          const z = a as HTMLOptGroupElement;
+          const key = z.dataset['key'];
 
-          Array.from(group.children).map(b => {
-            const option = b as HTMLOptionElement;
+          if (key) {
+            this._options[key] = {
+              text: z.getAttribute('label') as string,
+              options: [],
+            };
 
-            add(group.getAttribute('label') as string, option, group.disabled);
-          });
+            Array.from(z.children).map(b => {
+              const option = b as HTMLOptionElement;
+              add(key, option, z.disabled);
+            });
+          }
         }
       });
     }
@@ -172,7 +142,7 @@ export class ThemeSwitcher extends LitElement {
   private setKey(key: string, value: string) {
     const head = document.documentElement;
 
-    this.$config[key as 'mode' | 'theme' | 'radii' | 'shadows'] = value;
+    this.$config[key] = value;
 
     if (key === 'mode') {
       this.$config['mode'] = value;
@@ -198,11 +168,17 @@ export class ThemeSwitcher extends LitElement {
   }
 
   private renderKeys(item: OptionItem) {
-    const key = item.data.key as 'mode' | 'theme' | 'radii' | 'shadows';
+    const key = item.data.key;
 
     return html`
       <button
-        class="${this.$config[key] === item.value ? 'uk-active' : ''}"
+        class="${this.$config[key]
+          ? this.$config[key] === item.value
+            ? 'uk-active'
+            : ''
+          : item.selected === true
+            ? 'uk-active'
+            : ''}"
         @click="${() => {
           this.setKey(item.data.key, item.value);
 
@@ -218,66 +194,31 @@ export class ThemeSwitcher extends LitElement {
                 style="${`background:${item.data.hex}`}"
               ></span>
             `
-          : ''}
+          : item.data.icon
+            ? html`<uk-icon icon=${item.data.icon}></uk-icon>`
+            : ''}
         <span class="uk-ts-text">${item.text}</span>
       </button>
     `;
   }
 
-  private renderModes() {
-    return html`${['Light', 'Dark'].map(
-      a => html`
-        <button
-          class="${this.$config['mode'] === a.toLowerCase() ? 'uk-active' : ''}"
-          @click="${() => {
-            this.setKey('mode', a.toLowerCase());
-            this.requestUpdate();
-          }}"
-        >
-          ${a === 'Light'
-            ? html`<uk-icon icon="sun"></uk-icon>`
-            : html`<uk-icon icon="moon"></uk-icon>`}
-          <span class="uk-ts-text">
-            ${this.$i18n[a.toLowerCase() as 'light' | 'dark']}
-          </span>
-        </button>
-      `,
-    )}`;
-  }
-
   render() {
     return html`
       <div class="uk-ts">
-        ${['Theme', 'Radii', 'Shadows'].map(
+        ${Object.keys(this._options).map(
           a => html`
-            ${this._options[a]
-              ? html`
-                  <div class="uk-ts-key">
-                    <div class="uk-form-label">
-                      ${this.$i18n[
-                        a.toLowerCase() as 'theme' | 'radii' | 'shadows'
-                      ]}
-                    </div>
-                    <div class="uk-ts-value">
-                      ${repeat(
-                        this._options[a],
-                        _ => _,
-                        (item: OptionItem) => this.renderKeys(item),
-                      )}
-                    </div>
-                  </div>
-                `
-              : ''}
+            <div class="uk-ts-key">
+              <div class="uk-form-label">${this._options[a].text}</div>
+              <div class="uk-ts-value">
+                ${repeat(
+                  this._options[a].options,
+                  _ => _,
+                  (item: OptionItem) => this.renderKeys(item),
+                )}
+              </div>
+            </div>
           `,
         )}
-        ${this._options['Mode']
-          ? html`
-              <div class="uk-ts-key">
-                <div class="uk-form-label">${this.$i18n['mode']}</div>
-                <div class="uk-ts-value">${this.renderModes()}</div>
-              </div>
-            `
-          : ''}
       </div>
     `;
   }
