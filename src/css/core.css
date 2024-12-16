@@ -3,3 +3,84 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --uk-cal-cell-size: 2.25rem;
+  --uk-cal-cell-radius: var(--uk-global-radius);
+  --uk-cal-cell-header-font-size: var(--uk-global-font-size-s);
+  --uk-cal-cell-body-font-size: var(--uk-global-font-size);
+}
+
+.uk-cal table {
+  @apply flex flex-col gap-2;
+}
+
+.uk-cal table tbody {
+  @apply flex flex-col gap-2;
+}
+
+.uk-cal table thead th {
+  width: var(--uk-cal-cell-size);
+  font-size: var(--uk-cal-cell-header-font-size);
+  @apply text-muted-foreground font-normal;
+}
+
+.uk-cal table tbody tr,
+.uk-cal table thead tr {
+  @apply flex gap-0.5;
+}
+
+.uk-cal table tbody tr td {
+  width: var(--uk-cal-cell-size);
+  height: var(--uk-cal-cell-size);
+  font-size: var(--uk-cal-cell-body-font-size);
+  @apply relative text-center;
+}
+
+.uk-cal table tbody tr td button {
+  border-radius: var(--uk-cal-cell-radius);
+  @apply focus-visible:outline-ring hover:bg-accent hover:text-accent-foreground inline-flex h-full w-full items-center justify-center whitespace-nowrap focus-visible:outline-dotted focus-visible:ring-1;
+}
+
+.uk-cal table tbody tr td.uk-cal-oom button {
+  @apply text-muted-foreground;
+}
+
+.uk-cal table tbody tr td.uk-active button {
+  @apply bg-primary text-primary-foreground;
+}
+
+.uk-cal table tbody tr td.uk-disabled button {
+  @apply opacity-50;
+}
+
+.uk-cal-divider table tbody {
+  @apply gap-1;
+}
+
+.uk-cal-divider table tbody tr {
+  @apply border-border border-b;
+}
+
+.uk-cal-divider table tbody tr td {
+  @apply mb-1;
+}
+
+.uk-cal-divider table tbody tr:last-child {
+  @apply border-none;
+}
+
+.uk-cal-marked::after {
+  content: '';
+  width: 0px;
+  height: 0px;
+  border-style: solid;
+  border-width: var(--uk-cal-cell-body-font-size)
+    var(--uk-cal-cell-body-font-size) 0 0;
+  border-color: hsl(var(--destructive)) transparent transparent transparent;
+  transform: rotate(0deg);
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  border-top-left-radius: var(--uk-cal-cell-radius);
+}

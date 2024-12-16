@@ -77,3 +77,17 @@ export function id(length = 5) {
     characters.charAt(Math.floor(Math.random() * characters.length)),
   ).join('');
 }
+
+export function validateDate(value: string) {
+  if (/^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2})?$/.test(value)) {
+    let date = new Date(value);
+
+    if (isNaN(date.getTime())) {
+      throw new Error('Invalid date');
+    }
+
+    return date;
+  }
+
+  throw new Error('Invalid format');
+}
