@@ -46,6 +46,10 @@ export class ThemeSwitcher extends LitElement {
   connectedCallback(): void {
     super.connectedCallback();
 
+    this.$config['mode'] = document.documentElement.classList.contains('dark')
+      ? 'dark'
+      : 'light';
+
     const __FRANKEN__ = JSON.parse(localStorage.getItem('__FRANKEN__') || '{}');
 
     Object.keys(__FRANKEN__).forEach(a => {
