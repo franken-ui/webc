@@ -174,9 +174,8 @@ export class InputTag extends LitElement {
                     this.$tags = this.$tags.filter((_, b) => b !== i);
                   }
                 }}"
-              >
-                <uk-icon icon="x"></uk-icon>
-              </a>
+                uk-close
+              ></a>
             </div>
           `,
         )}

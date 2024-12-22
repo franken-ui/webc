@@ -290,7 +290,7 @@ export class Select extends BaseSelect {
     return this.searchable === true
       ? html`
           <div class="uk-cs-search">
-            <uk-icon icon="search"></uk-icon>
+            <span uk-search-icon></span>
             <input
               placeholder=${this.$i18n['search-placeholder']}
               type="text"

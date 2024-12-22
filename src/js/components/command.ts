@@ -126,7 +126,7 @@ export class Command extends BaseSelect {
     return html`
       <div class="uk-cmd-header">
         <div class="uk-cmd-header-icon">
-          <uk-icon icon="search"></uk-icon>
+          <span uk-search-icon></span>
         </div>
         <div class="uk-cmd-header-input">
           <input
