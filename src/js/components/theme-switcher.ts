@@ -26,13 +26,7 @@ type Config = {
 @customElement('uk-theme-switcher')
 export class ThemeSwitcher extends LitElement {
   @state()
-  $config: Config = {
-    mode: 'light',
-    theme: 'uk-theme-zinc',
-    radii: 'uk-radii-md',
-    shadows: 'uk-shadows-sm',
-    font: 'uk-font-sm',
-  };
+  $config: Config = {};
 
   @state()
   '__FRANKEN__': string;
