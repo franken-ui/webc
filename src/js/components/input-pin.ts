@@ -32,7 +32,12 @@ export class InputPin extends LitElement {
   $focus: undefined | number;
 
   @state()
+  $values: string[] = [];
+
+  @state()
   $value: string = '';
+
+  private HTMLInputs: NodeList | undefined;
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -52,24 +57,133 @@ export class InputPin extends LitElement {
         });
       }
     }
+
+    Array(this.length)
+      .fill('')
+      .map((_, b) => {
+        this.$values[b] = '';
+      });
+  }
+
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    this.HTMLInputs = this.renderRoot.querySelectorAll('input[type="text"]');
+
+    this.HTMLInputs.forEach(a => {
+      a.addEventListener('paste', (e: Event) => {
+        e.preventDefault();
+        const clipboardData = (e as ClipboardEvent).clipboardData;
+
+        if (clipboardData) {
+          const text = clipboardData.getData('Text').substring(0, this.length);
+
+          text.split('').forEach((str, i) => {
+            const input = (this.HTMLInputs as NodeList)[i] as HTMLInputElement;
+
+            input.disabled = false;
+            input.value = str;
+          });
+
+          if (text.length < this.length) {
+            const next = (this.HTMLInputs as NodeList)[
+              text.length
+            ] as HTMLInputElement;
+
+            next.disabled = false;
+            next.focus();
+          } else {
+            (
+              (this.HTMLInputs as NodeList)[
+                this.$focus as number
+              ] as HTMLInputElement
+            ).blur();
+          }
+        }
+      });
+    });
   }
 
   protected createRenderRoot(): HTMLElement | DocumentFragment {
     return this;
   }
 
-  protected updated(_changedProperties: PropertyValues): void {
-    if (_changedProperties.has('$value')) {
-      if (_changedProperties.get('$value') !== this.$value) {
-        this.dispatchEvent(
-          new CustomEvent('uk-input-pin:input', {
-            detail: { value: this.$value },
-            bubbles: true,
-            composed: true,
-          }),
-        );
-      }
-    }
+  private renderInput(i: number) {
+    return html`
+      <input
+        type="text"
+        maxlength="1"
+        placeholder="○"
+        .autofocus="${this.autofocus && i === 0 ? true : false}"
+        .disabled="${i === 0 ? false : true}"
+        @keydown="${(e: KeyboardEvent) => {
+          const input = e.target as HTMLInputElement;
+
+          switch (e.key) {
+            case 'Backspace':
+              if (this.$focus !== undefined) {
+                if (input.value.length === 0 && this.$focus > 0) {
+                  e.preventDefault();
+
+                  const prev = (this.HTMLInputs as NodeList)[
+                    this.$focus - 1
+                  ] as HTMLInputElement;
+
+                  prev.focus();
+                  input.disabled = true;
+                }
+              }
+              break;
+
+            case 'Delete':
+              if (this.$focus !== undefined) {
+                if (input.value.length === 0) {
+                  e.preventDefault();
+
+                  const next = (this.HTMLInputs as NodeList)[
+                    this.$focus + 1
+                  ] as HTMLInputElement;
+
+                  if (next) {
+                    next.focus();
+                    next.setSelectionRange(0, 0);
+                  }
+                }
+              }
+              break;
+          }
+        }}"
+        @input="${(e: InputEvent) => {
+          const input = e.target as HTMLInputElement;
+
+          if (input.value.length === 1) {
+            if (i < this.length - 1) {
+              const next = (this.HTMLInputs as NodeList)[
+                i + 1
+              ] as HTMLInputElement;
+
+              next.disabled = false;
+              next.focus();
+            }
+
+            if (i === this.length - 1) {
+              input.blur();
+            }
+          }
+
+          this.$values[i] = input.value;
+          this.$value = this.$values.join('');
+
+          this.dispatchEvent(
+            new CustomEvent('uk-input-pin:input', {
+              detail: { value: this.$value },
+              bubbles: true,
+              composed: true,
+            }),
+          );
+        }}"
+        @focus="${() => (this.$focus = i)}"
+        @blur="${() => (this.$focus = undefined)}"
+      />
+    `;
   }
 
   render() {
@@ -81,72 +195,11 @@ export class InputPin extends LitElement {
       >
         ${Array(this.length)
           .fill('')
-          .map(
-            (_, i) =>
-              html`<input
-                type="text"
-                maxlength="1"
-                placeholder="○"
-                .autofocus="${this.autofocus && i === 0 ? true : false}"
-                .disabled=${this.disabled}
-                @keydown="${(e: KeyboardEvent) => {
-                  const inputs =
-                    this.renderRoot.querySelectorAll('input[type="text"]');
-
-                  switch (e.key) {
-                    case 'Backspace':
-                      const input = e.target as HTMLInputElement;
-
-                      if (this.$focus !== undefined) {
-                        if (input.value.length === 0 && this.$focus > 0) {
-                          e.preventDefault();
-
-                          const prev = inputs[
-                            this.$focus - 1
-                          ] as HTMLInputElement;
-
-                          prev.focus();
-                        }
-                      }
-
-                      break;
-                  }
-                }}"
-                @input="${(e: InputEvent) => {
-                  const inputs =
-                    this.renderRoot.querySelectorAll('input[type="text"]');
-                  let value = '';
-
-                  inputs.forEach(a => {
-                    const b = a as HTMLInputElement;
-
-                    value += b.value;
-                  });
-
-                  const input = e.target as HTMLInputElement;
-
-                  if (input.value.length === 1) {
-                    if (i < this.length - 1) {
-                      const next = inputs[i + 1] as HTMLInputElement;
-
-                      next.focus();
-                    }
-
-                    if (i === this.length - 1) {
-                      input.blur();
-                    }
-                  }
-
-                  this.$value = value;
-                }}"
-                @focus="${() => (this.$focus = i)}"
-                @blur="${() => (this.$focus = undefined)}"
-              />`,
-          )}
+          .map((_, i) => this.renderInput(i))}
       </div>
       ${this.name
         ? html`
-            <input type="hidden" name="${this.name}" .value=${this.$value} />
+            <input type="hidden" name="${this.name}" .value="${this.$value}" />
           `
         : ''}
     `;
