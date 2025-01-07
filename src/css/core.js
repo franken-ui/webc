@@ -7,23 +7,11 @@ export default {
     {
       pattern: /^uk-/,
     },
-
-    'bg-background',
-    'bg-foreground',
-    'bg-card',
-    'bg-card-foreground',
-    'bg-popover',
-    'bg-popover-foreground',
-    'bg-primary',
-    'bg-primary-foreground',
-    'bg-secondary',
-    'bg-secondary-foreground',
-    'bg-muted',
-    'bg-muted-foreground',
-    'bg-accent',
-    'bg-accent-foreground',
-    'bg-destructive',
-    'bg-destructive-foreground',
+    {
+      pattern:
+        /^(bg|text)-(background|foreground|card|card-foreground|popover|popover-foreground|primary|primary-foreground|secondary|secondary-foreground|muted|muted-foreground|accent|accent-foreground|destructive|destructive-foreground)$/,
+      variants: ['hover'],
+    },
 
     'dark',
 
@@ -37,23 +25,6 @@ export default {
 
     'ProseMirror',
     'ProseMirror-focused',
-
-    'text-background',
-    'text-foreground',
-    'text-card',
-    'text-card-foreground',
-    'text-popover',
-    'text-popover-foreground',
-    'text-primary',
-    'text-primary-foreground',
-    'text-secondary',
-    'text-secondary-foreground',
-    'text-muted',
-    'text-muted-foreground',
-    'text-accent',
-    'text-accent-foreground',
-    'text-destructive',
-    'text-destructive-foreground',
 
     'tiptap',
 
