@@ -32,9 +32,6 @@ export class InputPin extends LitElement {
   $focus: undefined | number;
 
   @state()
-  $values: string[] = [];
-
-  @state()
   $value: string = '';
 
   private HTMLInputs: NodeList | undefined;
@@ -57,12 +54,6 @@ export class InputPin extends LitElement {
         });
       }
     }
-
-    Array(this.length)
-      .fill('')
-      .map((_, b) => {
-        this.$values[b] = '';
-      });
   }
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
@@ -75,6 +66,8 @@ export class InputPin extends LitElement {
 
         if (clipboardData) {
           const text = clipboardData.getData('Text').substring(0, this.length);
+
+          this.$value = text;
 
           text.split('').forEach((str, i) => {
             const input = (this.HTMLInputs as NodeList)[i] as HTMLInputElement;
@@ -169,8 +162,11 @@ export class InputPin extends LitElement {
             }
           }
 
-          this.$values[i] = input.value;
-          this.$value = this.$values.join('');
+          let value = '';
+          this.HTMLInputs?.forEach(a => {
+            value += (a as HTMLInputElement).value;
+          });
+          this.$value = value;
 
           this.dispatchEvent(
             new CustomEvent('uk-input-pin:input', {
