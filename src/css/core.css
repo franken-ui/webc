@@ -11,6 +11,42 @@
   --uk-cal-cell-body-font-size: var(--uk-global-font-size);
 }
 
+.uk-cal {
+  max-width: calc(var(--uk-cal-cell-size) * 7);
+}
+
+.uk-cal-header {
+  @apply flex gap-x-2;
+}
+
+.uk-cal-header-l,
+.uk-cal-header-r {
+  @apply flex-none;
+}
+
+.uk-cal-header-center {
+  @apply flex flex-1 justify-between gap-x-2;
+}
+
+.uk-cal-header-center input {
+  @apply w-16;
+}
+
+.uk-cal-month-dropdown {
+  --uk-dropdown-nav-item-padding: 0.25rem 0.25rem 0.25rem 0.25rem;
+  @apply flex-1;
+}
+
+.uk-cal-month-dropdown button {
+  @apply w-full;
+}
+
+.uk-cal-month-dropdown .uk-drop {
+  max-height: 10rem;
+  overflow-y: auto;
+  @apply max-w-full;
+}
+
 .uk-cal table {
   @apply flex flex-col gap-2;
 }

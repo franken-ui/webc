@@ -5,6 +5,7 @@ import { repeat } from 'lit/directives/repeat.js';
 
 interface I18N {
   weekdays: string;
+  months: string;
 }
 
 interface Day {
@@ -37,7 +38,11 @@ export class Calendar extends LitElement {
   @property({ type: String }) max = '';
 
   @state() private $viewDate = new Date();
-  @state() private $i18n: I18N = { weekdays: 'Su,Mo,Tu,We,Th,Fr,Sa' };
+  @state() private $i18n: I18N = {
+    weekdays: 'Su,Mo,Tu,We,Th,Fr,Sa',
+    months:
+      'January,February,March,April,May,June,July,August,September,October,November,December',
+  };
   @state() private $active = this.getUTCDate(new Date()).toISOString();
 
   private getUTCDate(date: Date): Date {
@@ -178,6 +183,24 @@ export class Calendar extends LitElement {
     }
 
     this.$viewDate = date;
+  }
+
+  private selectMonth(month: number) {
+    const date = new Date(this.$viewDate);
+
+    date.setMonth(month);
+
+    this.$viewDate = date;
+  }
+
+  private setYear(year: string) {
+    if (/^\d{4}$/.test(year)) {
+      const date = new Date(this.$viewDate);
+
+      date.setFullYear(parseInt(year));
+
+      this.$viewDate = date;
+    }
   }
 
   private getGridPosition(button: HTMLButtonElement) {
@@ -433,25 +456,73 @@ export class Calendar extends LitElement {
     `;
   }
 
+  private renderHeader() {
+    const months = this.$i18n.months.split(',');
+    const info = this.getTimestampComponent(this.$viewDate);
+
+    return html`
+      <div class="uk-cal-header">
+        <div class="uk-cal-header-l">
+          <button
+            class="uk-btn uk-btn-default uk-btn-sm uk-btn-icon"
+            @click=${() => this.navigateMonth('prev')}
+            type="button"
+            href="#"
+            data-uk-pgn-previous
+          ></button>
+        </div>
+        <div class="uk-cal-header-center">
+          <div class="uk-inline uk-cal-month-dropdown">
+            <button class="uk-btn uk-btn-default uk-btn-sm" type="button">
+              ${info.monthName}
+            </button>
+            <div class="uk-drop uk-dropdown" data-uk-dropdown="mode: click;">
+              <ul class="uk-dropdown-nav uk-nav">
+                ${months.map(
+                  (a, b) => html`
+                    <li class="${b + 1 === info.month ? 'uk-active' : ''}">
+                      <a
+                        @click="${() => this.selectMonth(b)}"
+                        class="uk-drop-close"
+                        href="#"
+                        >${a}</a
+                      >
+                    </li>
+                  `,
+                )}
+              </ul>
+            </div>
+          </div>
+          <input
+            class="uk-input uk-form-sm"
+            value="${info.year}"
+            @blur="${(e: FocusEvent) => {
+              const input = e.target as HTMLInputElement;
+
+              this.setYear(input.value);
+            }}"
+            type="text"
+          />
+        </div>
+        <div class="uk-cal-header-l">
+          <button
+            class="uk-btn uk-btn-default uk-btn-sm uk-btn-icon"
+            @click=${() => this.navigateMonth('next')}
+            type="button"
+            href="#"
+            data-uk-pgn-next
+          ></button>
+        </div>
+      </div>
+    `;
+  }
+
   render() {
     const weekdays = this.getWeekdays();
 
     return html`
-      <button
-        @click=${() => this.navigateMonth('prev')}
-        type="button"
-        tabindex="0"
-      >
-        Subtract month
-      </button>
-      <button
-        @click=${() => this.navigateMonth('next')}
-        type="button"
-        tabindex="0"
-      >
-        Add month
-      </button>
       <div class="uk-cal" role="application">
+        ${this.renderHeader()}
         <table role="grid" aria-label="Calendar">
           <thead>
             <tr role="row">
