@@ -39,7 +39,7 @@
 
 .uk-cal table tbody tr td button {
   border-radius: var(--uk-cal-cell-radius);
-  @apply focus-visible:outline-ring hover:bg-accent hover:text-accent-foreground inline-flex h-full w-full items-center justify-center whitespace-nowrap focus-visible:outline-dotted focus-visible:ring-1;
+  @apply focus-visible:outline-ring hover:bg-accent hover:text-accent-foreground inline-flex h-full w-full items-center justify-center whitespace-nowrap focus-visible:outline-dotted focus-visible:ring-1 disabled:opacity-50;
 }
 
 .uk-cal table tbody tr td.uk-cal-oom button {

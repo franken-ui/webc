@@ -1,187 +1,472 @@
-import { LitElement, html } from 'lit';
+import { LitElement, PropertyValues, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { validateDate } from '../helpers/common';
 import { repeat } from 'lit/directives/repeat.js';
 
-type I18N = {
+interface I18N {
   weekdays: string;
-};
+}
 
-type Day = {
+interface Day {
   date: number;
-  month: string;
+  month: 'prev' | 'current' | 'next';
   isCurrent: boolean;
   isDisabled: boolean;
   ISOString: string;
-};
+}
+
+interface TimestampComponent {
+  year: number;
+  month: number;
+  monthName: string;
+  day: number;
+  dayOfWeek: number;
+  dayName: string;
+  ISOString: string;
+}
 
 @customElement('uk-calendar')
 export class Calendar extends LitElement {
-  @property({ type: Number })
-  'starts-with': number = 0;
+  @property({ type: Number }) 'starts-with' = 0;
+  @property({ type: String }) 'disabled-dates' = '';
+  @property({ type: String }) i18n = '';
+  @property({ type: String }) 'view-date' = new Date()
+    .toISOString()
+    .split('T')[0];
+  @property({ type: String }) min = '';
+  @property({ type: String }) max = '';
 
-  @property({ type: String })
-  'disabled-dates': string = '';
+  @state() private $viewDate = new Date();
+  @state() private $i18n: I18N = { weekdays: 'Su,Mo,Tu,We,Th,Fr,Sa' };
+  @state() private $active = this.getUTCDate(new Date()).toISOString();
 
-  @property({ type: String })
-  i18n: string = '';
+  private getUTCDate(date: Date): Date {
+    return new Date(
+      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+    );
+  }
 
-  @state()
-  $i18n: I18N = {
-    weekdays: 'Su,Mo,Tu,We,Th,Fr,Sa',
-  };
+  connectedCallback(): void {
+    super.connectedCallback();
+    this.$viewDate = new Date(this['view-date']);
 
-  get cal() {
-    const { year, month, day } = {
-      year: 2025,
-      month: 2,
-      day: 22,
+    this.addEventListener('keydown', this.navigate);
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+
+    this.removeEventListener('keydown', this.navigate);
+  }
+
+  private isDateInRange(date: string): boolean {
+    if (!this.min && !this.max) return true;
+
+    const current = new Date(date);
+
+    if (this.min) {
+      const minDate = validateDate(this.min);
+      if (current < minDate) return false;
+    }
+
+    if (this.max) {
+      const maxDate = validateDate(this.max);
+      if (current > maxDate) return false;
+    }
+
+    return true;
+  }
+
+  private navigate = (event: KeyboardEvent): void => {
+    const currentButton = event.target as HTMLButtonElement;
+    if (!currentButton?.matches('button[data-iso]')) return;
+
+    const buttons = Array.from(this.querySelectorAll('button[data-iso]'));
+    const currentIndex = buttons.indexOf(currentButton);
+    const grid = this.getGridPosition(currentButton);
+    if (!grid) return;
+
+    const { rowIndex, colIndex } = grid;
+    let nextButton: HTMLButtonElement | undefined;
+
+    const findNextEnabled = (
+      buttons: HTMLButtonElement[],
+      start: number,
+      increment: number,
+    ): HTMLButtonElement | undefined => {
+      let index = start;
+      while (index >= 0 && index < buttons.length) {
+        const button = buttons[index];
+        if (!button.disabled) return button;
+        index += increment;
+      }
+      return undefined;
     };
 
-    const disabledDates: string[] =
-      this['disabled-dates'] !== ''
-        ? this['disabled-dates']
-            .split(',')
-            .filter(a => a !== '')
-            .map(a => {
-              try {
-                const date = validateDate(a);
+    const navigationMap: Record<string, () => HTMLButtonElement | undefined> = {
+      ArrowLeft: () => findNextEnabled(buttons, currentIndex - 1, -1),
+      ArrowRight: () => findNextEnabled(buttons, currentIndex + 1, 1),
+      ArrowUp: () => this.getNextEnabledInColumn(rowIndex - 1, colIndex, -1),
+      ArrowDown: () => this.getNextEnabledInColumn(rowIndex + 1, colIndex, 1),
+      Home: () => this.getRowFirstEnabledButton(rowIndex),
+      End: () => this.getRowLastEnabledButton(rowIndex),
+      PageUp: () => this.getNextEnabledInColumn(0, colIndex, 1),
+      PageDown: () => {
+        const rows = this.querySelectorAll('tr');
+        return this.getNextEnabledInColumn(rows.length - 1, colIndex, -1);
+      },
+    };
 
-                return date.toISOString().slice(0, 10);
-              } catch (e) {
-                console.error(`${a} has an invalid format.`);
+    if (event.key in navigationMap) {
+      event.preventDefault();
+      nextButton = navigationMap[event.key]();
+    } else if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      currentButton.click();
+      return;
+    }
 
-                return '';
-              }
-            })
-            .filter(a => a !== '')
-        : [];
+    nextButton?.focus();
+  };
 
-    // Create Date objects for the current, previous, and next months
-    const currentMonth = new Date(year, month - 1, 1);
+  private getNextEnabledInColumn(
+    startRow: number,
+    colIndex: number,
+    increment: number,
+  ): HTMLButtonElement | undefined {
+    const rows = Array.from(this.querySelectorAll('tr'));
+    let rowIndex = startRow;
 
-    // Get the number of days in each month
-    const daysInCurrentMonth = new Date(year, month, 0).getDate();
-    const daysInPrevMonth = new Date(year, month - 1, 0).getDate();
+    while (rowIndex >= 0 && rowIndex < rows.length) {
+      const button = rows[rowIndex]?.children[colIndex]?.querySelector(
+        'button',
+      ) as HTMLButtonElement;
+      if (button && !button.disabled) return button;
+      rowIndex += increment;
+    }
 
-    // Get the day of the week for the first day of the current month (0-6)
-    let startingDay = currentMonth.getDay();
+    return undefined;
+  }
 
-    // Adjust startingDay based on this['starts-with']
-    startingDay = (startingDay - this['starts-with'] + 7) % 7;
+  private getRowFirstEnabledButton(
+    rowIndex: number,
+  ): HTMLButtonElement | undefined {
+    const row = this.querySelectorAll('tr')[rowIndex];
+    const buttons = Array.from(row?.querySelectorAll('button') || []);
+    return buttons.find(button => !button.disabled) as HTMLButtonElement;
+  }
 
-    // Initialize the calendar array
-    const calendar = [];
+  private getRowLastEnabledButton(
+    rowIndex: number,
+  ): HTMLButtonElement | undefined {
+    const row = this.querySelectorAll('tr')[rowIndex];
+    const buttons = Array.from(row?.querySelectorAll('button') || []);
+    return buttons
+      .reverse()
+      .find(button => !button.disabled) as HTMLButtonElement;
+  }
 
+  private navigateMonth(direction: 'prev' | 'next') {
+    const date = new Date(this.$viewDate);
+
+    if (direction === 'prev') {
+      date.setMonth(date.getMonth() - 1);
+      if (this.min && date < validateDate(this.min)) return;
+    } else {
+      date.setMonth(date.getMonth() + 1);
+      if (this.max && date > validateDate(this.max)) return;
+    }
+
+    this.$viewDate = date;
+  }
+
+  private getGridPosition(button: HTMLButtonElement) {
+    const td = button.closest('td');
+    const tr = td?.closest('tr');
+    if (!tr) return null;
+
+    return {
+      rowIndex: Array.from(this.querySelectorAll('tr')).indexOf(tr),
+      colIndex: Array.from(tr.children).indexOf(td!),
+    };
+  }
+
+  private getButtonAtPosition(
+    rowIndex: number,
+    colIndex: number,
+  ): HTMLButtonElement | undefined {
+    const row = this.querySelectorAll('tr')[rowIndex];
+    return row?.children[colIndex]?.querySelector(
+      'button',
+    ) as HTMLButtonElement;
+  }
+
+  private getRowFirstButton(rowIndex: number): HTMLButtonElement | undefined {
+    const row = this.querySelectorAll('tr')[rowIndex];
+    return row?.querySelector('button') as HTMLButtonElement;
+  }
+
+  private getRowLastButton(rowIndex: number): HTMLButtonElement | undefined {
+    const row = this.querySelectorAll('tr')[rowIndex];
+    const buttons = row?.querySelectorAll('button');
+    return buttons?.[buttons.length - 1] as HTMLButtonElement;
+  }
+
+  private select(day: Day): void {
+    this.$active = day.ISOString;
+    if (day.month !== 'current') {
+      this.$viewDate = new Date(day.ISOString);
+    }
+  }
+
+  private isDisabled(date: string): boolean {
+    return (
+      this.parseDisabledDates().includes(date.slice(0, 10)) ||
+      !this.isDateInRange(date)
+    );
+  }
+
+  private getWeekdays(): string[] {
+    const weekdays = this.$i18n.weekdays.split(',');
+
+    if (this['starts-with'] === 1) {
+      weekdays.push(weekdays.shift()!);
+    }
+
+    return weekdays;
+  }
+
+  private get calendar(): Day[][] {
+    const { year, month } = {
+      year: this.$viewDate.getFullYear(),
+      month: this.$viewDate.getMonth() + 1,
+    };
+
+    const disabledDates = this.parseDisabledDates();
+    const { currentMonth, daysInCurrentMonth, daysInPrevMonth } =
+      this.getMonthInfo(year, month);
+    const startingDay = this.getStartingDay(currentMonth);
+
+    return this.generateCalendarGrid(year, month, {
+      startingDay,
+      daysInCurrentMonth,
+      daysInPrevMonth,
+      disabledDates,
+    });
+  }
+
+  private getTimestampComponent(date: Date): TimestampComponent {
+    return {
+      year: date.getFullYear(),
+      month: date.getMonth() + 1, // 1-12
+      monthName: date.toLocaleString('default', { month: 'long' }),
+      day: date.getDate(),
+      dayOfWeek: date.getDay(), // 0-6
+      dayName: date.toLocaleString('default', { weekday: 'long' }),
+      ISOString: date.toISOString(),
+    };
+  }
+
+  private parseDisabledDates(): string[] {
+    if (!this['disabled-dates']) return [];
+
+    return this['disabled-dates']
+      .split(',')
+      .filter(Boolean)
+      .map(date => {
+        try {
+          return validateDate(date).toISOString().slice(0, 10);
+        } catch (e) {
+          console.error(`${date} has an invalid format.`);
+          return '';
+        }
+      })
+      .filter(Boolean);
+  }
+
+  private getMonthInfo(year: number, month: number) {
+    return {
+      currentMonth: new Date(year, month - 1, 1),
+      daysInCurrentMonth: new Date(year, month, 0).getDate(),
+      daysInPrevMonth: new Date(year, month - 1, 0).getDate(),
+    };
+  }
+
+  private getStartingDay(currentMonth: Date): number {
+    return (currentMonth.getDay() - this['starts-with'] + 7) % 7;
+  }
+
+  private generateCalendarGrid(
+    year: number,
+    month: number,
+    {
+      startingDay,
+      daysInCurrentMonth,
+      daysInPrevMonth,
+    }: {
+      startingDay: number;
+      daysInCurrentMonth: number;
+      daysInPrevMonth: number;
+    },
+  ): Day[][] {
+    const calendar: Day[][] = [];
     let date = 1;
-    let currentWeek: Day[] = [];
-
-    // Calculate the starting date from the previous month
     let prevMonthStartDate = daysInPrevMonth - startingDay + 1;
 
-    for (let i = 0; i < 6; i++) {
-      currentWeek = [];
+    for (let week = 0; week < 6; week++) {
+      const currentWeek: Day[] = [];
 
-      for (let j = 0; j < 7; j++) {
-        let currentDate: number;
-        let monthOffset: number;
+      for (let dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++) {
+        const dayInfo = this.generateDayInfo(
+          year,
+          month,
+          date,
+          dayOfWeek,
+          week,
+          startingDay,
+          daysInCurrentMonth,
+          prevMonthStartDate,
+        );
 
-        if (i === 0 && j < startingDay) {
-          // Previous month days
-          currentDate = prevMonthStartDate;
-          monthOffset = -1;
-          prevMonthStartDate++;
-        } else if (date > daysInCurrentMonth) {
-          // Next month days
-          currentDate = date - daysInCurrentMonth;
-          monthOffset = 1;
-          date++;
-        } else {
-          // Current month days
-          currentDate = date;
-          monthOffset = 0;
-          date++;
-        }
-
-        const fullDate = new Date(year, month - 1 + monthOffset, currentDate);
-        const ISOString = fullDate.toISOString();
-
-        currentWeek.push({
-          date: currentDate,
-          month:
-            monthOffset === -1
-              ? 'prev'
-              : monthOffset === 1
-                ? 'next'
-                : 'current',
-          isCurrent: currentDate === day && monthOffset === 0,
-          isDisabled: disabledDates.includes(ISOString.slice(0, 10)),
-          ISOString: ISOString,
-        });
+        currentWeek.push(dayInfo.day);
+        ({ date, prevMonthStartDate } = dayInfo);
       }
 
       calendar.push(currentWeek);
-
       if (date > daysInCurrentMonth && currentWeek[6].month === 'next') break;
     }
 
     return calendar;
   }
 
+  private generateDayInfo(
+    year: number,
+    month: number,
+    date: number,
+    dayOfWeek: number,
+    week: number,
+    startingDay: number,
+    daysInCurrentMonth: number,
+    prevMonthStartDate: number,
+  ) {
+    let currentDate: number;
+    let monthOffset: number;
+
+    if (week === 0 && dayOfWeek < startingDay) {
+      currentDate = prevMonthStartDate++;
+      monthOffset = -1;
+    } else if (date > daysInCurrentMonth) {
+      currentDate = date - daysInCurrentMonth;
+      monthOffset = 1;
+      date++;
+    } else {
+      currentDate = date++;
+      monthOffset = 0;
+    }
+
+    const fullDate = new Date(
+      Date.UTC(year, month - 1 + monthOffset, currentDate),
+    );
+    const ISOString = fullDate.toISOString();
+
+    const day: Day = {
+      date: currentDate,
+      month:
+        monthOffset === -1 ? 'prev' : monthOffset === 1 ? 'next' : 'current',
+      isCurrent: currentDate === this.$viewDate.getDate() && monthOffset === 0,
+      isDisabled: this.isDisabled(ISOString),
+      ISOString,
+    };
+
+    return { day, date, prevMonthStartDate };
+  }
+
   protected createRenderRoot(): HTMLElement | DocumentFragment {
     return this;
   }
 
-  private renderWeek(i: Day[]) {
+  protected updated(changedProperties: PropertyValues): void {
+    if (changedProperties.has('$active')) {
+      this.updateComplete.then(() => {
+        const button = this.renderRoot.querySelector(
+          `button[data-iso="${this.$active}"]`,
+        ) as HTMLButtonElement;
+        button?.focus();
+      });
+    }
+  }
+
+  private renderWeek(days: Day[]): unknown {
     return html`
-      <tr>
-        ${repeat(
-          i,
-          _ => _,
-          i => this.renderDay(i),
-        )}
+      <tr role="row">
+        ${repeat(days, day => day.ISOString, this.renderDay.bind(this))}
       </tr>
     `;
   }
 
-  private renderDay(i: Day) {
+  private renderDay(day: Day): unknown {
+    const isSelected = this.$active === day.ISOString;
+    const month =
+      day.month === 'current' ? 'current month' : `${day.month} month`;
+    const outOfRange = !this.isDateInRange(day.ISOString);
+    const ariaLabel = `${day.date} ${month}${isSelected ? ', selected' : ''}${day.isDisabled ? ', disabled' : ''}${outOfRange ? ', out of allowed date range' : ''}`;
+
     return html`
       <td
-        class="${i.month !== 'current' ? 'uk-cal-oom' : ''} ${i.isCurrent ===
-        true
+        class="${day.month !== 'current' ? 'uk-cal-oom' : ''} ${isSelected
           ? 'uk-active'
           : ''}"
+        role="gridcell"
       >
-        <button>${i.date}</button>
+        <button
+          type="button"
+          data-iso="${day.ISOString}"
+          @click="${() => this.select(day)}"
+          aria-label="${ariaLabel}"
+          aria-selected="${isSelected}"
+          aria-disabled="${day.isDisabled}"
+          .disabled="${day.isDisabled}"
+        >
+          ${day.date}
+        </button>
       </td>
     `;
   }
 
   render() {
-    const weekdays: any[] = this.$i18n['weekdays'].split(',');
-
-    if (this['starts-with'] === 1) {
-      weekdays.push(weekdays.shift());
-    }
+    const weekdays = this.getWeekdays();
 
     return html`
-      <div class="uk-cal">
-        <table>
+      <button
+        @click=${() => this.navigateMonth('prev')}
+        type="button"
+        tabindex="0"
+      >
+        Subtract month
+      </button>
+      <button
+        @click=${() => this.navigateMonth('next')}
+        type="button"
+        tabindex="0"
+      >
+        Add month
+      </button>
+      <div class="uk-cal" role="application">
+        <table role="grid" aria-label="Calendar">
           <thead>
-            <tr>
+            <tr role="row">
               ${repeat(
                 weekdays,
-                ([key]) => key,
-                i => html`<th>${i}</th>`,
+                day => day,
+                day => html`<th role="columnheader" scope="col">${day}</th>`,
               )}
             </tr>
           </thead>
-
           <tbody>
             ${repeat(
-              this.cal,
-              ([key]) => key,
-              i => this.renderWeek(i),
+              this.calendar,
+              week => week[0].ISOString,
+              this.renderWeek.bind(this),
             )}
           </tbody>
         </table>
