@@ -30,10 +30,11 @@
     <script type="module" src="/src/js/icon.ts"></script>
   </head>
   <body class="bg-background text-foreground">
-    <uk-calendar
-      marked-dates="2025-01-01"
-      starts-with="1"
-      disabled-dates="2025-01-21"
-    ></uk-calendar>
+    <div class="uk-container">
+      <uk-calendar
+        i18n='{"weekdays":"Su,Má,Þr,Mi,Hó,Fr,La","months":"Januar,Februar,Mars,April,Ma\u00ed,Juni,Juli,August,September,Oktober,November,Desember"}'
+        jumpable
+      ></uk-calendar>
+    </div>
   </body>
 </html>

@@ -1,6 +1,6 @@
 import { LitElement, PropertyValues, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { validateDate } from '../helpers/common';
+import { parseOptions, validateDate } from '../helpers/common';
 import { repeat } from 'lit/directives/repeat.js';
 
 interface I18N {
@@ -29,24 +29,42 @@ interface TimestampComponent {
 
 @customElement('uk-calendar')
 export class Calendar extends LitElement {
-  @property({ type: Number }) 'starts-with' = 0;
-  @property({ type: String }) 'disabled-dates' = '';
-  @property({ type: String }) 'marked-dates' = '';
-  @property({ type: String }) i18n = '';
-  @property({ type: String }) 'view-date' = new Date()
-    .toISOString()
-    .split('T')[0];
-  @property({ type: String }) min = '';
-  @property({ type: String }) max = '';
-  @property({ type: Boolean }) jumpable = false;
+  @property({ type: Number })
+  'starts-with' = 0;
 
-  @state() private $viewDate = new Date();
-  @state() private $i18n: I18N = {
+  @property({ type: String })
+  'disabled-dates' = '';
+
+  @property({ type: String })
+  'marked-dates' = '';
+
+  @property({ type: String })
+  i18n = '';
+
+  @property({ type: String })
+  'view-date' = new Date().toISOString().split('T')[0];
+
+  @property({ type: String })
+  min = '';
+
+  @property({ type: String })
+  max = '';
+
+  @property({ type: Boolean })
+  jumpable = false;
+
+  @state()
+  private $viewDate = new Date();
+
+  @state()
+  private $i18n: I18N = {
     weekdays: 'Su,Mo,Tu,We,Th,Fr,Sa',
     months:
       'January,February,March,April,May,June,July,August,September,October,November,December',
   };
-  @state() private $active = this.getUTCDate(new Date()).toISOString();
+
+  @state()
+  private $active = this.getUTCDate(new Date()).toISOString();
 
   private getUTCDate(date: Date): Date {
     return new Date(
@@ -56,6 +74,15 @@ export class Calendar extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
+
+    if (this.i18n) {
+      const i18n = parseOptions(this.i18n) as I18N;
+
+      if (typeof i18n === 'object') {
+        this.$i18n = Object.assign(this.$i18n, i18n);
+      }
+    }
+
     this.$viewDate = new Date(this['view-date']);
 
     this.addEventListener('keydown', this.navigate);
@@ -68,18 +95,26 @@ export class Calendar extends LitElement {
   }
 
   private isDateInRange(date: string): boolean {
-    if (!this.min && !this.max) return true;
+    if (!this.min && !this.max) {
+      return true;
+    }
 
     const current = new Date(date);
 
     if (this.min) {
       const minDate = validateDate(this.min);
-      if (current < minDate) return false;
+
+      if (current < minDate) {
+        return false;
+      }
     }
 
     if (this.max) {
       const maxDate = validateDate(this.max);
-      if (current > maxDate) return false;
+
+      if (current > maxDate) {
+        return false;
+      }
     }
 
     return true;
@@ -87,14 +122,23 @@ export class Calendar extends LitElement {
 
   private navigate = (event: KeyboardEvent): void => {
     const currentButton = event.target as HTMLButtonElement;
-    if (!currentButton?.matches('button[data-iso]')) return;
 
-    const buttons = Array.from(this.querySelectorAll('button[data-iso]'));
+    if (!currentButton?.matches('button[data-iso]')) {
+      return;
+    }
+
+    const buttons: HTMLButtonElement[] = Array.from(
+      this.querySelectorAll('button[data-iso]'),
+    );
     const currentIndex = buttons.indexOf(currentButton);
     const grid = this.getGridPosition(currentButton);
-    if (!grid) return;
+
+    if (!grid) {
+      return;
+    }
 
     const { rowIndex, colIndex } = grid;
+
     let nextButton: HTMLButtonElement | undefined;
 
     const findNextEnabled = (
@@ -103,11 +147,17 @@ export class Calendar extends LitElement {
       increment: number,
     ): HTMLButtonElement | undefined => {
       let index = start;
+
       while (index >= 0 && index < buttons.length) {
         const button = buttons[index];
-        if (!button.disabled) return button;
+
+        if (!button.disabled) {
+          return button;
+        }
+
         index += increment;
       }
+
       return undefined;
     };
 
@@ -121,6 +171,7 @@ export class Calendar extends LitElement {
       PageUp: () => this.getNextEnabledInColumn(0, colIndex, 1),
       PageDown: () => {
         const rows = this.querySelectorAll('tr');
+
         return this.getNextEnabledInColumn(rows.length - 1, colIndex, -1);
       },
     };
@@ -149,7 +200,11 @@ export class Calendar extends LitElement {
       const button = rows[rowIndex]?.children[colIndex]?.querySelector(
         'button',
       ) as HTMLButtonElement;
-      if (button && !button.disabled) return button;
+
+      if (button && !button.disabled) {
+        return button;
+      }
+
       rowIndex += increment;
     }
 
@@ -161,6 +216,7 @@ export class Calendar extends LitElement {
   ): HTMLButtonElement | undefined {
     const row = this.querySelectorAll('tr')[rowIndex];
     const buttons = Array.from(row?.querySelectorAll('button') || []);
+
     return buttons.find(button => !button.disabled) as HTMLButtonElement;
   }
 
@@ -169,6 +225,7 @@ export class Calendar extends LitElement {
   ): HTMLButtonElement | undefined {
     const row = this.querySelectorAll('tr')[rowIndex];
     const buttons = Array.from(row?.querySelectorAll('button') || []);
+
     return buttons
       .reverse()
       .find(button => !button.disabled) as HTMLButtonElement;
@@ -179,10 +236,14 @@ export class Calendar extends LitElement {
 
     if (direction === 'prev') {
       date.setMonth(date.getMonth() - 1);
-      if (this.min && date < validateDate(this.min)) return;
+      if (this.min && date < validateDate(this.min)) {
+        return;
+      }
     } else {
       date.setMonth(date.getMonth() + 1);
-      if (this.max && date > validateDate(this.max)) return;
+      if (this.max && date > validateDate(this.max)) {
+        return;
+      }
     }
 
     this.$viewDate = date;
@@ -217,29 +278,30 @@ export class Calendar extends LitElement {
     };
   }
 
-  private getButtonAtPosition(
-    rowIndex: number,
-    colIndex: number,
-  ): HTMLButtonElement | undefined {
-    const row = this.querySelectorAll('tr')[rowIndex];
-    return row?.children[colIndex]?.querySelector(
-      'button',
-    ) as HTMLButtonElement;
-  }
+  // private getButtonAtPosition(
+  //   rowIndex: number,
+  //   colIndex: number,
+  // ): HTMLButtonElement | undefined {
+  //   const row = this.querySelectorAll('tr')[rowIndex];
+  //   return row?.children[colIndex]?.querySelector(
+  //     'button',
+  //   ) as HTMLButtonElement;
+  // }
 
-  private getRowFirstButton(rowIndex: number): HTMLButtonElement | undefined {
-    const row = this.querySelectorAll('tr')[rowIndex];
-    return row?.querySelector('button') as HTMLButtonElement;
-  }
+  // private getRowFirstButton(rowIndex: number): HTMLButtonElement | undefined {
+  //   const row = this.querySelectorAll('tr')[rowIndex];
+  //   return row?.querySelector('button') as HTMLButtonElement;
+  // }
 
-  private getRowLastButton(rowIndex: number): HTMLButtonElement | undefined {
-    const row = this.querySelectorAll('tr')[rowIndex];
-    const buttons = row?.querySelectorAll('button');
-    return buttons?.[buttons.length - 1] as HTMLButtonElement;
-  }
+  // private getRowLastButton(rowIndex: number): HTMLButtonElement | undefined {
+  //   const row = this.querySelectorAll('tr')[rowIndex];
+  //   const buttons = row?.querySelectorAll('button');
+  //   return buttons?.[buttons.length - 1] as HTMLButtonElement;
+  // }
 
   private select(day: Day): void {
     this.$active = day.ISOString;
+
     if (day.month !== 'current') {
       this.$viewDate = new Date(day.ISOString);
     }
@@ -272,7 +334,7 @@ export class Calendar extends LitElement {
       this.getMonthInfo(year, month);
     const startingDay = this.getStartingDay(currentMonth);
 
-    return this.generateCalendarGrid(year, month, {
+    return this.createGrid(year, month, {
       startingDay,
       daysInCurrentMonth,
       daysInPrevMonth,
@@ -318,7 +380,7 @@ export class Calendar extends LitElement {
     return (currentMonth.getDay() - this['starts-with'] + 7) % 7;
   }
 
-  private generateCalendarGrid(
+  private createGrid(
     year: number,
     month: number,
     {
@@ -339,7 +401,7 @@ export class Calendar extends LitElement {
       const currentWeek: Day[] = [];
 
       for (let dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++) {
-        const dayInfo = this.generateDayInfo(
+        const dayInfo = this.getDayInfo(
           year,
           month,
           date,
@@ -355,13 +417,16 @@ export class Calendar extends LitElement {
       }
 
       calendar.push(currentWeek);
-      if (date > daysInCurrentMonth && currentWeek[6].month === 'next') break;
+
+      if (date > daysInCurrentMonth && currentWeek[6].month === 'next') {
+        break;
+      }
     }
 
     return calendar;
   }
 
-  private generateDayInfo(
+  private getDayInfo(
     year: number,
     month: number,
     date: number,
@@ -468,83 +533,95 @@ export class Calendar extends LitElement {
     `;
   }
 
-  private renderHeader() {
+  private renderJumper() {
     const months = this.$i18n.months.split(',');
     const info = this.getTimestampComponent(this.$viewDate);
 
     return html`
-      <div class="uk-cal-header">
-        <div class="uk-cal-header-l">
-          <button
-            class="uk-btn uk-btn-default uk-btn-sm uk-btn-icon"
-            @click=${() => this.navigateMonth('prev')}
-            type="button"
-            href="#"
-            data-uk-pgn-previous
-          ></button>
+      <div class="uk-inline uk-cal-month-dropdown">
+        <button class="uk-input-fake uk-form-sm" type="button">
+          ${info.monthName}
+        </button>
+        <div class="uk-drop uk-dropdown" data-uk-dropdown="mode: click;">
+          <ul class="uk-dropdown-nav uk-nav">
+            ${months.map(
+              (a, b) => html`
+                <li
+                  class="uk-cal-month-dropdown-item ${b + 1 === info.month
+                    ? 'uk-active'
+                    : ''}"
+                >
+                  <a @click="${() => this.selectMonth(b)}" href="#">
+                    ${a}
+                    ${b + 1 === info.month
+                      ? html`<span data-uk-check></span>`
+                      : ''}
+                  </a>
+                </li>
+              `,
+            )}
+          </ul>
         </div>
-        <div class="uk-cal-header-center">
+      </div>
+      <input
+        class="uk-input uk-form-sm"
+        type="number"
+        step="1"
+        .value="${info.year.toString()}"
+        min="1000"
+        max="9999"
+        @blur="${(e: KeyboardEvent) => {
+          const input = e.target as HTMLInputElement;
+
+          input.value = info.year.toString();
+        }}"
+        @input="${(e: KeyboardEvent) => {
+          const input = e.target as HTMLInputElement;
+
+          input.value = input.value.replace(/[^0-9]/g, '').substring(0, 4);
+
+          if (input.value.length === 4) {
+            this.setYear(input.value);
+          }
+        }}"
+        type="text"
+      />
+    `;
+  }
+
+  private renderHeader() {
+    const info = this.getTimestampComponent(this.$viewDate);
+
+    return html`
+      <div class="uk-cal-header">
+        <button
+          class="uk-btn uk-btn-default uk-btn-sm uk-btn-icon"
+          @click=${() => this.navigateMonth('prev')}
+          type="button"
+          href="#"
+          data-uk-pgn-previous
+        ></button>
+        <div class="uk-cal-jumper">
           ${this.jumpable === false
             ? html`
                 <div class="uk-cal-title uk-text-sm">
                   ${info.monthName} ${info.year}
                 </div>
               `
-            : html`
-                <div class="uk-inline uk-cal-month-dropdown">
-                  <button class="uk-btn uk-btn-default uk-btn-sm" type="button">
-                    ${info.monthName}
-                  </button>
-                  <div
-                    class="uk-drop uk-dropdown"
-                    data-uk-dropdown="mode: click;"
-                  >
-                    <ul class="uk-dropdown-nav uk-nav">
-                      ${months.map(
-                        (a, b) => html`
-                          <li
-                            class="${b + 1 === info.month ? 'uk-active' : ''}"
-                          >
-                            <a
-                              @click="${() => this.selectMonth(b)}"
-                              class="uk-drop-close"
-                              href="#"
-                              >${a}</a
-                            >
-                          </li>
-                        `,
-                      )}
-                    </ul>
-                  </div>
-                </div>
-                <input
-                  class="uk-input uk-form-sm"
-                  .value="${info.year.toString()}"
-                  @blur="${(e: FocusEvent) => {
-                    const input = e.target as HTMLInputElement;
-
-                    this.setYear(input.value);
-                  }}"
-                  type="text"
-                />
-              `}
+            : this.renderJumper()}
         </div>
-        <div class="uk-cal-header-l">
-          <button
-            class="uk-btn uk-btn-default uk-btn-sm uk-btn-icon"
-            @click=${() => this.navigateMonth('next')}
-            type="button"
-            href="#"
-            data-uk-pgn-next
-          ></button>
-        </div>
+        <button
+          class="uk-btn uk-btn-default uk-btn-sm uk-btn-icon"
+          @click=${() => this.navigateMonth('next')}
+          type="button"
+          href="#"
+          data-uk-pgn-next
+        ></button>
       </div>
     `;
   }
 
   render() {
-    const weekdays = this.getWeekdays();
-
     return html`
       <div class="uk-cal" role="application">
         ${this.renderHeader()}
@@ -552,7 +629,7 @@ export class Calendar extends LitElement {
           <thead>
             <tr role="row">
               ${repeat(
-                weekdays,
+                this.getWeekdays(),
                 day => day,
                 day => html`<th role="columnheader" scope="col">${day}</th>`,
               )}

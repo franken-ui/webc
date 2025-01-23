@@ -11,6 +11,10 @@
   --uk-cal-cell-body-font-size: var(--uk-global-font-size);
 }
 
+.uk-datepicker-cal {
+  @apply p-3;
+}
+
 .uk-cal {
   max-width: calc(var(--uk-cal-cell-size) * 7);
 }
@@ -24,12 +28,26 @@
   @apply flex-none;
 }
 
-.uk-cal-header-center {
+.uk-cal-jumper {
   @apply flex flex-1 items-center justify-between gap-x-2;
 }
 
-.uk-cal-header-center input {
-  @apply w-16;
+.uk-cal-jumper .uk-input-fake {
+  justify-content: center;
+}
+
+.uk-cal-jumper input {
+  @apply w-12 text-center;
+}
+
+.uk-cal-jumper input[type='number']::-webkit-inner-spin-button,
+.uk-cal-jumper input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.uk-cal-jumper input[type='number'] {
+  -moz-appearance: textfield;
 }
 
 .uk-cal-title {
@@ -37,7 +55,7 @@
 }
 
 .uk-cal-month-dropdown {
-  --uk-dropdown-nav-item-padding: 0.25rem 0.25rem 0.25rem 0.25rem;
+  --uk-dropdown-nav-item-padding: 0.25rem;
   @apply flex-1;
 }
 
@@ -46,9 +64,11 @@
 }
 
 .uk-cal-month-dropdown .uk-drop {
-  max-height: 10rem;
-  overflow-y: auto;
-  @apply max-w-full;
+  @apply max-h-40 min-w-36 overflow-y-auto;
+}
+
+.uk-cal-month-dropdown-item a {
+  @apply items-center justify-between;
 }
 
 .uk-cal table {
@@ -62,6 +82,7 @@
 .uk-cal table thead th {
   width: var(--uk-cal-cell-size);
   font-size: var(--uk-cal-cell-header-font-size);
+
   @apply text-muted-foreground font-normal;
 }
 
@@ -74,12 +95,13 @@
   width: var(--uk-cal-cell-size);
   height: var(--uk-cal-cell-size);
   font-size: var(--uk-cal-cell-body-font-size);
-  padding: 0;
-  @apply relative text-center;
+
+  @apply relative p-0 text-center;
 }
 
 .uk-cal table tbody tr td button {
   border-radius: var(--uk-cal-cell-radius);
+
   @apply focus-visible:outline-ring hover:bg-accent hover:text-accent-foreground inline-flex h-full w-full items-center justify-center whitespace-nowrap focus-visible:outline-dotted focus-visible:ring-1 disabled:opacity-50;
 }
 
