@@ -13,6 +13,7 @@ interface Day {
   month: 'prev' | 'current' | 'next';
   isCurrent: boolean;
   isDisabled: boolean;
+  isMarked: boolean;
   ISOString: string;
 }
 
@@ -30,12 +31,14 @@ interface TimestampComponent {
 export class Calendar extends LitElement {
   @property({ type: Number }) 'starts-with' = 0;
   @property({ type: String }) 'disabled-dates' = '';
+  @property({ type: String }) 'marked-dates' = '';
   @property({ type: String }) i18n = '';
   @property({ type: String }) 'view-date' = new Date()
     .toISOString()
     .split('T')[0];
   @property({ type: String }) min = '';
   @property({ type: String }) max = '';
+  @property({ type: Boolean }) jumpable = false;
 
   @state() private $viewDate = new Date();
   @state() private $i18n: I18N = {
@@ -244,7 +247,7 @@ export class Calendar extends LitElement {
 
   private isDisabled(date: string): boolean {
     return (
-      this.parseDisabledDates().includes(date.slice(0, 10)) ||
+      this.parseDates(this['disabled-dates']).includes(date.slice(0, 10)) ||
       !this.isDateInRange(date)
     );
   }
@@ -265,7 +268,6 @@ export class Calendar extends LitElement {
       month: this.$viewDate.getMonth() + 1,
     };
 
-    const disabledDates = this.parseDisabledDates();
     const { currentMonth, daysInCurrentMonth, daysInPrevMonth } =
       this.getMonthInfo(year, month);
     const startingDay = this.getStartingDay(currentMonth);
@@ -274,7 +276,6 @@ export class Calendar extends LitElement {
       startingDay,
       daysInCurrentMonth,
       daysInPrevMonth,
-      disabledDates,
     });
   }
 
@@ -290,10 +291,8 @@ export class Calendar extends LitElement {
     };
   }
 
-  private parseDisabledDates(): string[] {
-    if (!this['disabled-dates']) return [];
-
-    return this['disabled-dates']
+  private parseDates(dates: string): string[] {
+    return dates
       .split(',')
       .filter(Boolean)
       .map(date => {
@@ -398,6 +397,9 @@ export class Calendar extends LitElement {
         monthOffset === -1 ? 'prev' : monthOffset === 1 ? 'next' : 'current',
       isCurrent: currentDate === this.$viewDate.getDate() && monthOffset === 0,
       isDisabled: this.isDisabled(ISOString),
+      isMarked: this.parseDates(this['marked-dates']).includes(
+        ISOString.slice(0, 10),
+      ),
       ISOString,
     };
 
@@ -416,6 +418,16 @@ export class Calendar extends LitElement {
         ) as HTMLButtonElement;
         button?.focus();
       });
+
+      this.dispatchEvent(
+        new CustomEvent(`uk-calendar:change`, {
+          detail: {
+            value: this.$active,
+          },
+          bubbles: true,
+          composed: true,
+        }),
+      );
     }
   }
 
@@ -438,7 +450,7 @@ export class Calendar extends LitElement {
       <td
         class="${day.month !== 'current' ? 'uk-cal-oom' : ''} ${isSelected
           ? 'uk-active'
-          : ''}"
+          : ''} ${day.isMarked ? 'uk-cal-marked' : ''}"
         role="gridcell"
       >
         <button
@@ -472,37 +484,50 @@ export class Calendar extends LitElement {
           ></button>
         </div>
         <div class="uk-cal-header-center">
-          <div class="uk-inline uk-cal-month-dropdown">
-            <button class="uk-btn uk-btn-default uk-btn-sm" type="button">
-              ${info.monthName}
-            </button>
-            <div class="uk-drop uk-dropdown" data-uk-dropdown="mode: click;">
-              <ul class="uk-dropdown-nav uk-nav">
-                ${months.map(
-                  (a, b) => html`
-                    <li class="${b + 1 === info.month ? 'uk-active' : ''}">
-                      <a
-                        @click="${() => this.selectMonth(b)}"
-                        class="uk-drop-close"
-                        href="#"
-                        >${a}</a
-                      >
-                    </li>
-                  `,
-                )}
-              </ul>
-            </div>
-          </div>
-          <input
-            class="uk-input uk-form-sm"
-            value="${info.year}"
-            @blur="${(e: FocusEvent) => {
-              const input = e.target as HTMLInputElement;
+          ${this.jumpable === false
+            ? html`
+                <div class="uk-cal-title uk-text-sm">
+                  ${info.monthName} ${info.year}
+                </div>
+              `
+            : html`
+                <div class="uk-inline uk-cal-month-dropdown">
+                  <button class="uk-btn uk-btn-default uk-btn-sm" type="button">
+                    ${info.monthName}
+                  </button>
+                  <div
+                    class="uk-drop uk-dropdown"
+                    data-uk-dropdown="mode: click;"
+                  >
+                    <ul class="uk-dropdown-nav uk-nav">
+                      ${months.map(
+                        (a, b) => html`
+                          <li
+                            class="${b + 1 === info.month ? 'uk-active' : ''}"
+                          >
+                            <a
+                              @click="${() => this.selectMonth(b)}"
+                              class="uk-drop-close"
+                              href="#"
+                              >${a}</a
+                            >
+                          </li>
+                        `,
+                      )}
+                    </ul>
+                  </div>
+                </div>
+                <input
+                  class="uk-input uk-form-sm"
+                  .value="${info.year.toString()}"
+                  @blur="${(e: FocusEvent) => {
+                    const input = e.target as HTMLInputElement;
 
-              this.setYear(input.value);
-            }}"
-            type="text"
-          />
+                    this.setYear(input.value);
+                  }}"
+                  type="text"
+                />
+              `}
         </div>
         <div class="uk-cal-header-l">
           <button
