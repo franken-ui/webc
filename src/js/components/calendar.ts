@@ -50,6 +50,12 @@ export class Calendar extends LitElement {
   @property({ type: String })
   max = '';
 
+  @property({ type: String })
+  value = '';
+
+  @property({ type: Boolean })
+  today = false;
+
   @property({ type: Boolean })
   jumpable = false;
 
@@ -64,13 +70,15 @@ export class Calendar extends LitElement {
   };
 
   @state()
-  private $active = this.getUTCDate(new Date()).toISOString();
+  private $active: string | undefined;
 
   private getUTCDate(date: Date): Date {
     return new Date(
       Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
     );
   }
+
+  private isDirty = false;
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -80,6 +88,18 @@ export class Calendar extends LitElement {
 
       if (typeof i18n === 'object') {
         this.$i18n = Object.assign(this.$i18n, i18n);
+      }
+    }
+
+    if (this.value) {
+      try {
+        this.$active = validateDate(this.value).toISOString();
+      } catch (e) {
+        console.error(`${this.value} has an invalid format.`);
+      }
+    } else {
+      if (this.today === true) {
+        this.$active = this.getUTCDate(new Date()).toISOString();
       }
     }
 
@@ -305,6 +325,10 @@ export class Calendar extends LitElement {
     if (day.month !== 'current') {
       this.$viewDate = new Date(day.ISOString);
     }
+
+    if (this.isDirty === false) {
+      this.isDirty = true;
+    }
   }
 
   private isDisabled(date: string): boolean {
@@ -481,7 +505,10 @@ export class Calendar extends LitElement {
         const button = this.renderRoot.querySelector(
           `button[data-iso="${this.$active}"]`,
         ) as HTMLButtonElement;
-        button?.focus();
+
+        if (button && this.isDirty === true) {
+          button.focus();
+        }
       });
 
       this.dispatchEvent(
