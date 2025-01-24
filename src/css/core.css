@@ -147,3 +147,27 @@
   left: 0;
   border-top-left-radius: var(--uk-cal-cell-radius);
 }
+
+/* INPUT TIME */
+
+.uk-input-time {
+  @apply inline-flex items-center gap-x-1;
+}
+
+.uk-input-time input {
+  @apply w-12 text-center;
+}
+
+.uk-input-time .uk-input-fake {
+  @apply w-12 justify-center;
+}
+
+.uk-input-time input[type='number']::-webkit-inner-spin-button,
+.uk-input-time input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.uk-input-time input[type='number'] {
+  -moz-appearance: textfield;
+}

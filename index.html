@@ -31,10 +31,23 @@
   </head>
   <body class="bg-background text-foreground">
     <div class="uk-container">
-      <uk-calendar
+      <uk-input-time
+        cls-custom="uk-form-sm uk-form-destructive"
+        id="time"
+        name="time"
+      ></uk-input-time>
+      <!-- <uk-calendar
         i18n='{"weekdays":"Su,Má,Þr,Mi,Hó,Fr,La","months":"Januar,Februar,Mars,April,Ma\u00ed,Juni,Juli,August,September,Oktober,November,Desember"}'
         jumpable
-      ></uk-calendar>
+      ></uk-calendar> -->
+
+      <script>
+        document
+          .getElementById('time')
+          .addEventListener('uk-input-time:input', e => {
+            console.log(e.detail);
+          });
+      </script>
     </div>
   </body>
 </html>
