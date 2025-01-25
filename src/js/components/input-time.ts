@@ -1,6 +1,6 @@
 import { LitElement, PropertyValues, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { parseOptions } from '../helpers/common';
+import { parseOptions, validateTime } from '../helpers/common';
 
 type I18N = {
   am: string;
@@ -22,6 +22,18 @@ export class InputTime extends LitElement {
   @property({ type: String })
   name: string = '';
 
+  @property({ type: Boolean })
+  now: boolean = false;
+
+  @property({ type: String })
+  value: string = '';
+
+  @property({ type: String })
+  min: string = '';
+
+  @property({ type: String })
+  max: string = '';
+
   @state()
   $i18n: I18N = {
     am: 'am',
@@ -37,20 +49,10 @@ export class InputTime extends LitElement {
   $hour: number | undefined;
 
   @state()
-  $min: number;
+  $min: number = 0;
 
   @state()
-  $meridiem: 'am' | 'pm';
-
-  constructor() {
-    super();
-
-    const date = new Date();
-
-    this.$hour = date.getHours() % 12 || 12;
-    this.$min = date.getMinutes();
-    this.$meridiem = date.getHours() < 12 ? 'am' : 'pm';
-  }
+  $meridiem: 'am' | 'pm' = 'am';
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -78,22 +80,43 @@ export class InputTime extends LitElement {
         });
       }
     }
+
+    if (this.value) {
+      try {
+        const validatedTime = validateTime(this.value);
+        const [hours, minutes] = validatedTime.split(':').map(Number);
+
+        this.$hour = hours % 12 || 12;
+        this.$min = minutes;
+        this.$meridiem = hours < 12 ? 'am' : 'pm';
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      if (this.now === true) {
+        const date = new Date();
+
+        this.$hour = date.getHours() % 12 || 12;
+        this.$min = date.getMinutes();
+        this.$meridiem = date.getHours() < 12 ? 'am' : 'pm';
+      }
+    }
   }
 
-  get $HH(): string | undefined {
+  get $HH(): string {
     if (this.$hour) {
       return this.$hour.toString().padStart(2, '0');
     }
 
-    return undefined;
+    return '00';
   }
 
-  get $MM(): string | undefined {
+  get $MM(): string {
     if (this.$min >= 0) {
       return this.$min.toString().padStart(2, '0');
     }
 
-    return undefined;
+    return '00';
   }
 
   get $value(): string {
@@ -118,20 +141,50 @@ export class InputTime extends LitElement {
       _changedProperties.has('$min') ||
       _changedProperties.has('$meridiem')
     ) {
-      this.dispatchEvent(
-        new CustomEvent('uk-input-time:input', {
-          detail: {
-            value: this.$value,
-          },
-          bubbles: true,
-          composed: true,
-        }),
-      );
+      let dispatch: string | false | undefined = this.isTimeInRange(this.$value)
+        ? this.$value
+        : false;
+
+      if (dispatch !== undefined) {
+        this.dispatchEvent(
+          new CustomEvent('uk-input-time:input', {
+            detail: {
+              value: dispatch,
+            },
+            bubbles: true,
+            composed: true,
+          }),
+        );
+      }
     }
   }
 
   protected createRenderRoot(): HTMLElement | DocumentFragment {
     return this;
+  }
+
+  private isTimeInRange(time: string): boolean {
+    if (!this.min && !this.max) {
+      return true;
+    }
+
+    try {
+      const currentTime = time;
+      const minTime = this.min ? validateTime(this.min) : null;
+      const maxTime = this.max ? validateTime(this.max) : null;
+
+      if (minTime && currentTime < minTime) {
+        return false;
+      }
+
+      if (maxTime && currentTime > maxTime) {
+        return false;
+      }
+
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   private renderInput(options: {
