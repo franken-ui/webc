@@ -1,6 +1,7 @@
 import { html, LitElement, PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { parseOptions, validateDate } from '../helpers/common';
+import { BaseCalendar } from './shared/base-calendar';
 
 interface I18N {
   weekdays: string;
@@ -20,57 +21,12 @@ interface TimeI18N {
 }
 
 @customElement('uk-input-date')
-export class InputDate extends LitElement {
-  @property({ type: Number })
-  'starts-with' = 0;
-
-  @property({ type: String })
-  'disabled-dates': string = '';
-
-  @property({ type: String })
-  'marked-dates': string = '';
-
-  @property({ type: String })
-  name: string = '';
-
-  @property({ type: String })
-  i18n: string = '';
-
-  @property({ type: String })
-  'view-date': string = new Date().toISOString().split('T')[0];
-
-  @property({ type: String })
-  'min-date': string = '';
-
-  @property({ type: String })
-  'max-date': string = '';
-
-  @property({ type: String })
-  value: string = '';
-
-  @property({ type: Boolean })
-  today: boolean = false;
-
+export class InputDate extends BaseCalendar {
   @property({ type: Boolean })
   time: boolean = false;
 
-  @property({ type: Boolean })
-  jumpable: boolean = false;
-
   @property({ type: String })
   placeholder: string = '';
-
-  @state()
-  private $i18n: I18N = {
-    weekdays: 'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
-    months:
-      'January,February,March,April,May,June,July,August,September,October,November,December',
-    am: 'am',
-    pm: 'pm',
-  };
-
-  @state()
-  private $calendarI18n: Partial<CalendarI18N> = {};
 
   @state()
   private $timeI18n: Partial<TimeI18N> = {};
@@ -86,6 +42,25 @@ export class InputDate extends LitElement {
 
   @state()
   private $t: string | undefined;
+
+  protected initializeValue(): void {
+    if (this.value) {
+      try {
+        const date = validateDate(this.value);
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+
+        this.$date = date.toISOString().slice(0, 10);
+        this.$time = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
+
+  protected getHiddenValue(): string {
+    return this.$value;
+  }
 
   get $value(): string {
     if (this.$d && this.$t) {
@@ -119,24 +94,6 @@ export class InputDate extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-
-    if (this.i18n) {
-      const i18n = parseOptions(this.i18n) as I18N;
-
-      if (typeof i18n === 'object') {
-        this.$i18n = Object.assign(this.$i18n, i18n);
-
-        this.$calendarI18n = {
-          weekdays: i18n.weekdays,
-          months: i18n.months,
-        };
-
-        this.$timeI18n = {
-          am: i18n.am,
-          pm: i18n.pm,
-        };
-      }
-    }
 
     if (this.value) {
       try {
@@ -172,12 +129,6 @@ export class InputDate extends LitElement {
     }
   }
 
-  private renderHidden() {
-    return this.name
-      ? html`<input name="${this.name}" type="hidden" value="${this.$value}" />`
-      : '';
-  }
-
   render() {
     return html`
       <div class="uk-datepicker">
@@ -191,10 +142,10 @@ export class InputDate extends LitElement {
               .starts-with="${this['starts-with']}"
               .disabled-dates="${this['disabled-dates']}"
               .marked-dates="${this['marked-dates']}"
-              .i18n="${JSON.stringify(this.$calendarI18n)}"
+              .i18n="${JSON.stringify(this.$i18n)}"
               .view-date="${this['view-date']}"
-              .min="${this['min-date']}"
-              .max="${this['max-date']}"
+              .min="${this['min']}"
+              .max="${this['max']}"
               .value="${this.$date as string}"
               .today="${this.today}"
               .jumpable="${this.jumpable}"

@@ -1,12 +1,8 @@
-import { LitElement, PropertyValues, html } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
-import { parseOptions, validateDate } from '../helpers/common';
+import { PropertyValues, html } from 'lit';
+import { customElement, state } from 'lit/decorators.js';
+import { validateDate } from '../helpers/common';
 import { repeat } from 'lit/directives/repeat.js';
-
-interface I18N {
-  weekdays: string;
-  months: string;
-}
+import { BaseCalendar } from './shared/base-calendar';
 
 interface Day {
   date: number;
@@ -17,87 +13,12 @@ interface Day {
   ISOString: string;
 }
 
-interface TimestampComponent {
-  year: number;
-  month: number;
-  monthName: string;
-  day: number;
-  dayOfWeek: number;
-  dayName: string;
-  ISOString: string;
-}
-
 @customElement('uk-calendar')
-export class Calendar extends LitElement {
-  @property({ type: Number })
-  'starts-with' = 0;
-
-  @property({ type: String })
-  'disabled-dates': string = '';
-
-  @property({ type: String })
-  'marked-dates': string = '';
-
-  @property({ type: String })
-  name: string = '';
-
-  @property({ type: String })
-  i18n: string = '';
-
-  @property({ type: String })
-  'view-date': string = new Date().toISOString().split('T')[0];
-
-  @property({ type: String })
-  min: string = '';
-
-  @property({ type: String })
-  max: string = '';
-
-  @property({ type: String })
-  value: string = '';
-
-  @property({ type: Boolean })
-  today: boolean = false;
-
-  @property({ type: Boolean })
-  jumpable: boolean = false;
-
-  @state()
-  private $viewDate: Date = new Date();
-
-  @state()
-  private $i18n: I18N = {
-    weekdays: 'Su,Mo,Tu,We,Th,Fr,Sa',
-    months:
-      'January,February,March,April,May,June,July,August,September,October,November,December',
-  };
-
+export class Calendar extends BaseCalendar {
   @state()
   private $active: string | undefined;
 
-  private getUTCDate(date: Date): Date {
-    return new Date(
-      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
-    );
-  }
-
-  private isDirty = false;
-
-  connectedCallback(): void {
-    super.connectedCallback();
-
-    if (this.i18n) {
-      const i18n = parseOptions(this.i18n) as I18N;
-
-      if (typeof i18n === 'object') {
-        this.$i18n = Object.assign(this.$i18n, i18n);
-      }
-    }
-
-    if (this['view-date']) {
-      this.$viewDate = new Date(this['view-date']);
-    }
-
+  protected initializeValue(): void {
     if (this.value) {
       try {
         const date = validateDate(this.value);
@@ -109,6 +30,14 @@ export class Calendar extends LitElement {
     } else if (this.today === true) {
       this.$active = this.getUTCDate(new Date()).toISOString();
     }
+  }
+
+  protected getHiddenValue(): string {
+    return this.$active?.slice(0, 10) as string;
+  }
+
+  connectedCallback(): void {
+    super.connectedCallback();
 
     this.addEventListener('keydown', this.navigate);
   }
@@ -117,32 +46,6 @@ export class Calendar extends LitElement {
     super.disconnectedCallback();
 
     this.removeEventListener('keydown', this.navigate);
-  }
-
-  private isDateInRange(date: string): boolean {
-    if (!this.min && !this.max) {
-      return true;
-    }
-
-    const current = new Date(date);
-
-    if (this.min) {
-      const minDate = validateDate(this.min);
-
-      if (current < minDate) {
-        return false;
-      }
-    }
-
-    if (this.max) {
-      const maxDate = validateDate(this.max);
-
-      if (current > maxDate) {
-        return false;
-      }
-    }
-
-    return true;
   }
 
   private navigate = (event: KeyboardEvent): void => {
@@ -350,7 +253,7 @@ export class Calendar extends LitElement {
       weekdays.push(weekdays.shift()!);
     }
 
-    return weekdays;
+    return weekdays.map(a => a.substring(0, 2));
   }
 
   private get calendar(): Day[][] {
@@ -368,33 +271,6 @@ export class Calendar extends LitElement {
       daysInCurrentMonth,
       daysInPrevMonth,
     });
-  }
-
-  private getTimestampComponent(date: Date): TimestampComponent {
-    return {
-      year: date.getFullYear(),
-      month: date.getMonth() + 1, // 1-12
-      monthName: date.toLocaleString('default', { month: 'long' }),
-      day: date.getDate(),
-      dayOfWeek: date.getDay(), // 0-6
-      dayName: date.toLocaleString('default', { weekday: 'long' }),
-      ISOString: date.toISOString(),
-    };
-  }
-
-  private parseDates(dates: string): string[] {
-    return dates
-      .split(',')
-      .filter(Boolean)
-      .map(date => {
-        try {
-          return validateDate(date).toISOString().slice(0, 10);
-        } catch (e) {
-          console.error(`${date} has an invalid format.`);
-          return '';
-        }
-      })
-      .filter(Boolean);
   }
 
   private getMonthInfo(year: number, month: number) {
@@ -651,16 +527,6 @@ export class Calendar extends LitElement {
         ></button>
       </div>
     `;
-  }
-
-  private renderHidden() {
-    return this.name
-      ? html`<input
-          name="${this.name}"
-          type="hidden"
-          value="${this.$active?.slice(0, 10) as string}"
-        />`
-      : '';
   }
 
   render() {
