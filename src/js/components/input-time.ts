@@ -28,6 +28,9 @@ export class InputTime extends LitElement {
   @property({ type: Boolean })
   disabled: boolean = false;
 
+  @property({ type: Boolean })
+  required: boolean = false;
+
   @property({ type: String })
   value: string = '';
 
@@ -269,7 +272,11 @@ export class InputTime extends LitElement {
           switch (state) {
             case '$hour':
               if (input.value === '') {
-                this.$hour = undefined;
+                if (this.required === false) {
+                  this.$hour = undefined;
+                } else {
+                  input.value = this.$HH;
+                }
                 return;
               }
 
