@@ -25,6 +25,9 @@ export class InputTime extends LitElement {
   @property({ type: Boolean })
   now: boolean = false;
 
+  @property({ type: Boolean })
+  disabled: boolean = false;
+
   @property({ type: String })
   value: string = '';
 
@@ -92,14 +95,12 @@ export class InputTime extends LitElement {
       } catch (error) {
         console.error(error);
       }
-    } else {
-      if (this.now === true) {
-        const date = new Date();
+    } else if (this.now === true) {
+      const date = new Date();
 
-        this.$hour = date.getHours() % 12 || 12;
-        this.$min = date.getMinutes();
-        this.$meridiem = date.getHours() < 12 ? 'am' : 'pm';
-      }
+      this.$hour = date.getHours() % 12 || 12;
+      this.$min = date.getMinutes();
+      this.$meridiem = date.getHours() < 12 ? 'am' : 'pm';
     }
   }
 
@@ -195,7 +196,24 @@ export class InputTime extends LitElement {
   }) {
     const { min, max, state, key } = options;
 
-    const value = this[state]?.toString() as string;
+    let value;
+
+    switch (state) {
+      case '$hour':
+        value =
+          this.$hour !== undefined
+            ? this.$hour.toString().padStart(2, '0')
+            : '';
+        break;
+      case '$min':
+        value =
+          this.$hour === undefined
+            ? '00'
+            : this.$min > 0
+              ? this.$min.toString().padStart(2, '0')
+              : '00';
+        break;
+    }
 
     return html`
       <input
@@ -207,8 +225,21 @@ export class InputTime extends LitElement {
         step="1"
         placeholder="${state === '$hour' ? '09' : '00'}"
         maxlength="2"
-        .value="${value}"
-        .disabled="${state !== '$hour' && this.$hour === undefined}"
+        value="${value as string}"
+        .disabled="${this.disabled ||
+        (state !== '$hour' && this.$hour === undefined)}"
+        @keydown="${(e: KeyboardEvent) => {
+          switch (state) {
+            case '$min':
+              switch (e.key) {
+                case 'ArrowDown':
+                  if (this.$min === 0) {
+                    e.preventDefault();
+                  }
+                  break;
+              }
+          }
+        }}"
         @input="${(e: KeyboardEvent) => {
           const input = e.target as HTMLInputElement;
 
@@ -303,7 +334,7 @@ export class InputTime extends LitElement {
             }
           }}"
           type="button"
-          .disabled="${this.$hour === undefined}"
+          .disabled="${this.disabled || this.$hour === undefined}"
         >
           ${this.$i18n[this.$meridiem]}
         </button>
