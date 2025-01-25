@@ -94,19 +94,21 @@ export class Calendar extends LitElement {
       }
     }
 
+    if (this['view-date']) {
+      this.$viewDate = new Date(this['view-date']);
+    }
+
     if (this.value) {
       try {
-        this.$active = validateDate(this.value).toISOString();
+        const date = validateDate(this.value);
+        this.$active = date.toISOString();
+        this.$viewDate = date;
       } catch (e) {
         console.error(`${this.value} has an invalid format.`);
       }
-    } else {
-      if (this.today === true) {
-        this.$active = this.getUTCDate(new Date()).toISOString();
-      }
+    } else if (this.today === true) {
+      this.$active = this.getUTCDate(new Date()).toISOString();
     }
-
-    this.$viewDate = new Date(this['view-date']);
 
     this.addEventListener('keydown', this.navigate);
   }
