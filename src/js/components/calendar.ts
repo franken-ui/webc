@@ -33,34 +33,37 @@ export class Calendar extends LitElement {
   'starts-with' = 0;
 
   @property({ type: String })
-  'disabled-dates' = '';
+  'disabled-dates': string = '';
 
   @property({ type: String })
-  'marked-dates' = '';
+  'marked-dates': string = '';
 
   @property({ type: String })
-  i18n = '';
+  name: string = '';
 
   @property({ type: String })
-  'view-date' = new Date().toISOString().split('T')[0];
+  i18n: string = '';
 
   @property({ type: String })
-  min = '';
+  'view-date': string = new Date().toISOString().split('T')[0];
 
   @property({ type: String })
-  max = '';
+  min: string = '';
 
   @property({ type: String })
-  value = '';
+  max: string = '';
+
+  @property({ type: String })
+  value: string = '';
 
   @property({ type: Boolean })
-  today = false;
+  today: boolean = false;
 
   @property({ type: Boolean })
-  jumpable = false;
+  jumpable: boolean = false;
 
   @state()
-  private $viewDate = new Date();
+  private $viewDate: Date = new Date();
 
   @state()
   private $i18n: I18N = {
@@ -514,7 +517,7 @@ export class Calendar extends LitElement {
       this.dispatchEvent(
         new CustomEvent(`uk-calendar:change`, {
           detail: {
-            value: this.$active,
+            value: this.$active?.slice(0, 10),
           },
           bubbles: true,
           composed: true,
@@ -648,6 +651,16 @@ export class Calendar extends LitElement {
     `;
   }
 
+  private renderHidden() {
+    return this.name
+      ? html`<input
+          name="${this.name}"
+          type="hidden"
+          value="${this.$active?.slice(0, 10) as string}"
+        />`
+      : '';
+  }
+
   render() {
     return html`
       <div class="uk-cal" role="application">
@@ -670,6 +683,7 @@ export class Calendar extends LitElement {
             )}
           </tbody>
         </table>
+        ${this.renderHidden()}
       </div>
     `;
   }
