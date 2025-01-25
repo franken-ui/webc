@@ -9,10 +9,18 @@
   --uk-cal-cell-radius: var(--uk-global-radius);
   --uk-cal-cell-header-font-size: var(--uk-global-font-size-s);
   --uk-cal-cell-body-font-size: var(--uk-global-font-size);
+
+  --uk-datepicker-spacing: 0.75rem;
 }
 
-.uk-datepicker-cal {
-  @apply p-3;
+.uk-datepicker-dropdown {
+  padding: var(--uk-datepicker-spacing);
+}
+
+.uk-datepicker-time {
+  margin-top: var(--uk-datepicker-spacing);
+
+  @apply flex justify-center;
 }
 
 .uk-cal {
