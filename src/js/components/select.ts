@@ -282,7 +282,7 @@ export class Select extends BaseSelect {
     index: number;
   }) {
     if (this.$selected.includes(options.item.value)) {
-      return html`<uk-icon class="uk-cs-check" icon="check"></uk-icon>`;
+      return html`<span class="uk-cs-check" data-uk-check></span>`;
     }
   }
 
@@ -334,7 +334,10 @@ export class Select extends BaseSelect {
           ${this.text}
           ${this._icon === true
             ? html`
-                <span class="${this.$cls['icon']}" uk-drop-parent-icon></span>
+                <span
+                  class="${this.$cls['icon']}"
+                  data-uk-drop-parent-icon
+                ></span>
               `
             : this.icon !== ''
               ? html`

@@ -77,3 +77,25 @@ export function id(length = 5) {
     characters.charAt(Math.floor(Math.random() * characters.length)),
   ).join('');
 }
+
+export function validateDate(value: string) {
+  if (/^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2})?$/.test(value)) {
+    let date = new Date(value);
+
+    if (isNaN(date.getTime())) {
+      throw new Error('Invalid date');
+    }
+
+    return date;
+  }
+
+  throw new Error('Invalid format');
+}
+
+export function validateTime(value: string) {
+  if (!/^([01]\d|2[0-3]):([0-5]\d)$/.test(value)) {
+    throw new Error('Invalid time format. Use HH:MM (24-hour format)');
+  }
+
+  return value;
+}
