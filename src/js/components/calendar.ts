@@ -13,10 +13,19 @@ interface Day {
   ISOString: string;
 }
 
+interface Cls extends Record<string, string> {
+  calendar: string;
+}
+
 @customElement('uk-calendar')
 export class Calendar extends BaseCalendar {
   @state()
   private $active: string | undefined;
+
+  @state()
+  protected $cls: Cls = {
+    calendar: '',
+  };
 
   protected initializeValue(): void {
     if (this.value) {
@@ -38,6 +47,8 @@ export class Calendar extends BaseCalendar {
 
   connectedCallback(): void {
     super.connectedCallback();
+
+    this.initializeCls();
 
     this.addEventListener('keydown', this.navigate);
   }
@@ -247,7 +258,7 @@ export class Calendar extends BaseCalendar {
   }
 
   private getWeekdays(): string[] {
-    const weekdays = this.$i18n.weekdays.split(',');
+    const weekdays = this.locales.weekdays as string[];
 
     if (this['starts-with'] === 1) {
       weekdays.push(weekdays.shift()!);
@@ -442,7 +453,7 @@ export class Calendar extends BaseCalendar {
   }
 
   private renderJumper() {
-    const months = this.$i18n.months.split(',');
+    const months = this.locales.months as string[];
     const info = this.getTimestampComponent(this.$viewDate);
 
     return html`
@@ -453,14 +464,14 @@ export class Calendar extends BaseCalendar {
         <div class="uk-drop uk-dropdown" data-uk-dropdown="mode: click;">
           <ul class="uk-dropdown-nav uk-nav">
             ${months.map(
-              (a, b) => html`
+              (_, b) => html`
                 <li
                   class="uk-cal-month-dropdown-item ${b + 1 === info.month
                     ? 'uk-active'
                     : ''}"
                 >
-                  <a @click="${() => this.selectMonth(b)}" href="#">
-                    ${a}
+                  <a @click="${() => this.selectMonth(b)}">
+                    ${months[b]}
                     ${b + 1 === info.month
                       ? html`<span data-uk-check></span>`
                       : ''}
@@ -506,23 +517,21 @@ export class Calendar extends BaseCalendar {
           class="uk-btn uk-btn-default uk-btn-sm uk-btn-icon"
           @click=${() => this.navigateMonth('prev')}
           type="button"
-          href="#"
           data-uk-pgn-previous
         ></button>
         <div class="uk-cal-jumper">
-          ${this.jumpable === false
-            ? html`
+          ${this.jumpable && !this.min && !this.max
+            ? this.renderJumper()
+            : html`
                 <div class="uk-cal-title uk-text-sm">
                   ${info.monthName} ${info.year}
                 </div>
-              `
-            : this.renderJumper()}
+              `}
         </div>
         <button
           class="uk-btn uk-btn-default uk-btn-sm uk-btn-icon"
           @click=${() => this.navigateMonth('next')}
           type="button"
-          href="#"
           data-uk-pgn-next
         ></button>
       </div>
@@ -531,7 +540,7 @@ export class Calendar extends BaseCalendar {
 
   render() {
     return html`
-      <div class="uk-cal" role="application">
+      <div class="uk-cal ${this.$cls['calendar']}" role="application">
         ${this.renderHeader()}
         <table role="grid" aria-label="Calendar">
           <thead>

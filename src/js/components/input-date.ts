@@ -1,35 +1,35 @@
-import { html, LitElement, PropertyValues } from 'lit';
+import { html, PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { parseOptions, validateDate } from '../helpers/common';
+import { validateDate } from '../helpers/common';
 import { BaseCalendar } from './shared/base-calendar';
 
-interface I18N {
-  weekdays: string;
-  months: string;
-  am: string;
-  pm: string;
-}
-
-interface CalendarI18N {
-  weekdays: string;
-  months: string;
-}
-
-interface TimeI18N {
-  am: string;
-  pm: string;
+interface Cls extends Record<string, string> {
+  button: string;
+  icon: string;
+  dropdown: string;
+  calendar: string;
+  time: string;
 }
 
 @customElement('uk-input-date')
 export class InputDate extends BaseCalendar {
   @property({ type: Boolean })
-  time: boolean = false;
+  'with-time': boolean = false;
+
+  @property({ type: Boolean })
+  'require-time': boolean = false;
+
+  @property({ type: Boolean })
+  disabled: boolean = false;
+
+  @property({ type: String })
+  drop: string = 'mode: click';
+
+  @property({ type: String })
+  icon: string = '';
 
   @property({ type: String })
   placeholder: string = '';
-
-  @state()
-  private $timeI18n: Partial<TimeI18N> = {};
 
   @state()
   private $date: string | undefined;
@@ -42,6 +42,17 @@ export class InputDate extends BaseCalendar {
 
   @state()
   private $t: string | undefined;
+
+  @state()
+  protected $cls: Cls = {
+    button: '',
+    icon: '',
+    dropdown: 'uk-datepicker-dropdown',
+    calendar: '',
+    time: '',
+  };
+
+  private _icon: boolean | string = false;
 
   protected initializeValue(): void {
     if (this.value) {
@@ -85,7 +96,7 @@ export class InputDate extends BaseCalendar {
 
     let text = 'Select a date';
 
-    if (this.time === true) {
+    if (this['with-time'] === true) {
       text += ' and time';
     }
 
@@ -107,6 +118,18 @@ export class InputDate extends BaseCalendar {
         console.error(error);
       }
     }
+
+    if (this.hasAttribute('icon')) {
+      const icon = this.getAttribute('icon');
+
+      if (icon === '') {
+        this._icon = true;
+      } else {
+        this._icon = icon as string;
+      }
+    }
+
+    this.initializeCls('button');
   }
 
   protected createRenderRoot(): HTMLElement | DocumentFragment {
@@ -120,7 +143,7 @@ export class InputDate extends BaseCalendar {
         this.$d = e.detail.value;
       });
 
-    if (this.time === true) {
+    if (this['with-time'] === true) {
       this.renderRoot
         .querySelector('uk-input-time')
         ?.addEventListener('uk-input-time:input', (e: any) => {
@@ -133,10 +156,31 @@ export class InputDate extends BaseCalendar {
     return html`
       <div class="uk-datepicker">
         <div class="uk-position-relative">
-          <button class="uk-input-fake">${this.$text}</button>
+          <button
+            class="${this.$cls['button']}"
+            type="button"
+            .disabled=${this.disabled}
+          >
+            ${this.$text}
+            ${this._icon === true
+              ? html`
+                  <span
+                    class="${this.$cls['icon']}"
+                    data-uk-drop-parent-icon
+                  ></span>
+                `
+              : this.icon !== ''
+                ? html`
+                    <uk-icon
+                      class="${this.$cls['icon']}"
+                      icon="${this.icon}"
+                    ></uk-icon>
+                  `
+                : ''}
+          </button>
           <div
-            class="uk-drop uk-datepicker-dropdown"
-            data-uk-dropdown="mode: click"
+            class="uk-drop ${this.$cls['dropdown']}"
+            data-uk-dropdown="${this.drop}"
           >
             <uk-calendar
               .starts-with="${this['starts-with']}"
@@ -151,13 +195,13 @@ export class InputDate extends BaseCalendar {
               .jumpable="${this.jumpable}"
             ></uk-calendar>
 
-            ${this.time
+            ${this['with-time']
               ? html`
                   <div class="uk-datepicker-time">
                     <uk-input-time
                       now
-                      required
-                      .i18n="${JSON.stringify(this.$timeI18n)}"
+                      .required=${this['require-time']}
+                      .i18n="${JSON.stringify(this.$i18n)}"
                       .value="${this.$time as string}"
                     ></uk-input-time>
                   </div>

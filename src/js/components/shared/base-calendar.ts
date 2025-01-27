@@ -2,12 +2,10 @@ import { LitElement, html } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { parseOptions, validateDate } from '../../helpers/common';
 
-export interface BaseI18N {
-  weekdays: string;
-  months: string;
-}
-
 export abstract class BaseCalendar extends LitElement {
+  @property({ type: String })
+  'cls-custom': string = '';
+
   @property({ type: Boolean })
   today: boolean = false;
 
@@ -42,16 +40,53 @@ export abstract class BaseCalendar extends LitElement {
   value: string = '';
 
   @state()
+  protected $cls: { [key: string]: string } = {};
+
+  @state()
   protected $viewDate: Date = new Date();
 
   @state()
-  protected $i18n: BaseI18N = {
+  protected $i18n: {
+    [key: string]: string;
+  } = {
     weekdays: 'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
     months:
       'January,February,March,April,May,June,July,August,September,October,November,December',
   };
 
   protected isDirty = false;
+
+  protected get locales() {
+    const i18n: { [key: string]: string | string[] } = {};
+
+    Object.keys(this.$i18n).forEach(a => {
+      i18n[a] = this.$i18n[a].includes(',')
+        ? this.$i18n[a].split(',').map(a => a.trim())
+        : this.$i18n[a];
+    });
+
+    return i18n;
+  }
+
+  protected initializeCls(_def = 'calendar'): void {
+    if (this['cls-custom']) {
+      const cls = parseOptions(this['cls-custom']) as
+        | { [key: string]: string }
+        | string;
+
+      if (typeof cls === 'string') {
+        this.$cls[_def] = cls;
+      } else {
+        Object.keys(this.$cls).forEach(a => {
+          const key = a;
+
+          if (cls[key]) {
+            this.$cls[key] = cls[key];
+          }
+        });
+      }
+    }
+  }
 
   protected getUTCDate(date: Date): Date {
     return new Date(
@@ -91,7 +126,7 @@ export abstract class BaseCalendar extends LitElement {
       .filter(Boolean)
       .map(date => {
         try {
-          return validateDate(date).toISOString().slice(0, 10);
+          return validateDate(date.trim()).toISOString().slice(0, 10);
         } catch (e) {
           console.error(`${date} has an invalid format.`);
           return '';
@@ -112,10 +147,12 @@ export abstract class BaseCalendar extends LitElement {
     return {
       year: date.getFullYear(),
       month: date.getMonth() + 1,
-      monthName: date.toLocaleString('default', { month: 'long' }),
+      monthName: this.$i18n['months'].split(',')[date.getMonth()],
+      // monthName: date.toLocaleString('default', { month: 'long' }),
       day: date.getDate(),
       dayOfWeek: date.getDay(),
-      dayName: date.toLocaleString('default', { weekday: 'long' }),
+      dayName: this.$i18n['weekdays'][date.getMonth()],
+      // dayName: date.toLocaleString('default', { weekday: 'long' }),
       ISOString: date.toISOString(),
     };
   }
@@ -124,7 +161,7 @@ export abstract class BaseCalendar extends LitElement {
     super.connectedCallback();
 
     if (this.i18n) {
-      const i18n = parseOptions(this.i18n) as BaseI18N;
+      const i18n = parseOptions(this.i18n);
 
       if (typeof i18n === 'object') {
         this.$i18n = Object.assign(this.$i18n, i18n);
