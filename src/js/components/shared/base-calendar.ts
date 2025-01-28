@@ -1,11 +1,8 @@
-import { LitElement, html } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { parseOptions, validateDate } from '../../helpers/common';
+import { Input } from './input';
 
-export abstract class BaseCalendar extends LitElement {
-  @property({ type: String })
-  'cls-custom': string = '';
-
+export abstract class BaseCalendar extends Input {
   @property({ type: Boolean })
   today: boolean = false;
 
@@ -22,12 +19,6 @@ export abstract class BaseCalendar extends LitElement {
   'marked-dates': string = '';
 
   @property({ type: String })
-  name: string = '';
-
-  @property({ type: String })
-  i18n: string = '';
-
-  @property({ type: String })
   'view-date': string = new Date().toISOString().split('T')[0];
 
   @property({ type: String })
@@ -35,12 +26,6 @@ export abstract class BaseCalendar extends LitElement {
 
   @property({ type: String })
   max: string = '';
-
-  @property({ type: String })
-  value: string = '';
-
-  @state()
-  protected $cls: { [key: string]: string } = {};
 
   @state()
   protected $viewDate: Date = new Date();
@@ -55,38 +40,6 @@ export abstract class BaseCalendar extends LitElement {
   };
 
   protected isDirty = false;
-
-  protected get locales() {
-    const i18n: { [key: string]: string | string[] } = {};
-
-    Object.keys(this.$i18n).forEach(a => {
-      i18n[a] = this.$i18n[a].includes(',')
-        ? this.$i18n[a].split(',').map(a => a.trim())
-        : this.$i18n[a];
-    });
-
-    return i18n;
-  }
-
-  protected initializeCls(_def = 'calendar'): void {
-    if (this['cls-custom']) {
-      const cls = parseOptions(this['cls-custom']) as
-        | { [key: string]: string }
-        | string;
-
-      if (typeof cls === 'string') {
-        this.$cls[_def] = cls;
-      } else {
-        Object.keys(this.$cls).forEach(a => {
-          const key = a;
-
-          if (cls[key]) {
-            this.$cls[key] = cls[key];
-          }
-        });
-      }
-    }
-  }
 
   protected getUTCDate(date: Date): Date {
     return new Date(
@@ -176,20 +129,4 @@ export abstract class BaseCalendar extends LitElement {
   }
 
   protected abstract initializeValue(): void;
-
-  protected createRenderRoot(): HTMLElement | DocumentFragment {
-    return this;
-  }
-
-  protected renderHidden() {
-    return this.name
-      ? html`<input
-          name="${this.name}"
-          type="hidden"
-          value="${this.getHiddenValue()}"
-        />`
-      : '';
-  }
-
-  protected abstract getHiddenValue(): string;
 }

@@ -19,6 +19,10 @@ interface Cls extends Record<string, string> {
 
 @customElement('uk-calendar')
 export class Calendar extends BaseCalendar {
+  protected 'cls-default-element' = 'calendar';
+
+  protected 'input-event' = 'uk-calendar:change';
+
   @state()
   private $active: string | undefined;
 
@@ -26,6 +30,18 @@ export class Calendar extends BaseCalendar {
   protected $cls: Cls = {
     calendar: '',
   };
+
+  protected get $value(): string {
+    if (this.$active) {
+      return this.$active.slice(0, 10);
+    }
+
+    return '';
+  }
+
+  protected get $text(): string {
+    return '';
+  }
 
   protected initializeValue(): void {
     if (this.value) {
@@ -41,14 +57,8 @@ export class Calendar extends BaseCalendar {
     }
   }
 
-  protected getHiddenValue(): string {
-    return this.$active?.slice(0, 10) as string;
-  }
-
   connectedCallback(): void {
     super.connectedCallback();
-
-    this.initializeCls();
 
     this.addEventListener('keydown', this.navigate);
   }
@@ -217,27 +227,6 @@ export class Calendar extends BaseCalendar {
     };
   }
 
-  // private getButtonAtPosition(
-  //   rowIndex: number,
-  //   colIndex: number,
-  // ): HTMLButtonElement | undefined {
-  //   const row = this.querySelectorAll('tr')[rowIndex];
-  //   return row?.children[colIndex]?.querySelector(
-  //     'button',
-  //   ) as HTMLButtonElement;
-  // }
-
-  // private getRowFirstButton(rowIndex: number): HTMLButtonElement | undefined {
-  //   const row = this.querySelectorAll('tr')[rowIndex];
-  //   return row?.querySelector('button') as HTMLButtonElement;
-  // }
-
-  // private getRowLastButton(rowIndex: number): HTMLButtonElement | undefined {
-  //   const row = this.querySelectorAll('tr')[rowIndex];
-  //   const buttons = row?.querySelectorAll('button');
-  //   return buttons?.[buttons.length - 1] as HTMLButtonElement;
-  // }
-
   private select(day: Day): void {
     this.$active = day.ISOString;
 
@@ -258,7 +247,7 @@ export class Calendar extends BaseCalendar {
   }
 
   private getWeekdays(): string[] {
-    const weekdays = this.locales.weekdays as string[];
+    const weekdays = this.$locales.weekdays as string[];
 
     if (this['starts-with'] === 1) {
       weekdays.push(weekdays.shift()!);
@@ -387,10 +376,6 @@ export class Calendar extends BaseCalendar {
     return { day, date, prevMonthStartDate };
   }
 
-  protected createRenderRoot(): HTMLElement | DocumentFragment {
-    return this;
-  }
-
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has('$active')) {
       this.updateComplete.then(() => {
@@ -403,15 +388,7 @@ export class Calendar extends BaseCalendar {
         }
       });
 
-      this.dispatchEvent(
-        new CustomEvent(`uk-calendar:change`, {
-          detail: {
-            value: this.$active?.slice(0, 10),
-          },
-          bubbles: true,
-          composed: true,
-        }),
-      );
+      this.emit();
     }
   }
 
@@ -453,7 +430,7 @@ export class Calendar extends BaseCalendar {
   }
 
   private renderJumper() {
-    const months = this.locales.months as string[];
+    const months = this.$locales.months as string[];
     const info = this.getTimestampComponent(this.$viewDate);
 
     return html`

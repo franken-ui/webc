@@ -13,23 +13,21 @@ interface Cls extends Record<string, string> {
 
 @customElement('uk-input-date')
 export class InputDate extends BaseCalendar {
+  protected 'cls-default-element' = 'button';
+
+  protected 'input-event' = 'uk-input-date:input';
+
   @property({ type: Boolean })
   'with-time': boolean = false;
 
   @property({ type: Boolean })
   'require-time': boolean = false;
 
-  @property({ type: Boolean })
-  disabled: boolean = false;
-
   @property({ type: String })
   drop: string = 'mode: click';
 
   @property({ type: String })
   icon: string = '';
-
-  @property({ type: String })
-  placeholder: string = '';
 
   @state()
   private $date: string | undefined;
@@ -69,11 +67,7 @@ export class InputDate extends BaseCalendar {
     }
   }
 
-  protected getHiddenValue(): string {
-    return this.$value;
-  }
-
-  get $value(): string {
+  protected get $value(): string {
     if (this.$d && this.$t) {
       return `${this.$d}T${this.$t}`;
     }
@@ -106,19 +100,6 @@ export class InputDate extends BaseCalendar {
   connectedCallback(): void {
     super.connectedCallback();
 
-    if (this.value) {
-      try {
-        const date = validateDate(this.value);
-        const hours = date.getHours();
-        const minutes = date.getMinutes();
-
-        this.$date = date.toISOString().slice(0, 10);
-        this.$time = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
     if (this.hasAttribute('icon')) {
       const icon = this.getAttribute('icon');
 
@@ -128,12 +109,6 @@ export class InputDate extends BaseCalendar {
         this._icon = icon as string;
       }
     }
-
-    this.initializeCls('button');
-  }
-
-  protected createRenderRoot(): HTMLElement | DocumentFragment {
-    return this;
   }
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
@@ -164,10 +139,7 @@ export class InputDate extends BaseCalendar {
             ${this.$text}
             ${this._icon === true
               ? html`
-                  <span
-                    class="${this.$cls['icon']}"
-                    data-uk-drop-parent-icon
-                  ></span>
+                  <span class="${this.$cls['icon']}" data-uk-calendar></span>
                 `
               : this.icon !== ''
                 ? html`
