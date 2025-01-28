@@ -1,7 +1,8 @@
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { parseOptions } from '../helpers/common';
 import slugify from 'slugify';
+import { Input } from './shared/input';
 
 type SlugOptions = {
   replacement: string;
@@ -17,24 +18,16 @@ type Cls = {
 };
 
 @customElement('uk-input-tag')
-export class InputTag extends LitElement {
-  @property({ type: String })
-  'cls-custom': string = '';
+export class InputTag extends Input {
+  protected 'cls-default-element' = 'div';
 
-  @property({ type: Boolean })
-  disabled: boolean = false;
+  protected 'input-event' = 'uk-input-tag:input';
 
   @property({ type: Number })
   maxlength: number = 20;
 
   @property({ type: Number })
   minlength: number = 1;
-
-  @property({ type: String })
-  name: string = '';
-
-  @property({ type: String })
-  placeholder: string = '';
 
   @property({ type: Boolean })
   slugify: boolean = false;
@@ -44,9 +37,6 @@ export class InputTag extends LitElement {
 
   @property({ type: String })
   state: 'primary' | 'secondary' | 'destructive' = 'secondary';
-
-  @property({ type: String })
-  value: string = '';
 
   @state()
   $cls: Cls = {
@@ -65,33 +55,15 @@ export class InputTag extends LitElement {
   @state()
   $tags: string[] = [];
 
-  connectedCallback(): void {
-    super.connectedCallback();
-
-    this.initializeDefaults();
-
-    if (this['cls-custom']) {
-      const cls = parseOptions(this['cls-custom']) as Cls | string;
-
-      if (typeof cls === 'string') {
-        this.$cls['div'] = cls;
-      } else {
-        Object.keys(this.$cls).forEach(a => {
-          const key = a as 'div';
-
-          if (cls[key]) {
-            this.$cls[key] = cls[key];
-          }
-        });
-      }
-    }
+  get $value(): string[] {
+    return this.$tags;
   }
 
-  protected createRenderRoot(): HTMLElement | DocumentFragment {
-    return this;
+  get $text(): string {
+    return '';
   }
 
-  private initializeDefaults() {
+  protected initializeValue() {
     this.$tags = this.value === '' ? [] : this.value.split(',');
 
     if (this['slugify-options']) {
@@ -137,13 +109,7 @@ export class InputTag extends LitElement {
       this.$input = '';
     }
 
-    this.dispatchEvent(
-      new CustomEvent('uk-input-tag:input', {
-        detail: { value: this.$tags },
-        bubbles: true,
-        composed: true,
-      }),
-    );
+    this.emit();
   }
 
   render() {
@@ -215,16 +181,7 @@ export class InputTag extends LitElement {
           .maxLength=${this.maxlength}
           .value=${this.$input}
         />
-
-        ${this.name
-          ? html`
-              ${this.$tags.map(
-                tag => html`
-                  <input name="${this.name}[]" type="hidden" value="${tag}" />
-                `,
-              )}
-            `
-          : ''}
+        ${this.renderHidden()}
       </div>
     `;
   }
