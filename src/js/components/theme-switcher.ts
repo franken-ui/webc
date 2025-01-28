@@ -1,30 +1,17 @@
-import { LitElement, PropertyValues, html } from 'lit';
+import { PropertyValues, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
-
-type OptionItemData = { key: string; [key: string]: any };
-
-type OptionItem = {
-  value: string;
-  text: string;
-  disabled: boolean;
-  selected: boolean;
-  data: OptionItemData;
-};
-
-type Option = {
-  [key: string]: {
-    text: string;
-    options: OptionItem[];
-  };
-};
+import { OptionItem, OptionItemGrouped, selectToJson } from '../helpers/common';
+import { Base } from './shared/base';
 
 type Config = {
   [key: string]: string;
 };
 
 @customElement('uk-theme-switcher')
-export class ThemeSwitcher extends LitElement {
+export class ThemeSwitcher extends Base {
+  protected 'cls-default-element' = 'div';
+
   @state()
   $config: Config = {};
 
@@ -33,9 +20,9 @@ export class ThemeSwitcher extends LitElement {
 
   private HTMLSelect: HTMLSelectElement | null = null;
 
-  private _options: Option = {};
+  private keys: OptionItemGrouped = {};
 
-  private _rendered: boolean = false;
+  private isRendered: boolean = false;
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -52,69 +39,15 @@ export class ThemeSwitcher extends LitElement {
 
     this.HTMLSelect = this.renderRoot.querySelector('select');
 
-    if (this.HTMLSelect) {
-      this.createOptions();
-    }
-  }
-
-  protected createOptions() {
-    if (this._rendered === true) {
-      return;
-    }
-
-    if (this.HTMLSelect) {
-      const add = (
-        group: string,
-        option: HTMLOptionElement,
-        isOptGroupDisabled?: boolean | undefined,
-      ) => {
-        let value: string | undefined;
-
-        if (option.hasAttribute('value')) {
-          value = option.getAttribute('value') as string;
-        } else {
-          value = option.textContent as string;
-        }
-
-        const data: OptionItemData = { key: group };
-
-        Object.keys(option.dataset).forEach(attr => {
-          data[attr] = option.dataset[attr];
-        });
-
-        (this._options[group]['options'] =
-          this._options[group]['options'] || []).push({
-          value: value,
-          text: option.textContent as string,
-          disabled: isOptGroupDisabled === true ? true : option.disabled,
-          selected: option.hasAttribute('selected'),
-          data: data,
-        });
-      };
-
-      Array.from(this.HTMLSelect.children).map(a => {
-        if (a.nodeName === 'OPTGROUP') {
-          const z = a as HTMLOptGroupElement;
-          const key = z.dataset['key'];
-
-          if (key) {
-            this._options[key] = {
-              text: z.getAttribute('label') as string,
-              options: [],
-            };
-
-            Array.from(z.children).map(b => {
-              const option = b as HTMLOptionElement;
-              add(key, option, z.disabled);
-            });
-          }
-        }
-      });
+    if (this.HTMLSelect && this.isRendered === false) {
+      this.keys = selectToJson(
+        this.HTMLSelect as HTMLSelectElement,
+      ) as OptionItemGrouped;
     }
   }
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
-    this._rendered = true;
+    this.isRendered = true;
   }
 
   protected updated(_changedProperties: PropertyValues): void {
@@ -131,10 +64,6 @@ export class ThemeSwitcher extends LitElement {
         }),
       );
     }
-  }
-
-  protected createRenderRoot(): HTMLElement | DocumentFragment {
-    return this;
   }
 
   private setKey(key: string, value: string) {
@@ -166,7 +95,7 @@ export class ThemeSwitcher extends LitElement {
   }
 
   private renderKeys(item: OptionItem) {
-    const key = item.data.key;
+    const key = item.group as string;
 
     return html`
       <button
@@ -178,7 +107,7 @@ export class ThemeSwitcher extends LitElement {
             ? 'uk-active'
             : ''}"
         @click="${() => {
-          this.setKey(item.data.key, item.value);
+          this.setKey(item.group as string, item.value);
 
           this.$config[key] = item.value;
 
@@ -202,16 +131,16 @@ export class ThemeSwitcher extends LitElement {
 
   render() {
     return html`
-      <div class="uk-ts">
-        ${Object.keys(this._options).map(
+      <div class="uk-ts ${this.$cls['div']}">
+        ${Object.keys(this.keys).map(
           a => html`
             <div class="uk-ts-key">
-              <div class="uk-form-label">${this._options[a].text}</div>
+              <div class="uk-form-label">${this.keys[a].text}</div>
               <div class="uk-ts-value">
                 ${repeat(
-                  this._options[a].options,
+                  this.keys[a].options,
                   _ => _,
-                  (item: OptionItem) => this.renderKeys(item),
+                  item => this.renderKeys(item),
                 )}
               </div>
             </div>
