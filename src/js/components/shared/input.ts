@@ -3,11 +3,17 @@ import { property } from 'lit/decorators.js';
 import { Base } from './base';
 
 export abstract class Input extends Base {
+  @property({ type: Boolean })
+  disabled: boolean = false;
+
   @property({ type: String })
   name: string = '';
 
   @property({ type: String })
   placeholder: string = '';
+
+  @property({ type: Boolean })
+  required: boolean = false;
 
   @property({ type: String })
   value: string = '';
@@ -46,5 +52,5 @@ export abstract class Input extends Base {
 
   protected abstract 'input-event': string;
 
-  protected abstract initializeValue(): boolean;
+  protected abstract initializeValue(): void;
 }

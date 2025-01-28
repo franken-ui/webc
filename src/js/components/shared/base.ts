@@ -15,19 +15,19 @@ export abstract class Base extends LitElement {
   @state()
   protected $cls: { [key: string]: string } = {};
 
-  protected get locales() {
-    const i18n: { [key: string]: string | string[] } = {};
+  protected get $locales() {
+    const locales: { [key: string]: string | string[] } = {};
 
     Object.keys(this.$i18n).forEach(a => {
-      i18n[a] = this.$i18n[a].includes(',')
+      locales[a] = this.$i18n[a].includes(',')
         ? this.$i18n[a].split(',').map(a => a.trim())
         : this.$i18n[a];
     });
 
-    return i18n;
+    return locales;
   }
 
-  protected initializeCls(): void {
+  private initializeCls(): void {
     if (this['cls-custom']) {
       const cls = parseOptions(this['cls-custom']) as
         | { [key: string]: string }
@@ -47,10 +47,21 @@ export abstract class Base extends LitElement {
     }
   }
 
+  private initializeI18n(): void {
+    if (this.i18n) {
+      const i18n = parseOptions(this.i18n);
+
+      if (typeof i18n === 'object') {
+        this.$i18n = Object.assign(this.$i18n, i18n);
+      }
+    }
+  }
+
   connectedCallback(): void {
     super.connectedCallback();
 
     this.initializeCls();
+    this.initializeI18n();
   }
 
   protected createRenderRoot(): HTMLElement | DocumentFragment {
