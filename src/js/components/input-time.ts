@@ -1,6 +1,7 @@
-import { LitElement, PropertyValues, html } from 'lit';
+import { PropertyValues, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { parseOptions, validateTime } from '../helpers/common';
+import { validateTime } from '../helpers/common';
+import { Input } from './shared/input';
 
 type I18N = {
   am: string;
@@ -12,27 +13,13 @@ type Cls = {
 };
 
 @customElement('uk-input-time')
-export class InputTime extends LitElement {
-  @property({ type: String })
-  'cls-custom': string = '';
+export class InputTime extends Input {
+  protected 'cls-default-element' = 'input';
 
-  @property({ type: String })
-  i18n: string = '';
-
-  @property({ type: String })
-  name: string = '';
+  protected 'input-event' = 'uk-input-time:input';
 
   @property({ type: Boolean })
   now: boolean = false;
-
-  @property({ type: Boolean })
-  disabled: boolean = false;
-
-  @property({ type: Boolean })
-  required: boolean = false;
-
-  @property({ type: String })
-  value: string = '';
 
   @property({ type: String })
   min: string = '';
@@ -60,33 +47,7 @@ export class InputTime extends LitElement {
   @state()
   $meridiem: 'am' | 'pm' = 'am';
 
-  connectedCallback(): void {
-    super.connectedCallback();
-
-    if (this.i18n) {
-      const i18n = parseOptions(this.i18n) as I18N;
-
-      if (typeof i18n === 'object') {
-        this.$i18n = Object.assign(this.$i18n, i18n);
-      }
-    }
-
-    if (this['cls-custom']) {
-      const cls = parseOptions(this['cls-custom']) as Cls | string;
-
-      if (typeof cls === 'string') {
-        this.$cls['input'] = cls;
-      } else {
-        Object.keys(this.$cls).forEach(a => {
-          const key = a as 'input';
-
-          if (cls[key]) {
-            this.$cls[key] = cls[key];
-          }
-        });
-      }
-    }
-
+  protected initializeValue() {
     if (this.value) {
       try {
         const validatedTime = validateTime(this.value);
@@ -124,6 +85,8 @@ export class InputTime extends LitElement {
   }
 
   get $value(): string {
+    let value = '';
+
     if (this.$hour) {
       let hour = this.$hour;
 
@@ -133,10 +96,18 @@ export class InputTime extends LitElement {
         hour = this.$hour === 12 ? 0 : this.$hour;
       }
 
-      return `${hour.toString().padStart(2, '0')}:${this.$min.toString().padStart(2, '0')}`;
+      value = `${hour.toString().padStart(2, '0')}:${this.$min.toString().padStart(2, '0')}`;
     }
 
+    return value;
+  }
+
+  get $text(): string {
     return '';
+  }
+
+  protected createRenderRoot(): HTMLElement | DocumentFragment {
+    return this;
   }
 
   protected updated(_changedProperties: PropertyValues): void {
@@ -145,49 +116,7 @@ export class InputTime extends LitElement {
       _changedProperties.has('$min') ||
       _changedProperties.has('$meridiem')
     ) {
-      let dispatch: string | false | undefined = this.isTimeInRange(this.$value)
-        ? this.$value
-        : false;
-
-      if (dispatch !== undefined) {
-        this.dispatchEvent(
-          new CustomEvent('uk-input-time:input', {
-            detail: {
-              value: dispatch,
-            },
-            bubbles: true,
-            composed: true,
-          }),
-        );
-      }
-    }
-  }
-
-  protected createRenderRoot(): HTMLElement | DocumentFragment {
-    return this;
-  }
-
-  private isTimeInRange(time: string): boolean {
-    if (!this.min && !this.max) {
-      return true;
-    }
-
-    try {
-      const currentTime = time;
-      const minTime = this.min ? validateTime(this.min) : null;
-      const maxTime = this.max ? validateTime(this.max) : null;
-
-      if (minTime && currentTime < minTime) {
-        return false;
-      }
-
-      if (maxTime && currentTime > maxTime) {
-        return false;
-      }
-
-      return true;
-    } catch {
-      return false;
+      this.emit();
     }
   }
 
@@ -303,12 +232,6 @@ export class InputTime extends LitElement {
     `;
   }
 
-  private renderHidden() {
-    return this.name
-      ? html`<input name="${this.name}" type="hidden" value="${this.$value}" />`
-      : '';
-  }
-
   render() {
     return html`
       <div class="uk-input-time">
@@ -343,7 +266,7 @@ export class InputTime extends LitElement {
           type="button"
           .disabled="${this.disabled || this.$hour === undefined}"
         >
-          ${this.$i18n[this.$meridiem]}
+          ${this.$locales[this.$meridiem]}
         </button>
         ${this.renderHidden()}
       </div>
