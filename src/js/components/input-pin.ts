@@ -1,27 +1,22 @@
-import { LitElement, PropertyValues, html } from 'lit';
+import { PropertyValues, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { parseOptions } from '../helpers/common';
+import { Input } from './shared/input';
 
 type Cls = {
   div: string;
 };
 
 @customElement('uk-input-pin')
-export class InputPin extends LitElement {
+export class InputPin extends Input {
+  protected 'cls-default-element' = 'div';
+
+  protected 'input-event' = 'uk-input-pin:input';
+
   @property({ type: Boolean })
   autofocus: boolean = false;
 
-  @property({ type: String })
-  'cls-custom': string = '';
-
-  @property({ type: Boolean })
-  disabled: boolean = false;
-
   @property({ type: Number })
   length: number = 6;
-
-  @property({ type: String })
-  name: string = '';
 
   @state()
   $cls: Cls = {
@@ -32,29 +27,19 @@ export class InputPin extends LitElement {
   $focus: undefined | number;
 
   @state()
-  $value: string = '';
+  $v: string = '';
+
+  get $value(): string {
+    return this.$v;
+  }
+
+  get $text(): string {
+    return '';
+  }
 
   private HTMLInputs: NodeList | undefined;
 
-  connectedCallback(): void {
-    super.connectedCallback();
-
-    if (this['cls-custom']) {
-      const cls = parseOptions(this['cls-custom']) as Cls | string;
-
-      if (typeof cls === 'string') {
-        this.$cls['div'] = cls;
-      } else {
-        Object.keys(this.$cls).forEach(a => {
-          const key = a as 'div';
-
-          if (cls[key]) {
-            this.$cls[key] = cls[key];
-          }
-        });
-      }
-    }
-  }
+  protected initializeValue(): void {}
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
     this.HTMLInputs = this.renderRoot.querySelectorAll('input[type="text"]');
@@ -67,7 +52,7 @@ export class InputPin extends LitElement {
         if (clipboardData) {
           const text = clipboardData.getData('Text').substring(0, this.length);
 
-          this.$value = text;
+          this.$v = text;
 
           text.split('').forEach((str, i) => {
             const input = (this.HTMLInputs as NodeList)[i] as HTMLInputElement;
@@ -93,10 +78,6 @@ export class InputPin extends LitElement {
         }
       });
     });
-  }
-
-  protected createRenderRoot(): HTMLElement | DocumentFragment {
-    return this;
   }
 
   private renderInput(i: number) {
@@ -166,15 +147,9 @@ export class InputPin extends LitElement {
           this.HTMLInputs?.forEach(a => {
             value += (a as HTMLInputElement).value;
           });
-          this.$value = value;
+          this.$v = value;
 
-          this.dispatchEvent(
-            new CustomEvent('uk-input-pin:input', {
-              detail: { value: this.$value },
-              bubbles: true,
-              composed: true,
-            }),
-          );
+          this.emit();
         }}"
         @focus="${() => (this.$focus = i)}"
         @blur="${() => (this.$focus = undefined)}"
@@ -193,11 +168,7 @@ export class InputPin extends LitElement {
           .fill('')
           .map((_, i) => this.renderInput(i))}
       </div>
-      ${this.name
-        ? html`
-            <input type="hidden" name="${this.name}" .value="${this.$value}" />
-          `
-        : ''}
+      ${this.renderHidden()}
     `;
   }
 }
