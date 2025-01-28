@@ -1,12 +1,12 @@
-import { LitElement, PropertyValues } from 'lit';
+import { PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import * as icons from 'lucide';
 import { createElement } from 'lucide';
+import { Base } from './shared/base';
 
 @customElement('uk-icon')
-export class Icon extends LitElement {
-  @property({ type: String })
-  'cls-custom': string = '';
+export class Icon extends Base {
+  protected 'cls-default-element' = 'svg';
 
   @property({ type: String })
   icon: string = '';
@@ -23,16 +23,17 @@ export class Icon extends LitElement {
   @state()
   svg: SVGElement | undefined;
 
-  get i() {
+  @state()
+  $cls: { svg: string } = {
+    svg: '',
+  };
+
+  get key() {
     return this.icon
       .trim()
       .split('-')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join('');
-  }
-
-  connectedCallback(): void {
-    super.connectedCallback();
   }
 
   protected updated(_changedProperties: PropertyValues): void {
@@ -44,18 +45,14 @@ export class Icon extends LitElement {
     ) {
       this.updateComplete.then(() => {
         this.svg = this.createSvg({
-          icon: this.i,
-          cls: this['cls-custom'],
+          icon: this.key,
+          cls: this.$cls.svg,
           height: this.height,
           width: this.width,
           strokeWidth: this['stroke-width'],
         });
       });
     }
-  }
-
-  protected createRenderRoot(): HTMLElement | DocumentFragment {
-    return this;
   }
 
   private createSvg(options: {
