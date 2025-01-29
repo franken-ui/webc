@@ -2,6 +2,7 @@ import { html, PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { validateDate } from '../helpers/common';
 import { BaseCalendar } from './shared/base-calendar';
+import dayjs from 'dayjs';
 
 interface Cls extends Record<string, string> {
   button: string;
@@ -16,6 +17,9 @@ export class InputDate extends BaseCalendar {
   protected 'cls-default-element' = 'button';
 
   protected 'input-event' = 'uk-input-date:input';
+
+  @property({ type: String })
+  'display-format': string = 'MMMM DD, YYYY';
 
   @property({ type: Boolean })
   'with-time': boolean = false;
@@ -81,7 +85,7 @@ export class InputDate extends BaseCalendar {
 
   get $text(): string {
     if (this.$value !== '') {
-      return 'TODO';
+      return dayjs(this.$value).format(this['display-format']);
     }
 
     if (this.placeholder) {
@@ -155,6 +159,7 @@ export class InputDate extends BaseCalendar {
             data-uk-dropdown="${this.drop}"
           >
             <uk-calendar
+              .cls-custom="${this.$cls['calendar']}"
               .starts-with="${this['starts-with']}"
               .disabled-dates="${this['disabled-dates']}"
               .marked-dates="${this['marked-dates']}"
@@ -172,6 +177,7 @@ export class InputDate extends BaseCalendar {
                   <div class="uk-datepicker-time">
                     <uk-input-time
                       now
+                      .cls-custom="${this.$cls['time']}"
                       .required=${this['require-time']}
                       .i18n="${JSON.stringify(this.$i18n)}"
                       .value="${this.$time as string}"

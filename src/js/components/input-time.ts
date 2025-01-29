@@ -19,6 +19,9 @@ export class InputTime extends Input {
   protected 'input-event' = 'uk-input-time:input';
 
   @property({ type: Boolean })
+  autofocus: boolean = false;
+
+  @property({ type: Boolean })
   now: boolean = false;
 
   @property({ type: String })
@@ -140,7 +143,7 @@ export class InputTime extends Input {
       case '$min':
         value =
           this.$hour === undefined
-            ? '00'
+            ? ''
             : this.$min > 0
               ? this.$min.toString().padStart(2, '0')
               : '00';
@@ -158,6 +161,7 @@ export class InputTime extends Input {
         placeholder="${state === '$hour' ? '09' : '00'}"
         maxlength="2"
         value="${value as string}"
+        .autofocus="${state === '$hour' && this.autofocus}"
         .disabled="${this.disabled ||
         (state !== '$hour' && this.$hour === undefined)}"
         @keydown="${(e: KeyboardEvent) => {

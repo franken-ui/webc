@@ -25,6 +25,7 @@
     "@tiptap/extension-underline": "^2.6.6",
     "@tiptap/starter-kit": "^2.6.6",
     "@types/lodash": "^4.17.13",
+    "dayjs": "^1.11.13",
     "lit": "^3.1.4",
     "lodash": "^4.17.21",
     "lucide": "^0.469.0",
