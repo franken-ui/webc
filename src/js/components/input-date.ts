@@ -1,8 +1,7 @@
 import { html, PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { validateDate } from '../helpers/common';
+import { formatDate, validateDate } from '../helpers/common';
 import { BaseCalendar } from './shared/base-calendar';
-import dayjs from 'dayjs';
 
 interface Cls extends Record<string, string> {
   button: string;
@@ -85,7 +84,11 @@ export class InputDate extends BaseCalendar {
 
   get $text(): string {
     if (this.$value !== '') {
-      return dayjs(this.$value).format(this['display-format']);
+      return formatDate(
+        new Date(this.$value),
+        this['display-format'],
+        this.$locales,
+      );
     }
 
     if (this.placeholder) {

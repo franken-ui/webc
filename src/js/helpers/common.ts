@@ -186,3 +186,72 @@ export function selectToJson(
 
   return flat ? flatOptions : groupedOptions;
 }
+
+export function formatDate(
+  date: Date,
+  format: string,
+  locales: {
+    [key: string]: any;
+  },
+): string {
+  // Mapping of tokens to formatter functions.
+  const tokens: { [token: string]: () => string } = {
+    // Year tokens
+    YYYY: () => date.getFullYear().toString(),
+    YY: () => (date.getFullYear() % 100).toString().padStart(2, '0'),
+
+    // Month tokens
+    MMMM: () => locales.months[date.getMonth()],
+    MMM: () => locales.months[date.getMonth()].substring(0, 3),
+    MM: () => (date.getMonth() + 1).toString().padStart(2, '0'),
+    M: () => (date.getMonth() + 1).toString(),
+
+    // Day tokens
+    dddd: () => locales.weekdays[date.getDay()], // Full weekday name
+    ddd: () => locales.weekdays[date.getDay()].substring(0, 3), // Abbreviated weekday name
+    Do: () => {
+      const day = date.getDate();
+      // Determine the ordinal suffix.
+      const suffix =
+        day % 10 === 1 && day !== 11
+          ? 'st'
+          : day % 10 === 2 && day !== 12
+            ? 'nd'
+            : day % 10 === 3 && day !== 13
+              ? 'rd'
+              : 'th';
+      return day + suffix;
+    },
+    DD: () => date.getDate().toString().padStart(2, '0'),
+    D: () => date.getDate().toString(),
+
+    // Hour tokens (24-hour clock)
+    HH: () => date.getHours().toString().padStart(2, '0'),
+    H: () => date.getHours().toString(),
+
+    // Hour tokens (12-hour clock)
+    hh: () => {
+      const h = date.getHours() % 12 || 12;
+      return h.toString().padStart(2, '0');
+    },
+    h: () => (date.getHours() % 12 || 12).toString(),
+
+    // Minute tokens
+    mm: () => date.getMinutes().toString().padStart(2, '0'),
+    m: () => date.getMinutes().toString(),
+
+    // AM/PM tokens
+    A: () => (date.getHours() >= 12 ? 'PM' : 'AM'),
+    a: () => (date.getHours() >= 12 ? 'pm' : 'am'),
+  };
+
+  // Sort token keys by length in descending order to build the regex
+  // This ensures that longer tokens are matched before their shorter subsets.
+  const tokenKeys = Object.keys(tokens).sort((a, b) => b.length - a.length);
+
+  // Build a regex to match any token
+  const tokenRegex = new RegExp(tokenKeys.join('|'), 'g');
+
+  // Replace tokens in one pass using the regex with a callback.
+  return format.replace(tokenRegex, match => tokens[match]());
+}
