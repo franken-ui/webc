@@ -1,7 +1,7 @@
 import { html, PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { GroupedOptionsItem, BaseSelect } from './shared/base-select';
-import { parseOptions } from '../helpers/common';
+import { OptionItem } from '../helpers/select';
+import { BaseSelect } from './shared/base-select';
 
 type I18N = {
   'search-placeholder': string;
@@ -16,9 +16,6 @@ type Cls = {
 
 @customElement('uk-select')
 export class Select extends BaseSelect {
-  @property({ type: Boolean })
-  disabled: boolean = false;
-
   @property({ type: String })
   drop: string = 'mode: click';
 
@@ -29,25 +26,7 @@ export class Select extends BaseSelect {
   multiple: boolean = false;
 
   @property({ type: String })
-  placeholder: string = 'Select an option';
-
-  @property({ type: String })
-  name: string = '';
-
-  @property({ type: String })
-  'cls-custom': string = '';
-
-  @property({ type: String })
-  i18n: string = '';
-
-  @property({ type: String })
   icon: string = '';
-
-  @property({ type: String })
-  value: string = '';
-
-  @state()
-  $open: boolean = false;
 
   @state()
   $selected: string[] = [];
@@ -69,17 +48,17 @@ export class Select extends BaseSelect {
 
   private HTMLDrop: Element | null = null;
 
-  get text() {
+  protected get $text(): string {
     if (this.$selected.length === 0) {
       return this.placeholder !== '' ? this.placeholder : 'Select an option';
     }
 
-    if (this.multiple === false) {
-      return this._options.find(a => a.value === this.$selected[0])?.text;
+    if (this.multiple === false && this.selected) {
+      return this.selected.text;
     }
 
-    if (this.$selected.length === 1) {
-      return this._options.find(a => a.value === this.$selected[0])?.text;
+    if (this.$selected.length === 1 && this.selected) {
+      return this.selected.text;
     }
 
     return this.$i18n['selection-count'].replace(
@@ -91,30 +70,6 @@ export class Select extends BaseSelect {
   connectedCallback(): void {
     super.connectedCallback();
 
-    if (this.i18n) {
-      const i18n = parseOptions(this.i18n) as I18N;
-
-      if (typeof i18n === 'object') {
-        this.$i18n = Object.assign(this.$i18n, i18n);
-      }
-    }
-
-    if (this['cls-custom']) {
-      const cls = parseOptions(this['cls-custom']) as Cls | string;
-
-      if (typeof cls === 'string') {
-        this.$cls['button'] = cls;
-      } else {
-        Object.keys(this.$cls).forEach(a => {
-          const key = a as 'button' | 'icon' | 'dropdown';
-
-          if (cls[key]) {
-            this.$cls[key] = cls[key];
-          }
-        });
-      }
-    }
-
     if (this.hasAttribute('icon')) {
       const icon = this.getAttribute('icon');
 
@@ -122,20 +77,6 @@ export class Select extends BaseSelect {
         this._icon = true;
       } else {
         this._icon = icon as string;
-      }
-    }
-
-    if (this.hasAttribute('value')) {
-      this.$selected = this.value.split(',');
-    } else {
-      this.$selected = this.options
-        .filter(a => a.selected === true)
-        .map(a => a.value);
-
-      if (this.multiple === false) {
-        this.$focused = this.options.findIndex(
-          a => a.value === this.$selected[0],
-        );
       }
     }
   }
@@ -157,75 +98,29 @@ export class Select extends BaseSelect {
       });
     }
 
-    this._rendered = true;
+    this.isRendered = true;
   }
 
-  private select(index: number) {
-    if (index === -1) {
+  protected select(item: OptionItem) {
+    if (item.disabled) {
       return;
     }
 
-    let selected = this.options[index];
-
-    if (selected.disabled) {
-      return;
-    }
+    this.selected = item;
 
     if (this.multiple === false) {
       // this.$focused = index;
-      this.$selected = [selected.value];
+      this.$selected = [item.value];
     } else {
-      if (this.$selected.findIndex(a => a === selected?.value) === -1) {
-        this.$selected.push(selected?.value);
+      if (this.$selected.findIndex(a => a === item?.value) === -1) {
+        this.$selected.push(item?.value);
       } else {
-        this.$selected = this.$selected.filter(a => a !== selected?.value);
+        this.$selected = this.$selected.filter(a => a !== item?.value);
       }
-
       this.requestUpdate();
     }
 
-    this.dispatchEvent(
-      new CustomEvent('uk-select:input', {
-        detail: {
-          value: this.multiple === false ? this.$selected[0] : this.$selected,
-        },
-        bubbles: true,
-        composed: true,
-      }),
-    );
-  }
-
-  protected override termUpdated(): void {
-    this.dispatchEvent(
-      new CustomEvent('uk-select:search', {
-        detail: {
-          value: this.$term,
-        },
-        bubbles: true,
-        composed: true,
-      }),
-    );
-  }
-
-  protected override onKeydown(e: KeyboardEvent) {
-    if (this.$open === true) {
-      switch (e.key) {
-        case 'ArrowDown':
-          e.preventDefault();
-          this.navigate('d');
-          break;
-
-        case 'ArrowUp':
-          e.preventDefault();
-          this.navigate('t');
-          break;
-
-        case 'Enter':
-          e.preventDefault();
-          this.select(this.$focused);
-          break;
-      }
-    }
+    this.emit();
   }
 
   private onInputKeydown(e: KeyboardEvent) {
@@ -242,10 +137,7 @@ export class Select extends BaseSelect {
     }
   }
 
-  protected override _cls(options?: {
-    item: GroupedOptionsItem;
-    index: number;
-  }): {
+  protected _cls(options?: { item: OptionItem; index: number }): {
     parent: string;
     item: string;
     'item-header': string;
@@ -263,24 +155,17 @@ export class Select extends BaseSelect {
       'item-icon': 'uk-cs-item-icon',
       'item-wrapper': 'uk-cs-item-wrapper',
       'item-text': 'uk-cs-item-text',
+      'item-subtitle': 'uk-nav-subtitle',
     };
   }
 
-  protected override onClick(options: {
-    item: GroupedOptionsItem;
-    index: number;
-  }): void {
+  protected onClick(options: { item: OptionItem; index: number }): void {
     const { item } = options;
 
-    const index = this.options.findIndex(a => a.value === item.value);
-
-    this.select(index);
+    this.select(item);
   }
 
-  protected override renderCheck(options: {
-    item: GroupedOptionsItem;
-    index: number;
-  }) {
+  protected renderCheck(options: { item: OptionItem; index: number }) {
     if (this.$selected.includes(options.item.value)) {
       return html`<span class="uk-cs-check" data-uk-check></span>`;
     }
@@ -303,23 +188,43 @@ export class Select extends BaseSelect {
               @keydown="${this.onInputKeydown}"
             />
           </div>
-          ${Object.keys(this.groupedOptions).length > 0
+          ${Object.keys(this.options).length > 0
             ? html`<hr class="uk-hr" />`
             : ''}
         `
       : '';
   }
 
-  private renderHidden() {
-    return this.name && this.$selected.length > 0
-      ? html`${this.multiple === false
-          ? this.renderInput(this.name, this.$selected[0])
-          : this.$selected.map(a => this.renderInput(`${this.name}[]`, a))}`
-      : '';
+  protected readonly 'cls-default-element': string = 'button';
+
+  protected readonly 'input-event': string = 'uk-select:input';
+
+  protected readonly 'search-event': string = 'uk-select:search';
+
+  protected get $value(): string | string[] {
+    return this.multiple
+      ? this.$selected
+      : this.$selected.length === 1
+        ? this.$selected[0]
+        : '';
   }
 
-  private renderInput(name: string, value: string) {
-    return html`<input name="${name}" type="hidden" value="${value}" />`;
+  protected initializeValue(): void {
+    if (this.hasAttribute('value')) {
+      this.$selected = this.value.split(',');
+    } else {
+      const selected: string[] = [];
+
+      for (const parent in this._options) {
+        this._options[parent].options.forEach(a => {
+          if (a.selected === true) {
+            selected.push(a.value);
+          }
+        });
+      }
+
+      this.$selected = selected;
+    }
   }
 
   render() {
@@ -331,7 +236,7 @@ export class Select extends BaseSelect {
           .disabled=${this.disabled}
           @keydown="${this.onKeydown}"
         >
-          ${this.text}
+          ${this.$text}
           ${this._icon === true
             ? html`
                 <span

@@ -1,7 +1,7 @@
 import { PropertyValues, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
-import { OptionItem, OptionItemGrouped, selectToJson } from '../helpers/common';
+import { OptionItem, OptionGrouped, selectToJson } from '../helpers/select';
 import { Base } from './shared/base';
 
 type Config = {
@@ -20,7 +20,7 @@ export class ThemeSwitcher extends Base {
 
   private HTMLSelect: HTMLSelectElement | null = null;
 
-  private keys: OptionItemGrouped = {};
+  private keys: OptionGrouped = {};
 
   private isRendered: boolean = false;
 
@@ -42,7 +42,7 @@ export class ThemeSwitcher extends Base {
     if (this.HTMLSelect && this.isRendered === false) {
       this.keys = selectToJson(
         this.HTMLSelect as HTMLSelectElement,
-      ) as OptionItemGrouped;
+      ) as OptionGrouped;
     }
   }
 

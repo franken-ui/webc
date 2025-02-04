@@ -1,6 +1,7 @@
-import { html, PropertyValues } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
-import { BaseSelect, GroupedOptionsItem } from './shared/base-select';
+import { html, PropertyValues, TemplateResult } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { OptionItem } from '../helpers/select';
+import { BaseSelect } from './shared/base-select';
 
 @customElement('uk-command')
 export class Command extends BaseSelect {
@@ -8,16 +9,12 @@ export class Command extends BaseSelect {
   key: string | undefined;
 
   @property({ type: String })
-  placeholder: string = 'Search';
+  toggle: string = '';
 
-  @property({ type: String })
-  toggle: string = 'fkcmd';
+  @state()
+  $open: boolean = true;
 
   private HTMLModal: Element | null = null;
-
-  constructor() {
-    super();
-  }
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
     this.HTMLModal = this.renderRoot.querySelector('.uk-modal');
@@ -40,35 +37,12 @@ export class Command extends BaseSelect {
       });
     }
 
-    this._rendered = true;
+    this.isRendered = true;
   }
 
-  protected override onKeydown(e: KeyboardEvent) {
-    switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        this.navigate('d');
-        break;
+  protected readonly 'search-event': string = 'uk-command:search';
 
-      case 'ArrowUp':
-        e.preventDefault();
-        this.navigate('t');
-        break;
-
-      case 'Enter':
-        e.preventDefault();
-        this.select(this.$focused);
-        break;
-
-      default:
-        break;
-    }
-  }
-
-  protected override _cls(options?: {
-    item: GroupedOptionsItem;
-    index: number;
-  }): {
+  protected _cls(options?: { item: OptionItem; index: number }): {
     parent: string;
     item: string;
     'item-header': string;
@@ -86,41 +60,52 @@ export class Command extends BaseSelect {
       'item-icon': 'uk-cmd-item-icon',
       'item-wrapper': 'uk-cmd-item-wrapper',
       'item-text': 'uk-cmd-item-text',
+      'item-subtitle': 'uk-nav-subtitle',
     };
   }
 
-  protected override onClick(options: {
-    item: GroupedOptionsItem;
-    index: number;
-  }): void {
+  protected onClick(options: { item: OptionItem; index: number }): void {
     const { item } = options;
 
-    const index = this.options.findIndex(a => a.value === item.value);
-
-    this.select(index);
+    this.select(item);
   }
 
-  private select(index: number): void {
-    if (index === -1) {
+  protected select(item: OptionItem) {
+    if (item.disabled) {
       return;
     }
 
-    let selected = this.options[index];
-
-    if (selected.disabled) {
-      return;
-    }
+    window.UIkit.modal(this.HTMLModal).hide();
 
     this.dispatchEvent(
       new CustomEvent('uk-command:click', {
         detail: {
-          value: selected,
+          value: item,
         },
         bubbles: true,
         composed: true,
       }),
     );
   }
+
+  protected renderCheck(_: {
+    item: OptionItem;
+    index: number;
+  }): TemplateResult | undefined {
+    return;
+  }
+
+  protected get $value(): string | string[] {
+    return '';
+  }
+  protected get $text(): string {
+    return '';
+  }
+  protected 'input-event': string = '';
+
+  protected initializeValue(): void {}
+
+  protected readonly 'cls-default-element' = '';
 
   private renderSearch() {
     return html`
@@ -148,9 +133,7 @@ export class Command extends BaseSelect {
           </button>
         </div>
       </div>
-      ${Object.keys(this.groupedOptions).length > 0
-        ? html`<hr class="uk-hr" />`
-        : ''}
+      ${Object.keys(this.options).length > 0 ? html`<hr class="uk-hr" />` : ''}
     `;
   }
 

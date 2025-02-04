@@ -1,31 +1,12 @@
-import { html, LitElement, PropertyValues, TemplateResult } from 'lit';
 import { property, state } from 'lit/decorators.js';
+import { Input } from './input';
+import { html, PropertyValues, TemplateResult } from 'lit';
+import { OptionGrouped, OptionItem, selectToJson } from '../../helpers/select';
 import { repeat } from 'lit/directives/repeat.js';
 
-export type OptionData = { keywords: string[]; [key: string]: any };
+export abstract class BaseSelect extends Input {
+  protected abstract readonly 'search-event': string;
 
-export type Option = {
-  group: string;
-  value: string;
-  text: string;
-  disabled: boolean;
-  selected: boolean;
-  data: OptionData;
-};
-
-export type GroupedOptionsItem = {
-  value: string;
-  text: string;
-  disabled: boolean;
-  selected: boolean;
-  data: OptionData;
-};
-
-export type GroupedOptions = {
-  [key: string]: GroupedOptionsItem[];
-};
-
-export class BaseSelect extends LitElement {
   @property({ type: Boolean })
   reactive: boolean = false;
 
@@ -38,38 +19,6 @@ export class BaseSelect extends LitElement {
   @state()
   $open: boolean = false;
 
-  protected _options: Option[] = [];
-
-  get options(): Option[] {
-    if (this.$term) {
-      return this._options.filter(a =>
-        a.data.keywords.some(keyword =>
-          keyword.toLowerCase().includes(this.$term.toLowerCase()),
-        ),
-      );
-    }
-
-    return this._options;
-  }
-
-  get groupedOptions() {
-    const groupedOptions: GroupedOptions = {};
-
-    for (const option of this.options) {
-      option['group'] = option.group;
-
-      (groupedOptions[option.group] = groupedOptions[option.group] || []).push({
-        value: option.value,
-        text: option.text,
-        disabled: option.disabled,
-        selected: option.selected,
-        data: option.data,
-      });
-    }
-
-    return groupedOptions;
-  }
-
   protected HTMLSelect: HTMLSelectElement | null = null;
 
   protected HTMLRectParent: HTMLElement | null = null;
@@ -78,7 +27,43 @@ export class BaseSelect extends LitElement {
 
   protected observer: MutationObserver | null = null;
 
-  protected _rendered: boolean = false;
+  protected isRendered: boolean = false;
+
+  protected _options: OptionGrouped = {};
+
+  protected selected: OptionItem | null = null;
+
+  get options() {
+    const options: OptionGrouped = {};
+
+    Object.entries(this._options).forEach(([key, group]) => {
+      const filtered = group.options.filter(option =>
+        option.data.keywords?.some(k =>
+          k.toLowerCase().includes(this.$term.toLowerCase()),
+        ),
+      );
+
+      if (filtered.length > 0) {
+        options[key] = {
+          text: group.text,
+          options: filtered,
+        };
+      }
+    });
+
+    return options;
+  }
+
+  get count() {
+    let total = 0;
+
+    for (const parent in this.options) {
+      const count = this.options[parent].options.length;
+      total += count;
+    }
+
+    return total - 1;
+  }
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -119,7 +104,15 @@ export class BaseSelect extends LitElement {
       _changedProperties.has('$term') &&
       _changedProperties.get('$term') !== undefined
     ) {
-      this.termUpdated();
+      this.dispatchEvent(
+        new CustomEvent(this['search-event'], {
+          detail: {
+            value: this.$term,
+          },
+          bubbles: true,
+          composed: true,
+        }),
+      );
 
       this.updateComplete.then(() => {
         this.$focused = -1;
@@ -144,86 +137,22 @@ export class BaseSelect extends LitElement {
     }
   }
 
-  protected termUpdated(): void {}
-
-  protected createRenderRoot(): HTMLElement | DocumentFragment {
-    return this;
-  }
-
   protected createOptions() {
-    if (this.reactive === false && this._rendered === true) {
+    if (this.reactive === false && this.isRendered === true) {
       return;
     }
 
     if (this.HTMLSelect) {
-      this._options = [];
-
-      const add = (
-        group: string,
-        option: HTMLOptionElement,
-        isOptGroupDisabled?: boolean | undefined,
-      ) => {
-        let value: string | undefined;
-
-        if (option.hasAttribute('value')) {
-          value = option.getAttribute('value') as string;
-        } else {
-          value = option.textContent as string;
-        }
-
-        const data: OptionData = { keywords: [] };
-
-        data['keywords'] = [value];
-
-        Object.keys(option.dataset).forEach(attr => {
-          if (attr !== 'keywords') {
-            data[attr] = option.dataset[attr];
-          } else {
-            data['keywords'] = [
-              value,
-              ...(option.getAttribute('data-keywords') as string).split(','),
-            ];
-          }
-        });
-
-        this._options.push({
-          group: group,
-          value: value,
-          text: option.textContent as string,
-          disabled: isOptGroupDisabled === true ? true : option.disabled,
-          selected: option.hasAttribute('selected'),
-          data: data,
-        });
-      };
-
-      Array.from(this.HTMLSelect.children).map(a => {
-        if (a.nodeName === 'OPTGROUP') {
-          const group = a as HTMLOptGroupElement;
-
-          Array.from(group.children).map(b => {
-            const option = b as HTMLOptionElement;
-
-            add(group.getAttribute('label') as string, option, group.disabled);
-          });
-        }
-
-        if (a.nodeName === 'OPTION') {
-          const option = a as HTMLOptionElement;
-
-          add('__', option);
-        }
-      });
+      this._options = selectToJson(this.HTMLSelect);
     }
   }
 
   protected navigate(direction: 't' | 'd') {
-    const count = this.options.length - 1;
-
     switch (direction) {
       case 't':
         if (direction === 't') {
-          if (this.$focused === 0) {
-            this.$focused = count;
+          if (this.$focused <= 0) {
+            this.$focused = this.count;
           } else {
             this.$focused--;
           }
@@ -231,7 +160,7 @@ export class BaseSelect extends LitElement {
         break;
 
       case 'd':
-        if (this.$focused < count) {
+        if (this.$focused < this.count) {
           this.$focused++;
         } else {
           this.$focused = 0;
@@ -258,7 +187,7 @@ export class BaseSelect extends LitElement {
     }
   }
 
-  protected _cls(options?: { item: GroupedOptionsItem; index: number }): {
+  protected abstract _cls(options?: { item: OptionItem; index: number }): {
     parent: string;
     item: string;
     'item-header': string;
@@ -267,26 +196,50 @@ export class BaseSelect extends LitElement {
     'item-icon': string;
     'item-text': string;
     [key: string]: string;
-  } {
-    return {
-      parent: 'uk-nav',
-      item: options?.item.disabled === true ? 'uk-disabled opacity-50' : '',
-      'item-header': 'uk-nav-header',
-      'item-link': '',
-      'item-icon': 'uk-flex-none uk-margin-small-right',
-      'item-wrapper': 'uk-flex-1 uk-flex uk-flex-middle',
-      'item-text': 'uk-flex-1',
-    };
+  };
+
+  protected abstract onClick(_: { item: OptionItem; index: number }): void;
+
+  protected abstract select(item: OptionItem): void;
+
+  protected onKeydown(e: KeyboardEvent) {
+    if (this.$open === true) {
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          this.navigate('d');
+          break;
+
+        case 'ArrowUp':
+          e.preventDefault();
+          this.navigate('t');
+          break;
+
+        case 'Enter':
+          e.preventDefault();
+
+          if (this.$focused === -1) {
+            return;
+          }
+
+          const dataset = this.HTMLRectActive?.dataset;
+
+          if (dataset) {
+            const key: string = dataset.key as string;
+            const index: number = dataset.index as unknown as number;
+
+            this.select(this.options[key].options[index]);
+          }
+
+          break;
+      }
+    }
   }
 
-  protected onClick(_: { item: GroupedOptionsItem; index: number }): void {}
-
-  protected onKeydown(_: KeyboardEvent) {}
-
-  protected renderCheck(_: {
-    item: GroupedOptionsItem;
+  protected abstract renderCheck(_: {
+    item: OptionItem;
     index: number;
-  }): TemplateResult | void {}
+  }): TemplateResult | undefined;
 
   protected renderList() {
     const cls = this._cls();
@@ -294,11 +247,11 @@ export class BaseSelect extends LitElement {
     return html`
       <ul class="${cls['parent']}" tabindex="-1" @keydown="${this.onKeydown}">
         ${repeat(
-          Object.keys(this.groupedOptions),
+          Object.keys(this.options),
           (a, _) => html`
             ${this.renderListHeader(a)}
-            ${repeat(this.groupedOptions[a], (b, i) =>
-              this.renderListItem(b, i),
+            ${repeat(this.options[a].options, (b, i) =>
+              this.renderListItem(a, b, i),
             )}
           `,
         )}
@@ -314,12 +267,14 @@ export class BaseSelect extends LitElement {
       : '';
   }
 
-  protected renderListItem(item: GroupedOptionsItem, index: number) {
+  protected renderListItem(key: string, item: OptionItem, index: number) {
     const cls = this._cls({ item, index });
 
     return html`
       <li class="${cls['item']}">
         <a
+          data-key="${key}"
+          data-index="${index}"
           @click="${() => this.onClick({ item, index })}"
           class="${cls['item-link']}"
           tabindex="-1"
@@ -337,7 +292,9 @@ export class BaseSelect extends LitElement {
               ? html`
                   <div>
                     <span class="${cls['item-text']}">${item.text}</span>
-                    <div class="uk-nav-subtitle">${item.data.description}</div>
+                    <div class="${cls['item-subtitle']}">
+                      ${item.data.description}
+                    </div>
                   </div>
                 `
               : html`<span class="${cls['item-text']}">${item.text}</span>`}
