@@ -48,7 +48,6 @@ export class Calendar extends BaseCalendar {
       try {
         const date = validateDate(this.value);
         this.$active = date.toISOString();
-        this.$viewDate = date;
       } catch (e) {
         console.error(`${this.value} has an invalid format.`);
       }
@@ -181,38 +180,41 @@ export class Calendar extends BaseCalendar {
   }
 
   private navigateMonth(direction: 'prev' | 'next') {
-    const date = new Date(this.$viewDate);
+    let month = this.$viewDate.getMonth();
+    let year = this.$viewDate.getFullYear();
 
     if (direction === 'prev') {
-      date.setMonth(date.getMonth() - 1);
-      if (this.min && date < validateDate(this.min)) {
-        return;
+      if (month === 0) {
+        month = 11;
+        year -= 1;
+      } else {
+        month -= 1;
       }
     } else {
-      date.setMonth(date.getMonth() + 1);
-      if (this.max && date > validateDate(this.max)) {
-        return;
+      if (month === 11) {
+        month = 0;
+        year += 1;
+      } else {
+        month += 1;
       }
     }
 
-    this.$viewDate = date;
+    this['view-date'] =
+      `${year.toString()}-${(month + 1).toString().padStart(2, '0')}-01`;
   }
 
   private selectMonth(month: number) {
-    const date = new Date(this.$viewDate);
+    const date = this['view-date'];
 
-    date.setMonth(month);
-
-    this.$viewDate = date;
+    this['view-date'] =
+      date.substring(0, 5) +
+      (month + 1).toString().padStart(2, '0') +
+      date.substring(7);
   }
 
   private setYear(year: string) {
     if (/^\d{4}$/.test(year)) {
-      const date = new Date(this.$viewDate);
-
-      date.setFullYear(parseInt(year));
-
-      this.$viewDate = date;
+      this['view-date'] = year.toString() + this['view-date'].substring(4);
     }
   }
 
@@ -231,7 +233,7 @@ export class Calendar extends BaseCalendar {
     this.$active = day.ISOString;
 
     if (day.month !== 'current') {
-      this.$viewDate = new Date(day.ISOString);
+      this['view-date'] = day.ISOString.slice(0, 10);
     }
 
     if (this.isDirty === false) {
@@ -497,7 +499,7 @@ export class Calendar extends BaseCalendar {
           data-uk-pgn-previous
         ></button>
         <div class="uk-cal-jumper">
-          ${this.jumpable && !this.min && !this.max
+          ${this.jumpable
             ? this.renderJumper()
             : html`
                 <div class="uk-cal-title uk-text-sm">
