@@ -14,7 +14,6 @@ export default defineConfig({
           lit: 'Lit',
           'lit/decorators.js': 'LitDecorators',
           'lit/directives/repeat.js': 'LitRepeat',
-          'lit/directives/unsafe-html.js': 'LitUnsafeHTML',
         },
       },
     },

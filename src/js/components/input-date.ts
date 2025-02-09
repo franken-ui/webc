@@ -110,11 +110,7 @@ export class InputDate extends BaseCalendar {
     if (this.hasAttribute('icon')) {
       const icon = this.getAttribute('icon');
 
-      if (icon === '') {
-        this._icon = true;
-      } else {
-        this._icon = icon as string;
-      }
+      this._icon = icon === '' ? true : (icon as string);
     }
   }
 

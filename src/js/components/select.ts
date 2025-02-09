@@ -72,11 +72,47 @@ export class Select extends BaseSelect {
 
     if (this.hasAttribute('icon')) {
       const icon = this.getAttribute('icon');
+      this._icon = icon === '' ? true : (icon as string);
+    }
 
-      if (icon === '') {
-        this._icon = true;
-      } else {
-        this._icon = icon as string;
+    if (this.hasAttribute('value')) {
+      this.$selected = this.value.split(',').map(v => v.trim());
+
+      if (!this.multiple) {
+        this.$selected = this.$selected.slice(-1);
+      }
+
+      this.updateSelectedFromValues();
+    } else {
+      let values: string[] = [];
+
+      for (const parent in this._options) {
+        const options = this._options[parent].options;
+
+        if (this.multiple) {
+          options.forEach(option => {
+            if (option.selected) {
+              values.push(option.value);
+            }
+          });
+        } else {
+          const lastSelected = [...options]
+            .reverse()
+            .find(option => option.selected);
+
+          if (lastSelected) {
+            values = [lastSelected.value];
+            this.selected = lastSelected;
+            break;
+          }
+        }
+      }
+
+      this.$selected = values;
+
+      // Only update selected for multiple selection mode
+      if (this.multiple) {
+        this.updateSelectedFromValues();
       }
     }
   }
@@ -101,26 +137,48 @@ export class Select extends BaseSelect {
     this.isRendered = true;
   }
 
-  protected select(item: OptionItem) {
+  protected select(item: OptionItem): void {
     if (item.disabled) {
       return;
     }
 
-    this.selected = item;
-
-    if (this.multiple === false) {
-      // this.$focused = index;
-      this.$selected = [item.value];
-    } else {
-      if (this.$selected.findIndex(a => a === item?.value) === -1) {
-        this.$selected.push(item?.value);
+    if (this.multiple) {
+      const existingIndex = this.$selected.findIndex(a => a === item?.value);
+      if (existingIndex === -1) {
+        this.$selected.push(item.value);
       } else {
-        this.$selected = this.$selected.filter(a => a !== item?.value);
+        this.$selected = this.$selected.filter(a => a !== item.value);
       }
+
+      if (this.$selected.length > 0) {
+        this.updateSelectedFromValues();
+      }
+
       this.requestUpdate();
+    } else {
+      this.$selected = [item.value];
+      this.selected = item;
     }
 
     this.emit();
+  }
+
+  private updateSelectedFromValues(): void {
+    if (this.$selected.length > 0) {
+      const lastValue = this.$selected[this.$selected.length - 1];
+
+      for (const parent in this._options) {
+        const lastSelected = this._options[parent].options.find(
+          option => option.value === lastValue,
+        );
+
+        if (lastSelected) {
+          this.selected = lastSelected;
+
+          break;
+        }
+      }
+    }
   }
 
   private onInputKeydown(e: KeyboardEvent) {
@@ -210,21 +268,7 @@ export class Select extends BaseSelect {
   }
 
   protected initializeValue(): void {
-    if (this.hasAttribute('value')) {
-      this.$selected = this.value.split(',');
-    } else {
-      const selected: string[] = [];
-
-      for (const parent in this._options) {
-        this._options[parent].options.forEach(a => {
-          if (a.selected === true) {
-            selected.push(a.value);
-          }
-        });
-      }
-
-      this.$selected = selected;
-    }
+    // because of special nature of select component's lifecycle, functionality has moved to connectedCallback() instead
   }
 
   render() {
