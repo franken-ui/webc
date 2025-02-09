@@ -24,11 +24,11 @@ export class InputTime extends Input {
   @property({ type: Boolean })
   now: boolean = false;
 
-  @property({ type: String })
-  min: string = '';
+  // @property({ type: String })
+  // min: string = '';
 
-  @property({ type: String })
-  max: string = '';
+  // @property({ type: String })
+  // max: string = '';
 
   @state()
   $i18n: I18N = {

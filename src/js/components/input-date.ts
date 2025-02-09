@@ -146,7 +146,10 @@ export class InputDate extends BaseCalendar {
             ${this.$text}
             ${this._icon === true
               ? html`
-                  <span class="${this.$cls['icon']}" data-uk-calendar></span>
+                  <span
+                    class="${this.$cls['icon']}"
+                    data-uk-calendar-icon
+                  ></span>
                 `
               : this.icon !== ''
                 ? html`

@@ -28,9 +28,6 @@ export abstract class BaseCalendar extends Input {
   max: string = '';
 
   @state()
-  protected $viewDate: Date = new Date();
-
-  @state()
   protected $i18n: {
     [key: string]: string;
   } = {
@@ -40,6 +37,16 @@ export abstract class BaseCalendar extends Input {
   };
 
   protected isDirty = false;
+
+  protected get $viewDate(): Date {
+    const date = new Date(this['view-date']);
+
+    if (date.getDate() !== 1) {
+      date.setDate(1);
+    }
+
+    return date;
+  }
 
   protected getUTCDate(date: Date): Date {
     return new Date(
@@ -119,10 +126,6 @@ export abstract class BaseCalendar extends Input {
       if (typeof i18n === 'object') {
         this.$i18n = Object.assign(this.$i18n, i18n);
       }
-    }
-
-    if (this['view-date']) {
-      this.$viewDate = new Date(this['view-date']);
     }
 
     this.initializeValue();
