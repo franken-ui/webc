@@ -47,7 +47,9 @@ export class Calendar extends BaseCalendar {
     if (this.value) {
       try {
         const date = validateDate(this.value);
+
         this.$active = date.toISOString();
+        this['view-date'] = date.toISOString().slice(0, 10);
       } catch (e) {
         console.error(`${this.value} has an invalid format.`);
       }
