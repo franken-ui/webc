@@ -2,10 +2,13 @@ import { html, PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { OptionItem } from '../helpers/select';
 import { BaseSelect } from './shared/base-select';
+import { repeat } from 'lit/directives/repeat.js';
+import { merge } from 'lodash';
 
 type I18N = {
   'search-placeholder': string;
   'selection-count': string;
+  insert: string;
 };
 
 type Cls = {
@@ -23,6 +26,9 @@ export class Select extends BaseSelect {
   searchable: boolean = false;
 
   @property({ type: Boolean })
+  insertable: boolean = false;
+
+  @property({ type: Boolean })
   multiple: boolean = false;
 
   @property({ type: String })
@@ -35,6 +41,7 @@ export class Select extends BaseSelect {
   $i18n: I18N = {
     'search-placeholder': 'Search',
     'selection-count': ':n: options selected',
+    insert: 'Insert',
   };
 
   @state()
@@ -114,6 +121,10 @@ export class Select extends BaseSelect {
       if (this.multiple) {
         this.updateSelectedFromValues();
       }
+    }
+
+    if (this.insertable) {
+      this.searchable = true;
     }
   }
 
@@ -195,6 +206,21 @@ export class Select extends BaseSelect {
     }
   }
 
+  protected onKeydownEnter(): void {
+    const dataset = this.HTMLRectActive?.dataset;
+
+    if (dataset) {
+      const key: string = dataset.key as string;
+      const index: number = dataset.index as unknown as number;
+
+      if (key === '__insert__') {
+        this.insert();
+      } else {
+        this.select(this.options[key].options[index]);
+      }
+    }
+  }
+
   protected _cls(options?: { item: OptionItem; index: number }): {
     parent: string;
     item: string;
@@ -229,6 +255,33 @@ export class Select extends BaseSelect {
     }
   }
 
+  private updateOptions(options: OptionItem[], key: string = '__') {
+    this._options = merge({}, this._options, {
+      [key]: {
+        text: this._options[key]?.text || '__',
+        options: options,
+      },
+    });
+  }
+
+  private hasOption(value: string): boolean {
+    return Object.values(this._options).some(group =>
+      group.options.some(option => option.value === value),
+    );
+  }
+
+  private addOption(item: OptionItem, key: string = '__') {
+    const options = this._options[key]?.options || [];
+
+    const exists = options.some(option => option.value === item.value);
+
+    if (!exists) {
+      this.updateOptions([...options, item]);
+    }
+
+    return !exists;
+  }
+
   private renderSearch() {
     return this.searchable === true
       ? html`
@@ -253,6 +306,67 @@ export class Select extends BaseSelect {
       : '';
   }
 
+  protected insert() {
+    const item = {
+      group: '__',
+      text: this.$term,
+      value: this.$term,
+      data: {
+        keywords: [this.$term],
+      },
+      selected: true,
+      disabled: false,
+    };
+
+    this.addOption(item);
+    if (this.multiple) {
+      this.$selected.push(this.$term);
+    } else {
+      this.$selected = [this.$term];
+    }
+    this.selected = item;
+
+    this.$term = '';
+  }
+
+  private renderInsertion() {
+    return html`
+      <li>
+        <a
+          data-key="__insert__"
+          @click="${(e: MouseEvent) => {
+            e.preventDefault();
+            this.insert();
+          }}"
+          tabindex="-1"
+        >
+          ${this.$i18n['insert']} ${this.$term}
+        </a>
+      </li>
+    `;
+  }
+
+  protected override renderList() {
+    const cls = this._cls();
+
+    return html`
+      <ul class="${cls['parent']}" tabindex="-1" @keydown="${this.onKeydown}">
+        ${repeat(
+          Object.keys(this.options),
+          (a, _) => html`
+            ${this.renderListHeader(a)}
+            ${repeat(this.options[a].options, (b, i) =>
+              this.renderListItem(a, b, i),
+            )}
+          `,
+        )}
+        ${this.insertable && this.$term && !this.hasOption(this.$term)
+          ? this.renderInsertion()
+          : ''}
+      </ul>
+    `;
+  }
+
   protected readonly 'cls-default-element': string = 'button';
 
   protected readonly 'input-event': string = 'uk-select:input';
@@ -265,6 +379,20 @@ export class Select extends BaseSelect {
       : this.$selected.length === 1
         ? this.$selected[0]
         : '';
+  }
+
+  override get count() {
+    let total =
+      this.insertable && this.$term !== '' && !this.hasOption(this.$term)
+        ? 1
+        : 0;
+
+    for (const parent in this.options) {
+      const count = this.options[parent].options.length;
+      total += count;
+    }
+
+    return total - 1;
   }
 
   protected initializeValue(): void {

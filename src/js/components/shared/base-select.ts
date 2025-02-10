@@ -202,6 +202,8 @@ export abstract class BaseSelect extends Input {
 
   protected abstract select(item: OptionItem): void;
 
+  protected abstract onKeydownEnter(): void;
+
   protected onKeydown(e: KeyboardEvent) {
     if (this.$open === true) {
       switch (e.key) {
@@ -222,14 +224,7 @@ export abstract class BaseSelect extends Input {
             return;
           }
 
-          const dataset = this.HTMLRectActive?.dataset;
-
-          if (dataset) {
-            const key: string = dataset.key as string;
-            const index: number = dataset.index as unknown as number;
-
-            this.select(this.options[key].options[index]);
-          }
+          this.onKeydownEnter();
 
           break;
       }

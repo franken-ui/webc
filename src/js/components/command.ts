@@ -70,6 +70,17 @@ export class Command extends BaseSelect {
     this.select(item);
   }
 
+  protected onKeydownEnter(): void {
+    const dataset = this.HTMLRectActive?.dataset;
+
+    if (dataset) {
+      const key: string = dataset.key as string;
+      const index: number = dataset.index as unknown as number;
+
+      this.select(this.options[key].options[index]);
+    }
+  }
+
   protected select(item: OptionItem) {
     if (item.disabled) {
       return;
