@@ -9,6 +9,7 @@
     "build:icon": "tsc && vite -c config/icon.js build",
     "build:wysiwyg": "tsc && vite -c config/wysiwyg.js build",
     "build:css": "vite -c config/css.js build",
+    "build:npf": "vite -c config/npf.js build",
     "build:utilities": "vite -c config/utilities.js build",
     "utils-alc:extract": "vite -c config/utilities-a-la-carte.js build",
     "utils-alc:merge": "cat dist/css/utilities-alc/*.css > dist/css/utilities.txt",

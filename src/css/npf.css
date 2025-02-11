@@ -1,0 +1,5 @@
+@config "npf.js";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
