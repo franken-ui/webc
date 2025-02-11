@@ -1,9 +1,8 @@
 import { html, PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { OptionItem } from '../helpers/select';
+import { OptionItem, selectToJson } from '../helpers/select';
 import { BaseSelect } from './shared/base-select';
 import { repeat } from 'lit/directives/repeat.js';
-import { merge } from 'lodash';
 
 type I18N = {
   'search-placeholder': string;
@@ -255,15 +254,6 @@ export class Select extends BaseSelect {
     }
   }
 
-  private updateOptions(options: OptionItem[], key: string = '__') {
-    this._options = merge({}, this._options, {
-      [key]: {
-        text: this._options[key]?.text || '__',
-        options: options,
-      },
-    });
-  }
-
   private hasOption(value: string): boolean {
     return Object.values(this._options).some(group =>
       group.options.some(option => option.value === value),
@@ -276,7 +266,8 @@ export class Select extends BaseSelect {
     const exists = options.some(option => option.value === item.value);
 
     if (!exists) {
-      this.updateOptions([...options, item]);
+      this._options = selectToJson(this.HTMLSelect as HTMLSelectElement);
+      this._options[key].options.push(item);
     }
 
     return !exists;
@@ -319,13 +310,14 @@ export class Select extends BaseSelect {
     };
 
     this.addOption(item);
+
     if (this.multiple) {
       this.$selected.push(this.$term);
     } else {
       this.$selected = [this.$term];
     }
-    this.selected = item;
 
+    this.selected = item;
     this.$term = '';
   }
 
