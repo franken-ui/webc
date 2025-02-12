@@ -27,6 +27,15 @@ export class Select extends BaseSelect {
   @property({ type: Boolean })
   insertable: boolean = false;
 
+  @property({ type: String })
+  'send-headers': string;
+
+  @property({ type: String })
+  'send-url': string;
+
+  @property({ type: String })
+  'send-method': string = 'POST';
+
   @property({ type: Boolean })
   multiple: boolean = false;
 
@@ -260,13 +269,21 @@ export class Select extends BaseSelect {
     );
   }
 
-  private addOption(item: OptionItem, key: string = '__') {
+  private addOption(item: OptionItem, key: string) {
     const options = this._options[key]?.options || [];
 
     const exists = options.some(option => option.value === item.value);
 
     if (!exists) {
-      this._options = selectToJson(this.HTMLSelect as HTMLSelectElement);
+      this._options = { ...this._options };
+
+      if (this._options[key] === undefined) {
+        this._options[key] = {
+          text: item.group || '__',
+          options: [],
+        };
+      }
+
       this._options[key].options.push(item);
     }
 
@@ -297,19 +314,70 @@ export class Select extends BaseSelect {
       : '';
   }
 
-  protected insert() {
-    const item = {
-      group: '__',
-      text: this.$term,
-      value: this.$term,
-      data: {
-        keywords: [this.$term],
-      },
-      selected: true,
-      disabled: false,
-    };
+  private async send(): Promise<OptionItem> {
+    function validate(data: any): boolean {
+      return (
+        typeof data === 'object' &&
+        'group' in data &&
+        'value' in data &&
+        'text' in data &&
+        'disabled' in data &&
+        'selected' in data &&
+        'data' in data &&
+        'key' in data.data &&
+        'keywords' in data.data
+      );
+    }
 
-    this.addOption(item);
+    try {
+      if (!this['send-url']) {
+        throw new Error('No send URL provided');
+      }
+
+      const headers: HeadersInit = this['send-headers']
+        ? JSON.parse(this['send-headers'])
+        : { 'Content-Type': 'application/json' };
+
+      const payload = {
+        term: this.$term,
+      };
+
+      const response = await fetch(this['send-url'], {
+        method: this['send-method'],
+        headers,
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (validate(data)) {
+        return data as OptionItem;
+      }
+
+      throw new Error('Invalid response format');
+    } catch (error) {
+      return {
+        group: '__',
+        text: this.$term,
+        value: this.$term,
+        data: {
+          key: '__',
+          keywords: [this.$term],
+        },
+        selected: true,
+        disabled: false,
+      };
+    }
+  }
+
+  protected async insert() {
+    const item = await this.send();
+
+    this.addOption(item, item.data.key as string);
 
     if (this.multiple) {
       this.$selected.push(this.$term);
