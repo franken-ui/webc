@@ -1,6 +1,6 @@
 import { html, PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { OptionItem, selectToJson } from '../helpers/select';
+import { OptionItem } from '../helpers/select';
 import { BaseSelect } from './shared/base-select';
 import { repeat } from 'lit/directives/repeat.js';
 
