@@ -117,26 +117,26 @@ export class ThemeSwitcher extends Base {
         ${item.data.hex
           ? html`
               <span
-                class="uk-ts-hex"
+                class="uk-theme-switcher-hex"
                 style="${`background:${item.data.hex}`}"
               ></span>
             `
           : item.data.icon
             ? html`<uk-icon icon=${item.data.icon}></uk-icon>`
             : ''}
-        <span class="uk-ts-text">${item.text}</span>
+        <span class="uk-theme-switcher-text">${item.text}</span>
       </button>
     `;
   }
 
   render() {
     return html`
-      <div class="uk-ts ${this.$cls['div']}">
+      <div class="uk-theme-switcher ${this.$cls['div']}">
         ${Object.keys(this.keys).map(
           a => html`
-            <div class="uk-ts-key">
+            <div class="uk-theme-switcher-key">
               <div class="uk-form-label">${this.keys[a].text}</div>
-              <div class="uk-ts-value">
+              <div class="uk-theme-switcher-value">
                 ${repeat(
                   this.keys[a].options,
                   _ => _,

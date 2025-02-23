@@ -240,13 +240,14 @@ export class Select extends BaseSelect {
     [key: string]: string;
   } {
     return {
-      parent: 'uk-nav uk-dropdown-nav uk-overflow-auto uk-cs-options',
+      parent:
+        'uk-nav uk-dropdown-nav uk-overflow-auto uk-custom-select-options',
       item: options?.item.disabled === true ? 'uk-disabled opacity-50' : '',
       'item-header': 'uk-nav-header',
       'item-link': this.multiple === false ? 'uk-drop-close' : '',
-      'item-icon': 'uk-cs-item-icon',
-      'item-wrapper': 'uk-cs-item-wrapper',
-      'item-text': 'uk-cs-item-text',
+      'item-icon': 'uk-custom-select-item-icon',
+      'item-wrapper': 'uk-custom-select-item-wrapper',
+      'item-text': 'uk-custom-select-item-text',
       'item-subtitle': 'uk-nav-subtitle',
     };
   }
@@ -259,7 +260,7 @@ export class Select extends BaseSelect {
 
   protected renderCheck(options: { item: OptionItem; index: number }) {
     if (this.$selected.includes(options.item.value)) {
-      return html`<span class="uk-cs-check" data-uk-check></span>`;
+      return html`<span class="uk-custom-select-check" data-uk-check></span>`;
     }
   }
 
@@ -293,7 +294,7 @@ export class Select extends BaseSelect {
   private renderSearch() {
     return this.searchable === true
       ? html`
-          <div class="uk-cs-search">
+          <div class="uk-custom-select-search">
             <span uk-search-icon></span>
             <input
               placeholder=${this.$i18n['search-placeholder']}
