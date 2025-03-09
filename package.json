@@ -6,16 +6,17 @@
   "scripts": {
     "dev": "vite",
     "build:core": "tsc && vite -c config/core.js build",
-    "build:icon": "tsc && vite -c config/icon.js build",
+    "build:icon": "tsc && vite -c config/icon.js build && rm src/static/icon.iife.js && mv dist/js/icon.iife.js src/static/",
     "build:wysiwyg": "tsc && vite -c config/wysiwyg.js build",
     "build:utilities": "vite -c config/utilities.js build",
-    "build:chart": "vite -c config/chart.js build",
+    "build:chart": "tsc && vite -c config/chart.js build && rm src/static/chart.iife.js && mv dist/js/chart.iife.js src/static/",
     "utils-alc:extract": "vite -c config/utilities-a-la-carte.js build",
     "utils-alc:merge": "cat dist/css/utilities-alc/*.css > dist/css/utilities.txt",
     "utils-alc:minify": "echo \"input=$(jq -sRr @uri dist/css/utilities.txt)\" | curl -X POST -H \"Content-Type: application/x-www-form-urlencoded\" -T - \"https://www.toptal.com/developers/cssminifier/api/raw\" -o dist/css/utilities.min.css",
     "build:utilities-alc": "npm run utils-alc:extract && npm run utils-alc:merge && npm run utils-alc:minify && rm dist/css/utilities.txt"
   },
   "dependencies": {
+    "@franken-ui/upstream": "^3.23.2",
     "@tiptap/core": "^2.6.6",
     "@tiptap/extension-character-count": "^2.6.6",
     "@tiptap/extension-link": "^2.6.6",

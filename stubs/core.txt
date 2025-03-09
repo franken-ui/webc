@@ -4,11 +4,9 @@ import * as LitDecorators from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
 //@ts-ignore
-import UIkit from '@franken-ui/upstream';
+import UIkit from '@franken-ui/upstream/dist/uikit-minimal.js';
 
 window.Lit = Lit;
 window.LitDecorators = LitDecorators;
 window.LitRepeat = { repeat };
 window.UIkit = UIkit;
-
-export * from './components/index.ts';
