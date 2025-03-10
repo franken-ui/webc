@@ -131,13 +131,6 @@ export class InputDate extends BaseCalendar {
   }
 
   render() {
-    if (
-      this['force-prevent-rerender'] &&
-      !!this.renderRoot.querySelector('[data-host-inner]')
-    ) {
-      return;
-    }
-
     return html`
       <div data-host-inner class="uk-datepicker">
         <div class="uk-position-relative">

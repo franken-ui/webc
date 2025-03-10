@@ -149,13 +149,6 @@ export class Command extends BaseSelect {
   }
 
   render() {
-    if (
-      this['force-prevent-rerender'] &&
-      !!this.renderRoot.querySelector('[data-host-inner]')
-    ) {
-      return;
-    }
-
     return html`
       <div
         data-host-inner

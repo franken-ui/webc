@@ -128,13 +128,6 @@ export class ThemeSwitcher extends Base {
   }
 
   render() {
-    if (
-      this['force-prevent-rerender'] &&
-      !!this.renderRoot.querySelector('[data-host-inner]')
-    ) {
-      return;
-    }
-
     return html`
       <div data-host-inner class="uk-theme-switcher ${this.$cls['div']}">
         ${Object.keys(this.keys).map(

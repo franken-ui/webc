@@ -67,6 +67,13 @@ export abstract class Base extends LitElement {
 
     this.initializeCls();
     this.initializeI18n();
+
+    if (
+      this['force-prevent-rerender'] &&
+      !!this.renderRoot.querySelector('[data-host-inner]')
+    ) {
+      this.renderRoot.querySelector('[data-host-inner]')?.remove();
+    }
   }
 
   protected createRenderRoot(): HTMLElement | DocumentFragment {

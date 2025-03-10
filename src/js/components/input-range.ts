@@ -163,13 +163,6 @@ export class InputRange extends Input {
   }
 
   render() {
-    if (
-      this['force-prevent-rerender'] &&
-      !!this.renderRoot.querySelector('[data-host-inner]')
-    ) {
-      return;
-    }
-
     const lowPercent = this.valueToPercent(this._lowValue);
     const highPercent = this.multiple
       ? this.valueToPercent(this._highValue)

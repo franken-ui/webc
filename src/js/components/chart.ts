@@ -85,13 +85,6 @@ export class Chart extends Base {
   }
 
   render() {
-    if (
-      this['force-prevent-rerender'] &&
-      !!this.renderRoot.querySelector('[data-host-inner]')
-    ) {
-      return;
-    }
-
     return html`
       <div data-host-inner class="uk-chart ${this.$cls['div']}"></div>
     `;

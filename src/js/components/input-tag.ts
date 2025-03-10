@@ -113,13 +113,6 @@ export class InputTag extends Input {
   }
 
   render() {
-    if (
-      this['force-prevent-rerender'] &&
-      !!this.renderRoot.querySelector('[data-host-inner]')
-    ) {
-      return;
-    }
-
     return html`
       <div
         data-host-inner
