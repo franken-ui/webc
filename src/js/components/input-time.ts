@@ -237,8 +237,15 @@ export class InputTime extends Input {
   }
 
   render() {
+    if (
+      this['force-prevent-rerender'] &&
+      !!this.renderRoot.querySelector('[data-host-inner]')
+    ) {
+      return;
+    }
+
     return html`
-      <div class="uk-input-time">
+      <div data-host-inner class="uk-input-time">
         ${this.renderInput({
           min: 1,
           max: 12,

@@ -461,8 +461,15 @@ export class Select extends BaseSelect {
   }
 
   render() {
+    if (
+      this['force-prevent-rerender'] &&
+      !!this.renderRoot.querySelector('[data-host-inner]')
+    ) {
+      return;
+    }
+
     return html`
-      <div class="uk-position-relative">
+      <div data-host-inner class="uk-position-relative">
         <button
           class="${this.$cls['button']}"
           type="button"

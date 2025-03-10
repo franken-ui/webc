@@ -19,8 +19,6 @@ export class Chart extends Base {
 
   protected observer: MutationObserver | null = null;
 
-  protected isRendered: boolean = false;
-
   connectedCallback(): void {
     super.connectedCallback();
 
@@ -87,7 +85,16 @@ export class Chart extends Base {
   }
 
   render() {
-    return html`<div class="uk-chart ${this.$cls['div']}"></div>`;
+    if (
+      this['force-prevent-rerender'] &&
+      !!this.renderRoot.querySelector('[data-host-inner]')
+    ) {
+      return;
+    }
+
+    return html`
+      <div data-host-inner class="uk-chart ${this.$cls['div']}"></div>
+    `;
   }
 }
 

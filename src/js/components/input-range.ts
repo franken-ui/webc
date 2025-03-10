@@ -163,6 +163,13 @@ export class InputRange extends Input {
   }
 
   render() {
+    if (
+      this['force-prevent-rerender'] &&
+      !!this.renderRoot.querySelector('[data-host-inner]')
+    ) {
+      return;
+    }
+
     const lowPercent = this.valueToPercent(this._lowValue);
     const highPercent = this.multiple
       ? this.valueToPercent(this._highValue)
@@ -207,7 +214,7 @@ export class InputRange extends Input {
     };
 
     return html`
-      <div class="uk-input-range">
+      <div data-host-inner class="uk-input-range">
         <div class="uk-input-range-runnable-track"></div>
         <div class="uk-input-range-track" style="${rangeStyle}"></div>
         ${renderKnob('low')} ${this.multiple ? renderKnob('high') : ''}

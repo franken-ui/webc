@@ -149,8 +149,20 @@ export class Command extends BaseSelect {
   }
 
   render() {
+    if (
+      this['force-prevent-rerender'] &&
+      !!this.renderRoot.querySelector('[data-host-inner]')
+    ) {
+      return;
+    }
+
     return html`
-      <div class="uk-modal uk-flex-top" id="${this.toggle}" uk-modal>
+      <div
+        data-host-inner
+        class="uk-modal uk-flex-top"
+        id="${this.toggle}"
+        data-uk-modal
+      >
         <div class="uk-modal-dialog uk-margin-auto-vertical">
           ${this.renderSearch()} ${this.renderList()}
         </div>

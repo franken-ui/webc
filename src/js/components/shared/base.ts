@@ -9,11 +9,16 @@ export abstract class Base extends LitElement {
   @property({ type: String })
   i18n: string = '';
 
+  @property({ type: Boolean })
+  'force-prevent-rerender': boolean = false;
+
   @state()
   protected $i18n: { [key: string]: string } = {};
 
   @state()
   protected $cls: { [key: string]: string } = {};
+
+  protected isRendered: boolean = false;
 
   protected get $locales() {
     const locales: { [key: string]: string | string[] } = {};

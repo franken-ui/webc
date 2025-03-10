@@ -520,8 +520,19 @@ export class Calendar extends BaseCalendar {
   }
 
   render() {
+    if (
+      this['force-prevent-rerender'] &&
+      !!this.renderRoot.querySelector('[data-host-inner]')
+    ) {
+      return;
+    }
+
     return html`
-      <div class="uk-cal ${this.$cls['calendar']}" role="application">
+      <div
+        data-host-inner
+        class="uk-cal ${this.$cls['calendar']}"
+        role="application"
+      >
         ${this.renderHeader()}
         <table role="grid" aria-label="Calendar">
           <thead>

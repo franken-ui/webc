@@ -22,8 +22,6 @@ export class ThemeSwitcher extends Base {
 
   private keys: OptionGrouped = {};
 
-  private isRendered: boolean = false;
-
   connectedCallback(): void {
     super.connectedCallback();
 
@@ -130,8 +128,15 @@ export class ThemeSwitcher extends Base {
   }
 
   render() {
+    if (
+      this['force-prevent-rerender'] &&
+      !!this.renderRoot.querySelector('[data-host-inner]')
+    ) {
+      return;
+    }
+
     return html`
-      <div class="uk-theme-switcher ${this.$cls['div']}">
+      <div data-host-inner class="uk-theme-switcher ${this.$cls['div']}">
         ${Object.keys(this.keys).map(
           a => html`
             <div class="uk-theme-switcher-key">

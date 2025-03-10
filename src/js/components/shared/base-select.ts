@@ -27,8 +27,6 @@ export abstract class BaseSelect extends Input {
 
   protected observer: MutationObserver | null = null;
 
-  protected isRendered: boolean = false;
-
   protected _options: OptionGrouped = {};
 
   protected selected: OptionItem | null = null;
