@@ -79,12 +79,12 @@
   </head>
   <body class="bg-background text-foreground">
     <div class="uk-container">
-      <uk-rte name="content">
-        <template>
-          <h1>Hello world</h1>
-        </template>
-      </uk-rte>
-      <uk-rte></uk-rte>
+      <uk-keyval cls-custom="table: uk-table-sm uk-table-striped">
+        <select hidden>
+          <option data-key="CARBON" value="1234"></option>
+          <option data-key="FRAMES_URL" value="https://example.com"></option>
+        </select>
+      </uk-keyval>
     </div>
   </body>
 </html>

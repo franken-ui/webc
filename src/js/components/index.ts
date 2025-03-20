@@ -7,3 +7,4 @@ export { Calendar } from './calendar';
 export { InputDate } from './input-date';
 export { InputTime } from './input-time';
 export { InputRange } from './input-range';
+export { Keyval } from './keyval';

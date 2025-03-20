@@ -50,3 +50,26 @@
 .uk-rte-link-close {
   @apply absolute right-2 top-2;
 }
+
+.uk-keyval {
+  border-radius: var(--uk-global-radius);
+  box-shadow: var(--uk-global-shadow);
+
+  @apply border border-border;
+}
+
+.uk-keyval-value-wrapper {
+  @apply w-full;
+}
+
+.uk-keyval-actions {
+  @apply flex flex-nowrap gap-x-2;
+}
+
+.uk-form-icon.uk-disabled {
+  @apply opacity-50;
+}
+
+.uk-inline:has(input[disabled]) .uk-form-icon {
+  opacity: 0.5;
+}
