@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  @apply text-muted-foreground pointer-events-none float-left h-0;
+}
+
+.ProseMirror {
+  @apply overflow-auto border border-input bg-transparent p-2 text-foreground;
+}
+
+.ProseMirror p:first-child {
+  @apply mt-0;
+}
+
+.ProseMirror p:last-child {
+  @apply mb-0;
+}
+
+.ProseMirror-focused {
+  @apply outline-none ring-1 ring-ring;
+}
+
+.uk-rte-header {
+  @apply flex flex-nowrap overflow-hidden rounded-t-md border border-b-0 border-border p-2;
+}
+
+.uk-rte-toolbar {
+  @apply -mb-10 flex w-full gap-x-3 overflow-x-scroll pb-10;
+}
+
+.uk-rte-toolbar-group {
+  @apply flex gap-1;
+}
+
+.uk-rte-toolbar-group button.uk-active {
+  @apply text-muted-foreground bg-muted;
+}
+
+.uk-rte-toolbar-group a {
+  @apply cursor-pointer;
+}
+
+.uk-rte-footer {
+  @apply rounded-b-md border border-t-0 border-border p-2 text-xs shadow-sm;
+}
+
+.uk-rte-link-close {
+  @apply absolute right-2 top-2;
+}

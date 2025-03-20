@@ -6,9 +6,9 @@ export default defineConfig({
     emptyOutDir: false,
     ...shared,
     lib: {
-      entry: 'src/js/wysiwyg.ts',
-      name: 'FRANKENUIWYSIWYG',
-      fileName: 'js/wysiwyg',
+      entry: 'src/js/rte.ts',
+      name: 'FRANKENUIRTE',
+      fileName: 'js/rte',
       formats: ['iife'],
     },
   },
