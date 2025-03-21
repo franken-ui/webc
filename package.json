@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build:core": "tsc && vite -c config/core.js build",
+    "build:core": "tsc && vite -c config/core.js build && rm src/static/core.iife.js && mv dist/js/core.iife.js src/static/",
     "build:icon": "tsc && vite -c config/icon.js build && rm src/static/icon.iife.js && mv dist/js/icon.iife.js src/static/",
     "build:rte": "tsc && vite -c config/rte.js build && rm src/static/rte.iife.js && mv dist/js/rte.iife.js src/static/",
     "build:utilities": "vite -c config/utilities.js build",
