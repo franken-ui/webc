@@ -1,15 +1,15 @@
-# Franken UI - Web Components
+# Franken UI
 
-This is a project designed to complement UIkit, filling in the gaps with the missing components of Franken UI.
+Franken UI is an open-source library of UI components. Under the hood, it uses UIkit 3 and extended with LitElement. The design is based on shadcn/ui.
 
 ## Documentations
 
-|               **Version**               |   **Status**   |
-|:---------------------------------------:|:--------------:|
-| [Version 2](https://franken-ui.dev)     | ⚡ Active       |
+|               **Version**               |   **Status**    |
+|:---------------------------------------:|:---------------:|
+| [Version 2](https://franken-ui.dev)     | ⚡ Active        |
 | [Version 1](https://uno.franken-ui.dev) | 💀 Discontinued |
 
-## Sponsors
+## Support
 
 Franken UI is an independent, MIT-licensed open source project with its ongoing development made possible entirely by the support of the community. If Franken UI has been beneficial to you in any way, please consider contributing by making a donation, which will help maintain and improve it for the benefit of everyone.
 
@@ -38,6 +38,10 @@ Thanks to the following:
   </tr>
 </table>
 
+## Hire Me
+
+I maybe open to new projects and collaborations! Feel free to [get in touch](mailto:reden@franken-ui.dev) to discuss potential collaborations or freelance work.
+
 ## License
 
-Licensed under the [MIT license](https://github.com/franken-ui/webc/blob/master/LICENSE.md).
+Licensed under the [MIT license](https://github.com/franken-ui/ui/blob/master/LICENSE.md).
