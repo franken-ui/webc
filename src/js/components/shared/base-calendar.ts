@@ -27,6 +27,9 @@ export abstract class BaseCalendar extends Input {
   @property({ type: String })
   max: string = '';
 
+  @property({ type: Number })
+  'weekday-abbr-length': number = 3;
+
   @state()
   protected $i18n: {
     [key: string]: string;

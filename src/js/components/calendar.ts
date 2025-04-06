@@ -257,7 +257,7 @@ export class Calendar extends BaseCalendar {
       weekdays.push(weekdays.shift()!);
     }
 
-    return weekdays.map(a => a.substring(0, 2));
+    return weekdays.map(a => a.substring(0, this['weekday-abbr-length']));
   }
 
   private get calendar(): Day[][] {
@@ -443,13 +443,13 @@ export class Calendar extends BaseCalendar {
           ${info.monthName}
         </button>
         <div class="uk-drop uk-dropdown" data-uk-dropdown="mode: click;">
-          <ul class="uk-dropdown-nav uk-nav">
+          <ul class="uk-nav uk-dropdown-nav">
             ${months.map(
               (_, b) => html`
                 <li
-                  class="uk-cal-month-dropdown-item ${b + 1 === info.month
+                  class="${b + 1 === info.month
                     ? 'uk-active'
-                    : ''}"
+                    : ''} uk-cal-month-dropdown-item"
                 >
                   <a @click="${() => this.selectMonth(b)}">
                     ${months[b]}
@@ -495,7 +495,7 @@ export class Calendar extends BaseCalendar {
     return html`
       <div class="uk-cal-header">
         <button
-          class="uk-btn uk-btn-default uk-btn-sm uk-btn-icon"
+          class="uk-btn uk-btn-default uk-btn-icon uk-btn-sm"
           @click=${() => this.navigateMonth('prev')}
           type="button"
           data-uk-pgn-previous
@@ -510,7 +510,7 @@ export class Calendar extends BaseCalendar {
               `}
         </div>
         <button
-          class="uk-btn uk-btn-default uk-btn-sm uk-btn-icon"
+          class="uk-btn uk-btn-default uk-btn-icon uk-btn-sm"
           @click=${() => this.navigateMonth('next')}
           type="button"
           data-uk-pgn-next
@@ -523,7 +523,7 @@ export class Calendar extends BaseCalendar {
     return html`
       <div
         data-host-inner
-        class="uk-cal ${this.$cls['calendar']}"
+        class="${this.$cls['calendar']} uk-cal"
         role="application"
       >
         ${this.renderHeader()}
