@@ -1,0 +1,33 @@
+{
+  "name": "webc",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite"
+  },
+  "dependencies": {
+    "lit": "^3.3.0"
+  },
+  "devDependencies": {
+    "@open-wc/eslint-config": "^12.0.3",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.5",
+    "prettier": "^3.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.11",
+    "typescript": "~5.8.3",
+    "vite": "^6.3.5"
+  },
+  "eslintConfig": {
+    "extends": [
+      "@open-wc/eslint-config"
+    ]
+  },
+  "prettier": {
+    "singleQuote": true,
+    "arrowParens": "avoid",
+    "plugins": [
+      "prettier-plugin-tailwindcss"
+    ]
+  }
+}
