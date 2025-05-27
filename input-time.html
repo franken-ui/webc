@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Input Time</title>
+    <link rel="stylesheet" href="/fonts/geist-font/style.css" />
+    <link rel="stylesheet" href="./tw.css" />
+    <script type="module" src="/src/js/core.ts"></script>
+    <script type="module" src="/src/js/icon.ts"></script>
+    <script>
+      const htmlElement = document.documentElement;
+
+      const __FRANKEN__ = JSON.parse(
+        localStorage.getItem('__FRANKEN__') || '{}',
+      );
+
+      if (
+        __FRANKEN__.mode === 'dark' ||
+        (!__FRANKEN__.mode &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches)
+      ) {
+        htmlElement.classList.add('dark');
+      } else {
+        htmlElement.classList.remove('dark');
+      }
+
+      htmlElement.classList.add(__FRANKEN__.theme || 'uk-theme-zinc');
+      htmlElement.classList.add(__FRANKEN__.radii || 'uk-radii-md');
+      htmlElement.classList.add(__FRANKEN__.shadows || 'uk-shadows-sm');
+      htmlElement.classList.add(__FRANKEN__.font || 'uk-font-sm');
+      htmlElement.classList.add(__FRANKEN__.chart || 'uk-chart-default');
+    </script>
+  </head>
+  <body class="bg-background font-geist-sans text-foreground antialiased">
+    <div class="uk-container my-10">
+      <div class="mb-2 flex justify-center">
+        <a
+          class="uk-focus-visible text-muted-foreground inline-flex justify-between gap-x-2"
+          href="/"
+        >
+          <uk-icon icon="arrow-left"></uk-icon>
+          <span class="uk-text-small">Back</span>
+        </a>
+      </div>
+      <h1 class="uk-h1 mb-6 text-center">Input Time</h1>
+
+      <ul class="uk-accordion" data-uk-accordion>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            Basic
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-time></uk-input-time>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">name</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-time name="time"></uk-input-time>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">now</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-time name="time" now></uk-input-time>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">cls-custom</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-time
+                name="time"
+                now
+                cls-custom="uk-form-sm uk-form-destructive"
+              ></uk-input-time>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">value</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-time name="time" value="20:00"></uk-input-time>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">disabled</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-time name="time" value="20:00" disabled></uk-input-time>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">autofocus</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-time
+                name="time"
+                value="20:00"
+                autofocus
+              ></uk-input-time>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Event:
+              <code class="uk-codespan">uk-input-time:input</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-time id="time" value="20:00"></uk-input-time>
+            </div>
+
+            <script>
+              document
+                .getElementById('time')
+                .addEventListener('uk-input-time:input', e => {
+                  console.log(e.detail);
+                });
+            </script>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>

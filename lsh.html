@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LSH</title>
+    <link rel="stylesheet" href="/fonts/geist-font/style.css" />
+    <link rel="stylesheet" href="./tw.css" />
+    <script type="module" src="/src/js/core.ts"></script>
+    <script type="module" src="/src/js/icon.ts"></script>
+    <script type="module" src="/src/js/chart.ts"></script>
+    <script>
+      const htmlElement = document.documentElement;
+
+      const __FRANKEN__ = JSON.parse(
+        localStorage.getItem('__FRANKEN__') || '{}',
+      );
+
+      if (
+        __FRANKEN__.mode === 'dark' ||
+        (!__FRANKEN__.mode &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches)
+      ) {
+        htmlElement.classList.add('dark');
+      } else {
+        htmlElement.classList.remove('dark');
+      }
+
+      htmlElement.classList.add(__FRANKEN__.theme || 'uk-theme-zinc');
+      htmlElement.classList.add(__FRANKEN__.radii || 'uk-radii-md');
+      htmlElement.classList.add(__FRANKEN__.shadows || 'uk-shadows-sm');
+      htmlElement.classList.add(__FRANKEN__.font || 'uk-font-sm');
+      htmlElement.classList.add(__FRANKEN__.chart || 'uk-chart-default');
+    </script>
+  </head>
+  <body class="bg-background font-geist-sans text-foreground antialiased">
+    <div class="uk-container my-10">
+      <div class="mb-2 flex justify-center">
+        <a
+          class="uk-focus-visible text-muted-foreground inline-flex justify-between gap-x-2"
+          href="/"
+        >
+          <uk-icon icon="arrow-left"></uk-icon>
+          <span class="uk-text-small">Back</span>
+        </a>
+      </div>
+      <h1 class="uk-h1 mb-6 text-center">LSH</h1>
+
+      <div class="flex gap-x-4">
+        <div class="flex-1">
+          <div class="space-y-6">
+            <div class="">
+              <div class="uk-btn uk-btn-primary">Primary</div>
+            </div>
+            <div class="">
+              <input class="uk-checkbox" type="checkbox" />
+            </div>
+            <div class="">
+              <input class="uk-radio" type="radio" />
+            </div>
+            <div class="">
+              <input class="uk-input" type="text" placeholder="Input" />
+            </div>
+            <p class="uk-paragraph">
+              The king thought long and hard, and finally came up with a
+              <a class="uk-link" href="#">brilliant plan</a>: he would tax the
+              jokes in the kingdom.
+            </p>
+            <div class="uk-chart-container max-w-md">
+              <div class="p-4">
+                <div class="uk-card-title">Area Chart - Smooth</div>
+                <div class="uk-text-sm mt-2">January - June 2024</div>
+              </div>
+
+              <div class="px-4">
+                <uk-chart>
+                  <script type="application/json">
+                    {
+                      "series": [
+                        {
+                          "name": "Desktops",
+                          "data": [186, 305, 237, 73, 209, 214]
+                        }
+                      ],
+                      "chart": {
+                        "type": "area",
+                        "zoom": {
+                          "enabled": false
+                        },
+                        "toolbar": {
+                          "show": false
+                        }
+                      },
+                      "dataLabels": {
+                        "enabled": false
+                      },
+                      "stroke": {
+                        "curve": "smooth",
+                        "width": 2
+                      },
+                      "colors": ["hsl(var(--chart-1))"],
+                      "grid": {
+                        "row": {
+                          "colors": []
+                        },
+                        "borderColor": "hsl(var(--border))"
+                      },
+                      "xaxis": {
+                        "categories": [
+                          "Jan",
+                          "Feb",
+                          "Mar",
+                          "Apr",
+                          "May",
+                          "Jun"
+                        ],
+                        "tooltip": {
+                          "enabled": false
+                        },
+                        "labels": {
+                          "style": {
+                            "colors": "hsl(var(--muted-foreground))"
+                          }
+                        },
+                        "axisBorder": {
+                          "show": false
+                        },
+                        "axisTicks": {
+                          "show": false
+                        }
+                      },
+                      "yaxis": {
+                        "labels": {
+                          "show": false
+                        }
+                      },
+                      "tooltip": {
+                        "title": {
+                          "show": false
+                        }
+                      }
+                    }
+                  </script>
+                </uk-chart>
+              </div>
+
+              <div class="p-4">
+                <div class="flex items-center gap-x-2 font-medium leading-none">
+                  Trending up by 5.2% this month
+                  <uk-icon icon="trending-up"></uk-icon>
+                </div>
+                <div class="text-muted-foreground mt-2 leading-none">
+                  Showing total visitors for the last 6 months
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="w-1/4 flex-none">
+          <!-- Theme options -->
+          <div class="space-y-6">
+            <!-- Theme Colors -->
+            <div>
+              <div class="uk-form-label mb-2">Theme</div>
+              <div class="grid grid-cols-3 gap-2">
+                <uk-lsh value="uk-theme-zinc" group="theme">
+                  <template>
+                    <div
+                      class="flex items-center gap-2 rounded border p-2 hover:bg-muted"
+                    >
+                      <span
+                        class="h-4 w-4 rounded"
+                        style="background: #52525b"
+                      ></span>
+                      <span class="text-sm">Zinc</span>
+                    </div>
+                  </template>
+                </uk-lsh>
+
+                <uk-lsh value="uk-theme-slate" group="theme">
+                  <template>
+                    <div
+                      class="flex items-center gap-2 rounded border p-2 hover:bg-muted"
+                    >
+                      <span
+                        class="h-4 w-4 rounded"
+                        style="background: #64748b"
+                      ></span>
+                      <span class="text-sm">Slate</span>
+                    </div>
+                  </template>
+                </uk-lsh>
+
+                <uk-lsh value="uk-theme-stone" group="theme">
+                  <template>
+                    <div
+                      class="flex items-center gap-2 rounded border p-2 hover:bg-muted"
+                    >
+                      <span
+                        class="h-4 w-4 rounded"
+                        style="background: #78716c"
+                      ></span>
+                      <span class="text-sm">Stone</span>
+                    </div>
+                  </template>
+                </uk-lsh>
+
+                <uk-lsh value="uk-theme-red" group="theme">
+                  <template>
+                    <div
+                      class="flex items-center gap-2 rounded border p-2 hover:bg-muted"
+                    >
+                      <span
+                        class="h-4 w-4 rounded"
+                        style="background: #dc2626"
+                      ></span>
+                      <span class="text-sm">Red</span>
+                    </div>
+                  </template>
+                </uk-lsh>
+
+                <uk-lsh value="uk-theme-blue" group="theme">
+                  <template>
+                    <div
+                      class="flex items-center gap-2 rounded border p-2 hover:bg-muted"
+                    >
+                      <span
+                        class="h-4 w-4 rounded"
+                        style="background: #2563eb"
+                      ></span>
+                      <span class="text-sm">Blue</span>
+                    </div>
+                  </template>
+                </uk-lsh>
+
+                <uk-lsh value="uk-theme-green" group="theme">
+                  <template>
+                    <div
+                      class="flex items-center gap-2 rounded border p-2 hover:bg-muted"
+                    >
+                      <span
+                        class="h-4 w-4 rounded"
+                        style="background: #16a34a"
+                      ></span>
+                      <span class="text-sm">Green</span>
+                    </div>
+                  </template>
+                </uk-lsh>
+              </div>
+            </div>
+
+            <!-- Border Radius -->
+            <div>
+              <div class="uk-form-label mb-2">Radii</div>
+              <div class="space-y-1">
+                <uk-lsh value="uk-radii-none" group="radii">
+                  <template>
+                    <div
+                      class="w-full rounded border p-2 text-left hover:bg-muted"
+                    >
+                      None
+                    </div>
+                  </template>
+                </uk-lsh>
+
+                <uk-lsh value="uk-radii-sm" group="radii">
+                  <template>
+                    <div
+                      class="w-full rounded border p-2 text-left hover:bg-muted"
+                    >
+                      Small
+                    </div>
+                  </template>
+                </uk-lsh>
+
+                <uk-lsh value="uk-radii-md" group="radii">
+                  <template>
+                    <div
+                      class="w-full rounded border p-2 text-left hover:bg-muted"
+                    >
+                      Medium
+                    </div>
+                  </template>
+                </uk-lsh>
+
+                <uk-lsh value="uk-radii-lg" group="radii">
+                  <template>
+                    <div
+                      class="w-full rounded border p-2 text-left hover:bg-muted"
+                    >
+                      Large
+                    </div>
+                  </template>
+                </uk-lsh>
+              </div>
+            </div>
+
+            <!-- Shadows -->
+            <div>
+              <div class="uk-form-label mb-2">Shadows</div>
+              <div class="grid grid-cols-2 gap-2">
+                <uk-lsh value="uk-shadows-none" group="shadows">
+                  <template>
+                    <div class="rounded border p-3 text-center hover:bg-muted">
+                      None
+                    </div>
+                  </template>
+                </uk-lsh>
+
+                <uk-lsh value="uk-shadows-sm" group="shadows">
+                  <template>
+                    <div class="rounded border p-3 text-center hover:bg-muted">
+                      Small
+                    </div>
+                  </template>
+                </uk-lsh>
+
+                <uk-lsh value="uk-shadows-md" group="shadows">
+                  <template>
+                    <div class="rounded border p-3 text-center hover:bg-muted">
+                      Medium
+                    </div>
+                  </template>
+                </uk-lsh>
+
+                <uk-lsh value="uk-shadows-lg" group="shadows">
+                  <template>
+                    <div class="rounded border p-3 text-center hover:bg-muted">
+                      Large
+                    </div>
+                  </template>
+                </uk-lsh>
+              </div>
+            </div>
+
+            <!-- Font Size -->
+            <div>
+              <div class="uk-form-label mb-2">Font</div>
+              <div class="space-y-1">
+                <uk-lsh value="uk-font-sm" group="font">
+                  <template>
+                    <div
+                      class="w-full rounded border p-2 text-left hover:bg-muted"
+                    >
+                      Small
+                    </div>
+                  </template>
+                </uk-lsh>
+
+                <uk-lsh value="uk-font-base" group="font">
+                  <template>
+                    <div
+                      class="w-full rounded border p-2 text-left hover:bg-muted"
+                    >
+                      Default
+                    </div>
+                  </template>
+                </uk-lsh>
+              </div>
+            </div>
+
+            <!-- Chart Theme -->
+            <div>
+              <div class="uk-form-label mb-2">Chart</div>
+              <div class="space-y-1">
+                <uk-lsh value="uk-chart-default" group="chart">
+                  <template>
+                    <div
+                      class="flex items-center gap-2 rounded border p-2 hover:bg-muted"
+                    >
+                      <span
+                        class="h-4 w-4 rounded"
+                        style="background: #e76e50"
+                      ></span>
+                      <span>Default</span>
+                    </div>
+                  </template>
+                </uk-lsh>
+
+                <uk-lsh value="uk-chart-sapphire" group="chart">
+                  <template>
+                    <div
+                      class="flex items-center gap-2 rounded border p-2 hover:bg-muted"
+                    >
+                      <span
+                        class="h-4 w-4 rounded"
+                        style="background: #2563eb"
+                      ></span>
+                      <span>Sapphire</span>
+                    </div>
+                  </template>
+                </uk-lsh>
+
+                <uk-lsh value="uk-chart-ruby" group="chart">
+                  <template>
+                    <div
+                      class="flex items-center gap-2 rounded border p-2 hover:bg-muted"
+                    >
+                      <span
+                        class="h-4 w-4 rounded"
+                        style="background: #e21d48"
+                      ></span>
+                      <span>Ruby</span>
+                    </div>
+                  </template>
+                </uk-lsh>
+              </div>
+            </div>
+
+            <!-- Light/Dark Mode -->
+            <div>
+              <div class="uk-form-label mb-2">Mode</div>
+              <div class="flex gap-2">
+                <uk-lsh value="light" group="mode">
+                  <template>
+                    <div
+                      class="flex items-center gap-2 rounded border p-3 hover:bg-muted"
+                    >
+                      <uk-icon icon="sun"></uk-icon>
+                      <span>Light</span>
+                    </div>
+                  </template>
+                </uk-lsh>
+
+                <uk-lsh value="dark" group="mode">
+                  <template>
+                    <div
+                      class="flex items-center gap-2 rounded border p-3 hover:bg-muted"
+                    >
+                      <uk-icon icon="moon"></uk-icon>
+                      <span>Dark</span>
+                    </div>
+                  </template>
+                </uk-lsh>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

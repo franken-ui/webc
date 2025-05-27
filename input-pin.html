@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Input PIN</title>
+    <link rel="stylesheet" href="/fonts/geist-font/style.css" />
+    <link rel="stylesheet" href="./tw.css" />
+    <script type="module" src="/src/js/core.ts"></script>
+    <script type="module" src="/src/js/icon.ts"></script>
+    <script>
+      const htmlElement = document.documentElement;
+
+      const __FRANKEN__ = JSON.parse(
+        localStorage.getItem('__FRANKEN__') || '{}',
+      );
+
+      if (
+        __FRANKEN__.mode === 'dark' ||
+        (!__FRANKEN__.mode &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches)
+      ) {
+        htmlElement.classList.add('dark');
+      } else {
+        htmlElement.classList.remove('dark');
+      }
+
+      htmlElement.classList.add(__FRANKEN__.theme || 'uk-theme-zinc');
+      htmlElement.classList.add(__FRANKEN__.radii || 'uk-radii-md');
+      htmlElement.classList.add(__FRANKEN__.shadows || 'uk-shadows-sm');
+      htmlElement.classList.add(__FRANKEN__.font || 'uk-font-sm');
+      htmlElement.classList.add(__FRANKEN__.chart || 'uk-chart-default');
+    </script>
+  </head>
+  <body class="bg-background font-geist-sans text-foreground antialiased">
+    <div class="uk-container my-10">
+      <div class="mb-2 flex justify-center">
+        <a
+          class="uk-focus-visible text-muted-foreground inline-flex justify-between gap-x-2"
+          href="/"
+        >
+          <uk-icon icon="arrow-left"></uk-icon>
+          <span class="uk-text-small">Back</span>
+        </a>
+      </div>
+      <h1 class="uk-h1 mb-6 text-center">Input PIN</h1>
+
+      <ul class="uk-accordion" data-uk-accordion>
+        <!-- Basic -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            Basic
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-pin></uk-input-pin>
+            </div>
+          </div>
+        </li>
+
+        <!-- Different lengths -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">length</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="flex flex-col gap-4">
+              <div class="">
+                <label class="uk-form-label mb-2 block">4-digit PIN:</label>
+                <uk-input-pin length="4"></uk-input-pin>
+              </div>
+
+              <div class="">
+                <label class="uk-form-label mb-2 block">8-digit PIN:</label>
+                <uk-input-pin length="8"></uk-input-pin>
+              </div>
+            </div>
+          </div>
+        </li>
+
+        <!-- Autofocus -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">autofocus</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-pin autofocus></uk-input-pin>
+            </div>
+          </div>
+        </li>
+
+        <!-- Disabled state -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">disabled</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-pin disabled></uk-input-pin>
+            </div>
+          </div>
+        </li>
+
+        <!-- Custom styling -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">cls-custom</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-pin cls-custom="uk-form-destructive"></uk-input-pin>
+            </div>
+          </div>
+        </li>
+
+        <!-- Form integration -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">name</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <form
+                id="complete-form"
+                class="space-y-2"
+                onsubmit="event.preventDefault(); alert('Form data: ' + new FormData(this).get('pin'));"
+              >
+                <div class="space-y-2">
+                  <label class="uk-form-label">Enter PIN:</label>
+                  <div class="uk-form-controls">
+                    <uk-input-pin name="pin" length="4" required></uk-input-pin>
+                  </div>
+                </div>
+                <div>
+                  <button class="uk-btn uk-btn-primary" type="submit">
+                    Verify PIN
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </li>
+
+        <!-- Event handling -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Event:
+              <code class="uk-codespan">uk-input-pin:input</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <div class="space-y-2">
+                <uk-input-pin id="event-pin" length="4"></uk-input-pin>
+                <div>Current value: <span id="pin-value">____</span></div>
+              </div>
+              <script>
+                document
+                  .getElementById('event-pin')
+                  .addEventListener('uk-input-pin:input', e => {
+                    document.getElementById('pin-value').textContent =
+                      e.detail.value || '____';
+                  });
+              </script>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>

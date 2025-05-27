@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Command</title>
+    <link rel="stylesheet" href="/fonts/geist-font/style.css" />
+    <link rel="stylesheet" href="./tw.css" />
+    <script type="module" src="/src/js/core.ts"></script>
+    <script type="module" src="/src/js/icon.ts"></script>
+    <script>
+      const htmlElement = document.documentElement;
+
+      const __FRANKEN__ = JSON.parse(
+        localStorage.getItem('__FRANKEN__') || '{}',
+      );
+
+      if (
+        __FRANKEN__.mode === 'dark' ||
+        (!__FRANKEN__.mode &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches)
+      ) {
+        htmlElement.classList.add('dark');
+      } else {
+        htmlElement.classList.remove('dark');
+      }
+
+      htmlElement.classList.add(__FRANKEN__.theme || 'uk-theme-zinc');
+      htmlElement.classList.add(__FRANKEN__.radii || 'uk-radii-md');
+      htmlElement.classList.add(__FRANKEN__.shadows || 'uk-shadows-sm');
+      htmlElement.classList.add(__FRANKEN__.font || 'uk-font-sm');
+      htmlElement.classList.add(__FRANKEN__.chart || 'uk-chart-default');
+    </script>
+  </head>
+  <body class="bg-background font-geist-sans text-foreground antialiased">
+    <div class="uk-container my-10">
+      <div class="mb-2 flex justify-center">
+        <a
+          class="uk-focus-visible text-muted-foreground inline-flex justify-between gap-x-2"
+          href="/"
+        >
+          <uk-icon icon="arrow-left"></uk-icon>
+          <span class="uk-text-small">Back</span>
+        </a>
+      </div>
+      <h1 class="uk-h1 mb-6 text-center">Command</h1>
+
+      <ul class="grid grid-cols-1 gap-y-8">
+        <li>
+          <div class="flex items-center gap-x-2">
+            <span class="font-medium">Basic</span>
+            <kbd class="uk-kbd">Ctrl + J</kbd>
+          </div>
+
+          <uk-command key="j">
+            <select hidden>
+              <optgroup label="Suggestions">
+                <option data-icon="calendar" value="/path/to/calendar">
+                  Calendar
+                </option>
+                <option data-icon="smile" value="/path/to/search-emoji">
+                  Search Emoji
+                </option>
+                <option
+                  data-icon="calculator"
+                  disabled
+                  value="/path/to/calculator"
+                >
+                  Calculator
+                </option>
+              </optgroup>
+              <optgroup label="Settings">
+                <option data-icon="user" value="/path/to/profile">
+                  Profile
+                </option>
+                <option data-icon="credit-card" value="/path/to/billing">
+                  Billing
+                </option>
+                <option data-icon="settings" value="/path/to/settings">
+                  Settings
+                </option>
+              </optgroup>
+            </select>
+          </uk-command>
+        </li>
+        <li>
+          <div class="flex items-center gap-x-2">
+            <span>
+              <span class="font-medium">Attr:</span>
+              <code class="uk-codespan">modifier</code>
+            </span>
+            <kbd class="uk-kbd">Alt + J</kbd>
+          </div>
+
+          <uk-command modifier="alt" key="j">
+            <select hidden>
+              <optgroup label="Suggestions">
+                <option data-icon="calendar" value="/path/to/calendar">
+                  Calendar
+                </option>
+                <option data-icon="smile" value="/path/to/search-emoji">
+                  Search Emoji
+                </option>
+                <option
+                  data-icon="calculator"
+                  disabled
+                  value="/path/to/calculator"
+                >
+                  Calculator
+                </option>
+              </optgroup>
+              <optgroup label="Settings">
+                <option data-icon="user" value="/path/to/profile">
+                  Profile
+                </option>
+                <option data-icon="credit-card" value="/path/to/billing">
+                  Billing
+                </option>
+                <option data-icon="settings" value="/path/to/settings">
+                  Settings
+                </option>
+              </optgroup>
+            </select>
+          </uk-command>
+        </li>
+        <li>
+          <div class="flex items-center gap-x-2">
+            <span>
+              <span class="font-medium">Event:</span>
+              <code class="uk-codespan">uk-command:search</code>,
+              <code class="uk-codespan">uk-command:click</code>
+            </span>
+            <kbd class="uk-kbd">Alt + X</kbd>
+          </div>
+
+          <uk-command id="command" modifier="alt" key="x">
+            <select hidden>
+              <optgroup label="Suggestions">
+                <option
+                  data-icon="calendar"
+                  value="/path/to/calendar"
+                  data-modifier="alt"
+                  data-key="p"
+                >
+                  Calendar
+                </option>
+                <option data-icon="smile" value="/path/to/search-emoji">
+                  Search Emoji
+                </option>
+                <option
+                  data-icon="calculator"
+                  disabled
+                  value="/path/to/calculator"
+                >
+                  Calculator
+                </option>
+              </optgroup>
+              <optgroup label="Settings">
+                <option data-icon="user" value="/path/to/profile">
+                  Profile
+                </option>
+                <option data-icon="credit-card" value="/path/to/billing">
+                  Billing
+                </option>
+                <option data-icon="settings" value="/path/to/settings">
+                  Settings
+                </option>
+              </optgroup>
+            </select>
+          </uk-command>
+
+          <script>
+            const el = document.getElementById('command');
+
+            el.addEventListener('uk-command:search', e => {
+              console.log(e.detail);
+            });
+
+            el.addEventListener('uk-command:click', e => {
+              console.log(e.detail);
+            });
+          </script>
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>

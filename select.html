@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Select</title>
+    <link rel="stylesheet" href="/fonts/geist-font/style.css" />
+    <link rel="stylesheet" href="./tw.css" />
+    <script type="module" src="/src/js/core.ts"></script>
+    <script type="module" src="/src/js/icon.ts"></script>
+    <script>
+      const htmlElement = document.documentElement;
+
+      const __FRANKEN__ = JSON.parse(
+        localStorage.getItem('__FRANKEN__') || '{}',
+      );
+
+      if (
+        __FRANKEN__.mode === 'dark' ||
+        (!__FRANKEN__.mode &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches)
+      ) {
+        htmlElement.classList.add('dark');
+      } else {
+        htmlElement.classList.remove('dark');
+      }
+
+      htmlElement.classList.add(__FRANKEN__.theme || 'uk-theme-zinc');
+      htmlElement.classList.add(__FRANKEN__.radii || 'uk-radii-md');
+      htmlElement.classList.add(__FRANKEN__.shadows || 'uk-shadows-sm');
+      htmlElement.classList.add(__FRANKEN__.font || 'uk-font-sm');
+      htmlElement.classList.add(__FRANKEN__.chart || 'uk-chart-default');
+    </script>
+  </head>
+  <body class="bg-background font-geist-sans text-foreground antialiased">
+    <div class="uk-container my-10">
+      <div class="mb-2 flex justify-center">
+        <a
+          class="uk-focus-visible text-muted-foreground inline-flex justify-between gap-x-2"
+          href="/"
+        >
+          <uk-icon icon="arrow-left"></uk-icon>
+          <span class="uk-text-small">Back</span>
+        </a>
+      </div>
+      <h1 class="uk-h1 mb-6 text-center">Select</h1>
+
+      <ul class="uk-accordion" data-uk-accordion>
+        <!-- Basic usage -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            Basic
+            <span class="uk-accordion-icon"
+              ><uk-icon icon="chevron-down"></uk-icon
+            ></span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-select
+                cls-custom="button: uk-input-fake; dropdown: w-full"
+                placeholder="Choose a fruit"
+              >
+                <select hidden>
+                  <option value="">Select</option>
+                  <option value="apple">Apple</option>
+                  <option value="banana">Banana</option>
+                  <option value="orange">Orange</option>
+                </select>
+              </uk-select>
+            </div>
+          </div>
+        </li>
+
+        <!-- Multiple selection -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>Attr: <code class="uk-codespan">multiple</code></span>
+            <span class="uk-accordion-icon"
+              ><uk-icon icon="chevron-down"></uk-icon
+            ></span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-select
+                cls-custom="button: uk-input-fake; dropdown: w-full"
+                multiple
+                placeholder="Pick colors"
+              >
+                <select hidden>
+                  <option value="red">Red</option>
+                  <option value="green">Green</option>
+                  <option value="blue">Blue</option>
+                  <option value="yellow">Yellow</option>
+                </select>
+              </uk-select>
+            </div>
+          </div>
+        </li>
+
+        <!-- Searchable -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>Attr: <code class="uk-codespan">searchable</code></span>
+            <span class="uk-accordion-icon"
+              ><uk-icon icon="chevron-down"></uk-icon
+            ></span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-select
+                cls-custom="button: uk-input-fake; dropdown: w-full"
+                searchable
+                placeholder="Search for a city"
+              >
+                <select hidden>
+                  <option value="ny">New York</option>
+                  <option value="la">Los Angeles</option>
+                  <option value="sf">San Francisco</option>
+                  <option value="chi">Chicago</option>
+                </select>
+              </uk-select>
+            </div>
+          </div>
+        </li>
+
+        <!-- Insertable -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>Attr: <code class="uk-codespan">insertable</code></span>
+            <span class="uk-accordion-icon"
+              ><uk-icon icon="chevron-down"></uk-icon
+            ></span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-select
+                cls-custom="button: uk-input-fake; dropdown: w-full"
+                insertable
+                placeholder="Add or select"
+              >
+                <select hidden>
+                  <option value="cat">Cat</option>
+                  <option value="dog">Dog</option>
+                  <option value="bird">Bird</option>
+                </select>
+              </uk-select>
+            </div>
+          </div>
+        </li>
+
+        <!-- Custom icon -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>Attr: <code class="uk-codespan">icon</code></span>
+            <span class="uk-accordion-icon"
+              ><uk-icon icon="chevron-down"></uk-icon
+            ></span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-select
+                cls-custom="button: uk-input-fake justify-between; dropdown: w-full"
+                icon="star"
+                placeholder="With icon"
+              >
+                <select hidden>
+                  <option value="1">One</option>
+                  <option value="2">Two</option>
+                  <option value="3">Three</option>
+                </select>
+              </uk-select>
+            </div>
+          </div>
+        </li>
+
+        <!-- Custom drop config -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>Attr: <code class="uk-codespan">drop</code></span>
+            <span class="uk-accordion-icon"
+              ><uk-icon icon="chevron-down"></uk-icon
+            ></span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-select
+                cls-custom="button: uk-input-fake; dropdown: w-full"
+                drop="mode: click; animation: uk-anmt-slide-top-sm"
+                placeholder="slide-top-sm"
+              >
+                <select hidden>
+                  <option value="a">A</option>
+                  <option value="b">B</option>
+                  <option value="c">C</option>
+                </select>
+              </uk-select>
+            </div>
+          </div>
+        </li>
+
+        <!-- Disabled -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>Attr: <code class="uk-codespan">disabled</code></span>
+            <span class="uk-accordion-icon"
+              ><uk-icon icon="chevron-down"></uk-icon
+            ></span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-select
+                cls-custom="button: uk-input-fake; dropdown: w-full"
+                disabled
+                placeholder="Disabled select"
+              >
+                <select hidden>
+                  <option value="1">One</option>
+                  <option value="2">Two</option>
+                </select>
+              </uk-select>
+            </div>
+          </div>
+        </li>
+
+        <!-- Required -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>Attr: <code class="uk-codespan">required</code></span>
+            <span class="uk-accordion-icon"
+              ><uk-icon icon="chevron-down"></uk-icon
+            ></span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <form
+                onsubmit="event.preventDefault(); alert('Form submitted!');"
+              >
+                <uk-select
+                  cls-custom="button: uk-input-fake; dropdown: w-full"
+                  name="pet"
+                  required
+                  placeholder="Required"
+                >
+                  <select hidden>
+                    <option value="">Select</option>
+                    <option value="cat">Cat</option>
+                    <option value="dog">Dog</option>
+                  </select>
+                </uk-select>
+                <button class="uk-btn uk-btn-primary mt-2" type="submit">
+                  Submit
+                </button>
+              </form>
+            </div>
+          </div>
+        </li>
+
+        <!-- Form integration -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>Attr: <code class="uk-codespan">name</code></span>
+            <span class="uk-accordion-icon"
+              ><uk-icon icon="chevron-down"></uk-icon
+            ></span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <form
+                id="select-form"
+                onsubmit="event.preventDefault(); alert('Selected: ' + new FormData(this).get('myselect'))"
+              >
+                <uk-select
+                  cls-custom="button: uk-input-fake; dropdown: w-full"
+                  name="myselect"
+                  placeholder="Form select"
+                >
+                  <select hidden>
+                    <option value="">Select</option>
+                    <option value="a">A</option>
+                    <option value="b">B</option>
+                  </select>
+                </uk-select>
+                <button class="uk-btn uk-btn-primary mt-2" type="submit">
+                  Submit
+                </button>
+              </form>
+            </div>
+          </div>
+        </li>
+
+        <!-- i18n -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>Attr: <code class="uk-codespan">i18n</code></span>
+            <span class="uk-accordion-icon"
+              ><uk-icon icon="chevron-down"></uk-icon
+            ></span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-select
+                cls-custom="button: uk-input-fake; dropdown: w-full"
+                i18n='{"search-placeholder":"Buscar","selection-count":"Seleccionados: :n:","insert":"Agregar"}'
+                placeholder="i18n example"
+                searchable
+                multiple
+              >
+                <select hidden>
+                  <option value="uno">Uno</option>
+                  <option value="dos">Dos</option>
+                  <option value="tres">Tres</option>
+                </select>
+              </uk-select>
+            </div>
+          </div>
+        </li>
+
+        <!-- Option groups -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            Option Groups
+            <span class="uk-accordion-icon"
+              ><uk-icon icon="chevron-down"></uk-icon
+            ></span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-select
+                cls-custom="button: uk-input-fake; dropdown: w-full"
+                placeholder="Grouped options"
+              >
+                <select hidden>
+                  <optgroup label="Fruits">
+                    <option value="apple">Apple</option>
+                    <option value="banana">Banana</option>
+                  </optgroup>
+                  <optgroup label="Vegetables">
+                    <option value="carrot">Carrot</option>
+                    <option value="lettuce">Lettuce</option>
+                  </optgroup>
+                  <option value="other">Other</option>
+                </select>
+              </uk-select>
+            </div>
+          </div>
+        </li>
+
+        <!-- Pre-populated -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            Pre-populated
+            <span class="uk-accordion-icon"
+              ><uk-icon icon="chevron-down"></uk-icon
+            ></span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-select
+                cls-custom="button: uk-input-fake; dropdown: w-full"
+                placeholder="Grouped options"
+              >
+                <select hidden>
+                  <optgroup label="Fruits">
+                    <option value="apple" selected>Apple</option>
+                    <option value="banana">Banana</option>
+                  </optgroup>
+                  <optgroup label="Vegetables">
+                    <option value="carrot">Carrot</option>
+                    <option value="lettuce">Lettuce</option>
+                  </optgroup>
+                  <option value="other">Other</option>
+                </select>
+              </uk-select>
+            </div>
+          </div>
+        </li>
+
+        <!-- Event handling -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>Event: <code class="uk-codespan">uk-select:input</code></span>
+            <span class="uk-accordion-icon"
+              ><uk-icon icon="chevron-down"></uk-icon
+            ></span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <div class="space-y-2">
+                <uk-select
+                  cls-custom="button: uk-input-fake; dropdown: w-full"
+                  id="event-select"
+                  placeholder="Event select"
+                >
+                  <select hidden>
+                    <option value="">Select</option>
+                    <option value="x">X</option>
+                    <option value="y">Y</option>
+                  </select>
+                </uk-select>
+                <div>Current value: <span id="select-value">(none)</span></div>
+              </div>
+              <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                  document
+                    .getElementById('event-select')
+                    .addEventListener('uk-select:input', e => {
+                      document.getElementById('select-value').textContent =
+                        e.detail.value || '(none)';
+                    });
+                });
+              </script>
+            </div>
+          </div>
+        </li>
+
+        <!-- Data attributes (data-icon, data-description, data-keywords) -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span
+              >Attr: <code class="uk-codespan">data-*</code> (icon, description,
+              keywords)</span
+            >
+            <span class="uk-accordion-icon"
+              ><uk-icon icon="chevron-down"></uk-icon
+            ></span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-select
+                cls-custom="button: uk-input-fake; dropdown: w-full"
+                placeholder="Data attributes demo"
+                searchable
+              >
+                <select hidden>
+                  <optgroup label="Animals" data-icon="paw">
+                    <option
+                      value="cat"
+                      data-icon="cat"
+                      data-description="A small domesticated carnivorous mammal"
+                      data-keywords="feline,pet,meow"
+                    >
+                      Cat
+                    </option>
+                    <option
+                      value="dog"
+                      data-icon="dog"
+                      data-description="A domesticated carnivorous mammal"
+                      data-keywords="canine,pet,woof"
+                    >
+                      Dog
+                    </option>
+                  </optgroup>
+                  <optgroup label="Birds" data-icon="feather">
+                    <option
+                      value="parrot"
+                      data-icon="feather"
+                      data-description="A bird with a curved beak"
+                      data-keywords="bird,talk,green"
+                    >
+                      Parrot
+                    </option>
+                    <option
+                      value="eagle"
+                      data-icon="feather"
+                      data-description="A large bird of prey"
+                      data-keywords="bird,prey,soar"
+                    >
+                      Eagle
+                    </option>
+                  </optgroup>
+                  <option
+                    value="other"
+                    data-icon="circle"
+                    data-description="Other animals"
+                    data-keywords="misc"
+                  >
+                    Other
+                  </option>
+                </select>
+              </uk-select>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>

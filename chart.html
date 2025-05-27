@@ -1,0 +1,808 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chart</title>
+    <link rel="stylesheet" href="/fonts/geist-font/style.css" />
+    <link rel="stylesheet" href="./tw.css" />
+    <script type="module" src="/src/js/core.ts"></script>
+    <script type="module" src="/src/js/icon.ts"></script>
+    <script type="module" src="/src/js/chart.ts"></script>
+    <script>
+      const htmlElement = document.documentElement;
+
+      const __FRANKEN__ = JSON.parse(
+        localStorage.getItem('__FRANKEN__') || '{}',
+      );
+
+      if (
+        __FRANKEN__.mode === 'dark' ||
+        (!__FRANKEN__.mode &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches)
+      ) {
+        htmlElement.classList.add('dark');
+      } else {
+        htmlElement.classList.remove('dark');
+      }
+
+      htmlElement.classList.add(__FRANKEN__.theme || 'uk-theme-zinc');
+      htmlElement.classList.add(__FRANKEN__.radii || 'uk-radii-md');
+      htmlElement.classList.add(__FRANKEN__.shadows || 'uk-shadows-sm');
+      htmlElement.classList.add(__FRANKEN__.font || 'uk-font-sm');
+      htmlElement.classList.add(__FRANKEN__.chart || 'uk-chart-default');
+    </script>
+  </head>
+  <body class="bg-background font-geist-sans text-foreground antialiased">
+    <div class="uk-container my-10">
+      <div class="mb-2 flex justify-center">
+        <a
+          class="uk-focus-visible text-muted-foreground inline-flex justify-between gap-x-2"
+          href="/"
+        >
+          <uk-icon icon="arrow-left"></uk-icon>
+          <span class="uk-text-small">Back</span>
+        </a>
+      </div>
+      <h1 class="uk-h1 mb-6 text-center">Chart</h1>
+
+      <div class="mb-6 grid grid-cols-2 gap-x-4">
+        <div class="">
+          <uk-theme-switcher>
+            <select hidden>
+              <optgroup data-key="chart" label="Chart">
+                <option data-hex="#e76e50" value="uk-chart-default" selected>
+                  Default
+                </option>
+                <option data-hex="#2563eb" value="uk-chart-sapphire">
+                  Sapphire
+                </option>
+                <option data-hex="#e21d48" value="uk-chart-ruby">Ruby</option>
+                <option data-hex="#1dc355" value="uk-chart-emerald">
+                  Emerald
+                </option>
+                <option data-hex="#ad7c48" value="uk-chart-daylight">
+                  Daylight
+                </option>
+                <option data-hex="#959593" value="uk-chart-midnight">
+                  Midnight
+                </option>
+              </optgroup>
+            </select>
+          </uk-theme-switcher>
+        </div>
+        <div class="">
+          <uk-theme-switcher>
+            <select hidden>
+              <optgroup data-key="mode" label="Mode">
+                <option data-icon="sun" value="light">Light</option>
+                <option data-icon="moon" value="dark">Dark</option>
+              </optgroup>
+            </select>
+          </uk-theme-switcher>
+        </div>
+      </div>
+
+      <ul class="uk-accordion" data-uk-accordion>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            Area: Smooth
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="uk-chart-container max-w-md">
+              <div class="p-4">
+                <div class="uk-card-title">Area Chart - Smooth</div>
+                <div class="uk-text-sm mt-2">January - June 2024</div>
+              </div>
+
+              <div class="px-4">
+                <uk-chart>
+                  <script type="application/json">
+                    {
+                      "series": [
+                        {
+                          "name": "Desktops",
+                          "data": [186, 305, 237, 73, 209, 214]
+                        }
+                      ],
+                      "chart": {
+                        "type": "area",
+                        "zoom": {
+                          "enabled": false
+                        },
+                        "toolbar": {
+                          "show": false
+                        }
+                      },
+                      "dataLabels": {
+                        "enabled": false
+                      },
+                      "stroke": {
+                        "curve": "smooth",
+                        "width": 2
+                      },
+                      "colors": ["hsl(var(--chart-1))"],
+                      "grid": {
+                        "row": {
+                          "colors": []
+                        },
+                        "borderColor": "hsl(var(--border))"
+                      },
+                      "xaxis": {
+                        "categories": [
+                          "Jan",
+                          "Feb",
+                          "Mar",
+                          "Apr",
+                          "May",
+                          "Jun"
+                        ],
+                        "tooltip": {
+                          "enabled": false
+                        },
+                        "labels": {
+                          "style": {
+                            "colors": "hsl(var(--muted-foreground))"
+                          }
+                        },
+                        "axisBorder": {
+                          "show": false
+                        },
+                        "axisTicks": {
+                          "show": false
+                        }
+                      },
+                      "yaxis": {
+                        "labels": {
+                          "show": false
+                        }
+                      },
+                      "tooltip": {
+                        "title": {
+                          "show": false
+                        }
+                      }
+                    }
+                  </script>
+                </uk-chart>
+              </div>
+
+              <div class="p-4">
+                <div class="flex items-center gap-x-2 font-medium leading-none">
+                  Trending up by 5.2% this month
+                  <uk-icon icon="trending-up"></uk-icon>
+                </div>
+                <div class="text-muted-foreground mt-2 leading-none">
+                  Showing total visitors for the last 6 months
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            Area: Multiple
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="uk-chart-container max-w-md">
+              <div class="p-4">
+                <div class="uk-card-title">Area Chart - Multiple</div>
+                <div class="uk-text-sm mt-2">January - June 2024</div>
+              </div>
+
+              <div class="px-4">
+                <uk-chart>
+                  <script type="application/json">
+                    {
+                      "series": [
+                        {
+                          "name": "Desktops",
+                          "data": [186, 305, 237, 73, 209, 214]
+                        },
+                        {
+                          "name": "Mobile",
+                          "data": [80, 200, 120, 190, 130, 140]
+                        }
+                      ],
+                      "chart": {
+                        "type": "area",
+                        "zoom": {
+                          "enabled": false
+                        },
+                        "toolbar": {
+                          "show": false
+                        }
+                      },
+                      "dataLabels": {
+                        "enabled": false
+                      },
+                      "stroke": {
+                        "curve": "smooth",
+                        "width": 2
+                      },
+                      "colors": ["hsl(var(--chart-1))", "hsl(var(--chart-2))"],
+                      "grid": {
+                        "row": {
+                          "colors": []
+                        },
+                        "borderColor": "hsl(var(--border))"
+                      },
+                      "xaxis": {
+                        "categories": [
+                          "Jan",
+                          "Feb",
+                          "Mar",
+                          "Apr",
+                          "May",
+                          "Jun"
+                        ],
+                        "tooltip": {
+                          "enabled": false
+                        },
+                        "labels": {
+                          "style": {
+                            "colors": "hsl(var(--muted-foreground))"
+                          }
+                        },
+                        "axisBorder": {
+                          "show": false
+                        },
+                        "axisTicks": {
+                          "show": false
+                        }
+                      },
+                      "yaxis": {
+                        "labels": {
+                          "show": false
+                        }
+                      },
+                      "tooltip": {
+                        "title": {
+                          "show": false
+                        }
+                      },
+                      "legend": {
+                        "show": false
+                      }
+                    }
+                  </script>
+                </uk-chart>
+              </div>
+
+              <div class="p-4">
+                <div class="flex items-center gap-x-2 font-medium leading-none">
+                  Trending up by 5.2% this month
+                  <uk-icon icon="trending-up"></uk-icon>
+                </div>
+                <div class="text-muted-foreground mt-2 leading-none">
+                  Showing total visitors for the last 6 months
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            Line: Smooth
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="uk-chart-container max-w-md">
+              <div class="p-4">
+                <div class="uk-card-title">Line Chart - Smooth</div>
+                <div class="uk-text-sm mt-2">January - June 2024</div>
+              </div>
+
+              <div class="px-4">
+                <uk-chart>
+                  <script type="application/json">
+                    {
+                      "series": [
+                        {
+                          "name": "Desktops",
+                          "data": [186, 305, 237, 73, 209, 214]
+                        }
+                      ],
+                      "chart": {
+                        "type": "line",
+                        "zoom": {
+                          "enabled": false
+                        },
+                        "toolbar": {
+                          "show": false
+                        }
+                      },
+                      "dataLabels": {
+                        "enabled": false
+                      },
+                      "stroke": {
+                        "curve": "smooth",
+                        "width": 2
+                      },
+                      "colors": ["hsl(var(--chart-1))"],
+                      "grid": {
+                        "row": {
+                          "colors": []
+                        },
+                        "borderColor": "hsl(var(--border))"
+                      },
+                      "xaxis": {
+                        "categories": [
+                          "Jan",
+                          "Feb",
+                          "Mar",
+                          "Apr",
+                          "May",
+                          "Jun"
+                        ],
+                        "tooltip": {
+                          "enabled": false
+                        },
+                        "labels": {
+                          "style": {
+                            "colors": "hsl(var(--muted-foreground))"
+                          }
+                        },
+                        "axisBorder": {
+                          "show": false
+                        },
+                        "axisTicks": {
+                          "show": false
+                        }
+                      },
+                      "yaxis": {
+                        "labels": {
+                          "show": false
+                        }
+                      },
+                      "tooltip": {
+                        "title": {
+                          "show": false
+                        }
+                      }
+                    }
+                  </script>
+                </uk-chart>
+              </div>
+
+              <div class="p-4">
+                <div class="flex items-center gap-x-2 font-medium leading-none">
+                  Trending up by 5.2% this month
+                  <uk-icon icon="trending-up"></uk-icon>
+                </div>
+                <div class="text-muted-foreground mt-2 leading-none">
+                  Showing total visitors for the last 6 months
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            Line: Straight
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="uk-chart-container max-w-md">
+              <div class="p-4">
+                <div class="uk-card-title">Line Chart - Straight</div>
+                <div class="uk-text-sm mt-2">January - June 2024</div>
+              </div>
+
+              <div class="px-4">
+                <uk-chart>
+                  <script type="application/json">
+                    {
+                      "series": [
+                        {
+                          "name": "Desktops",
+                          "data": [186, 305, 237, 73, 209, 214]
+                        }
+                      ],
+                      "chart": {
+                        "type": "line",
+                        "zoom": {
+                          "enabled": false
+                        },
+                        "toolbar": {
+                          "show": false
+                        }
+                      },
+                      "dataLabels": {
+                        "enabled": false
+                      },
+                      "stroke": {
+                        "curve": "straight",
+                        "width": 2
+                      },
+                      "colors": ["hsl(var(--chart-1))"],
+                      "grid": {
+                        "row": {
+                          "colors": []
+                        },
+                        "borderColor": "hsl(var(--border))"
+                      },
+                      "xaxis": {
+                        "categories": [
+                          "Jan",
+                          "Feb",
+                          "Mar",
+                          "Apr",
+                          "May",
+                          "Jun"
+                        ],
+                        "tooltip": {
+                          "enabled": false
+                        },
+                        "labels": {
+                          "style": {
+                            "colors": "hsl(var(--muted-foreground))"
+                          }
+                        },
+                        "axisBorder": {
+                          "show": false
+                        },
+                        "axisTicks": {
+                          "show": false
+                        }
+                      },
+                      "yaxis": {
+                        "labels": {
+                          "show": false
+                        }
+                      },
+                      "tooltip": {
+                        "title": {
+                          "show": false
+                        }
+                      }
+                    }
+                  </script>
+                </uk-chart>
+              </div>
+
+              <div class="p-4">
+                <div class="flex items-center gap-x-2 font-medium leading-none">
+                  Trending up by 5.2% this month
+                  <uk-icon icon="trending-up"></uk-icon>
+                </div>
+                <div class="text-muted-foreground mt-2 leading-none">
+                  Showing total visitors for the last 6 months
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            Line: Stepline
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="uk-chart-container max-w-md">
+              <div class="p-4">
+                <div class="uk-card-title">Line Chart - Stepline</div>
+                <div class="uk-text-sm mt-2">January - June 2024</div>
+              </div>
+
+              <div class="px-4">
+                <uk-chart>
+                  <script type="application/json">
+                    {
+                      "series": [
+                        {
+                          "name": "Desktops",
+                          "data": [186, 305, 237, 73, 209, 214]
+                        }
+                      ],
+                      "chart": {
+                        "type": "line",
+                        "zoom": {
+                          "enabled": false
+                        },
+                        "toolbar": {
+                          "show": false
+                        }
+                      },
+                      "dataLabels": {
+                        "enabled": false
+                      },
+                      "stroke": {
+                        "curve": "stepline",
+                        "width": 2
+                      },
+                      "colors": ["hsl(var(--chart-1))"],
+                      "grid": {
+                        "row": {
+                          "colors": []
+                        },
+                        "borderColor": "hsl(var(--border))"
+                      },
+                      "xaxis": {
+                        "categories": [
+                          "Jan",
+                          "Feb",
+                          "Mar",
+                          "Apr",
+                          "May",
+                          "Jun"
+                        ],
+                        "tooltip": {
+                          "enabled": false
+                        },
+                        "labels": {
+                          "style": {
+                            "colors": "hsl(var(--muted-foreground))"
+                          }
+                        },
+                        "axisBorder": {
+                          "show": false
+                        },
+                        "axisTicks": {
+                          "show": false
+                        }
+                      },
+                      "yaxis": {
+                        "labels": {
+                          "show": false
+                        }
+                      },
+                      "tooltip": {
+                        "title": {
+                          "show": false
+                        }
+                      },
+                      "markers": {
+                        "hover": {
+                          "sizeOffset": 4
+                        }
+                      }
+                    }
+                  </script>
+                </uk-chart>
+              </div>
+
+              <div class="p-4">
+                <div class="flex items-center gap-x-2 font-medium leading-none">
+                  Trending up by 5.2% this month
+                  <uk-icon icon="trending-up"></uk-icon>
+                </div>
+                <div class="text-muted-foreground mt-2 leading-none">
+                  Showing total visitors for the last 6 months
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            Line: Multiple
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="uk-chart-container max-w-md">
+              <div class="p-4">
+                <div class="uk-card-title">Line Chart - Multiple</div>
+                <div class="uk-text-sm mt-2">January - June 2024</div>
+              </div>
+
+              <div class="px-4">
+                <uk-chart>
+                  <script type="application/json">
+                    {
+                      "series": [
+                        {
+                          "name": "Desktops",
+                          "data": [186, 305, 237, 73, 209, 214]
+                        },
+                        {
+                          "name": "Mobile",
+                          "data": [80, 200, 120, 190, 130, 140]
+                        }
+                      ],
+                      "chart": {
+                        "type": "line",
+                        "zoom": {
+                          "enabled": false
+                        },
+                        "toolbar": {
+                          "show": false
+                        }
+                      },
+                      "dataLabels": {
+                        "enabled": false
+                      },
+                      "stroke": {
+                        "curve": "smooth",
+                        "width": 2
+                      },
+                      "colors": ["hsl(var(--chart-1))", "hsl(var(--chart-2))"],
+                      "grid": {
+                        "row": {
+                          "colors": []
+                        },
+                        "borderColor": "hsl(var(--border))"
+                      },
+                      "xaxis": {
+                        "categories": [
+                          "Jan",
+                          "Feb",
+                          "Mar",
+                          "Apr",
+                          "May",
+                          "Jun"
+                        ],
+                        "tooltip": {
+                          "enabled": false
+                        },
+                        "labels": {
+                          "style": {
+                            "colors": "hsl(var(--muted-foreground))"
+                          }
+                        },
+                        "axisBorder": {
+                          "show": false
+                        },
+                        "axisTicks": {
+                          "show": false
+                        }
+                      },
+                      "yaxis": {
+                        "labels": {
+                          "show": false
+                        }
+                      },
+                      "tooltip": {
+                        "title": {
+                          "show": false
+                        },
+                        "style": {
+                          "fontFamily": "inherit",
+                          "fontSize": "var(--uk-global-font-size-s)",
+                          "lineHeight": "var(--uk-global-line-height-s)"
+                        }
+                      },
+                      "legend": {
+                        "fontFamily": "inherit",
+                        "fontSize": "",
+                        "lineHeight": "",
+                        "markers": {
+                          "strokeWidth": 0
+                        }
+                      }
+                    }
+                  </script>
+                </uk-chart>
+              </div>
+
+              <div class="p-4">
+                <div class="flex items-center gap-x-2 font-medium leading-none">
+                  Trending up by 5.2% this month
+                  <uk-icon icon="trending-up"></uk-icon>
+                </div>
+                <div class="text-muted-foreground mt-2 leading-none">
+                  Showing total visitors for the last 6 months
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">reactive</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="uk-chart-container max-w-md">
+              <div class="p-4">
+                <div class="uk-card-title">Area Chart - Smooth</div>
+                <div class="uk-text-sm mt-2">January - June 2024</div>
+              </div>
+
+              <div class="px-4">
+                <uk-chart reactive>
+                  <script type="application/json">
+                    {
+                      "series": [
+                        {
+                          "name": "Desktops",
+                          "data": [186, 305, 237, 73, 209, 214]
+                        }
+                      ],
+                      "chart": {
+                        "type": "area",
+                        "zoom": {
+                          "enabled": false
+                        },
+                        "toolbar": {
+                          "show": false
+                        }
+                      },
+                      "dataLabels": {
+                        "enabled": false
+                      },
+                      "stroke": {
+                        "curve": "smooth",
+                        "width": 2
+                      },
+                      "colors": ["hsl(var(--chart-1))"],
+                      "grid": {
+                        "row": {
+                          "colors": []
+                        },
+                        "borderColor": "hsl(var(--border))"
+                      },
+                      "xaxis": {
+                        "categories": [
+                          "Jan",
+                          "Feb",
+                          "Mar",
+                          "Apr",
+                          "May",
+                          "Jun"
+                        ],
+                        "tooltip": {
+                          "enabled": false
+                        },
+                        "labels": {
+                          "style": {
+                            "colors": "hsl(var(--muted-foreground))"
+                          }
+                        },
+                        "axisBorder": {
+                          "show": false
+                        },
+                        "axisTicks": {
+                          "show": false
+                        }
+                      },
+                      "yaxis": {
+                        "labels": {
+                          "show": false
+                        }
+                      },
+                      "tooltip": {
+                        "title": {
+                          "show": false
+                        }
+                      }
+                    }
+                  </script>
+                </uk-chart>
+              </div>
+
+              <div class="p-4">
+                <div class="flex items-center gap-x-2 font-medium leading-none">
+                  Trending up by 5.2% this month
+                  <uk-icon icon="trending-up"></uk-icon>
+                </div>
+                <div class="text-muted-foreground mt-2 leading-none">
+                  Showing total visitors for the last 6 months
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>

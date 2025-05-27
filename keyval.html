@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Keyval</title>
+    <link rel="stylesheet" href="/fonts/geist-font/style.css" />
+    <link rel="stylesheet" href="./tw.css" />
+    <script type="module" src="/src/js/core.ts"></script>
+    <script type="module" src="/src/js/icon.ts"></script>
+    <script>
+      const htmlElement = document.documentElement;
+
+      const __FRANKEN__ = JSON.parse(
+        localStorage.getItem('__FRANKEN__') || '{}',
+      );
+
+      if (
+        __FRANKEN__.mode === 'dark' ||
+        (!__FRANKEN__.mode &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches)
+      ) {
+        htmlElement.classList.add('dark');
+      } else {
+        htmlElement.classList.remove('dark');
+      }
+
+      htmlElement.classList.add(__FRANKEN__.theme || 'uk-theme-zinc');
+      htmlElement.classList.add(__FRANKEN__.radii || 'uk-radii-md');
+      htmlElement.classList.add(__FRANKEN__.shadows || 'uk-shadows-sm');
+      htmlElement.classList.add(__FRANKEN__.font || 'uk-font-sm');
+      htmlElement.classList.add(__FRANKEN__.chart || 'uk-chart-default');
+    </script>
+  </head>
+  <body class="bg-background font-geist-sans text-foreground antialiased">
+    <div class="uk-container my-10">
+      <div class="mb-2 flex justify-center">
+        <a
+          class="uk-focus-visible text-muted-foreground inline-flex justify-between gap-x-2"
+          href="/"
+        >
+          <uk-icon icon="arrow-left"></uk-icon>
+          <span class="uk-text-small">Back</span>
+        </a>
+      </div>
+      <h1 class="uk-h1 mb-6 text-center">Keyval</h1>
+
+      <!-- test cases here -->
+      <ul class="uk-accordion" data-uk-accordion>
+        <!-- Basic usage -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            Basic
+            <span class="uk-accordion-icon"
+              ><uk-icon icon="chevron-down"></uk-icon
+            ></span>
+          </a>
+          <div class="uk-accordion-content">
+            <div class="">
+              <uk-keyval></uk-keyval>
+            </div>
+          </div>
+        </li>
+
+        <!-- Sensitive/password mode -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>Attr: <code class="uk-codespan">sensitive</code></span>
+            <span class="uk-accordion-icon"
+              ><uk-icon icon="chevron-down"></uk-icon
+            ></span>
+          </a>
+          <div class="uk-accordion-content">
+            <div class="">
+              <uk-keyval sensitive></uk-keyval>
+            </div>
+          </div>
+        </li>
+
+        <!-- Max rows -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>Attr: <code class="uk-codespan">max</code></span>
+            <span class="uk-accordion-icon"
+              ><uk-icon icon="chevron-down"></uk-icon
+            ></span>
+          </a>
+          <div class="uk-accordion-content">
+            <div class="">
+              <uk-keyval max="2"></uk-keyval>
+            </div>
+          </div>
+        </li>
+
+        <!-- Non-insertable -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>Attr: <code class="uk-codespan">noninsertable</code></span>
+            <span class="uk-accordion-icon"
+              ><uk-icon icon="chevron-down"></uk-icon
+            ></span>
+          </a>
+          <div class="uk-accordion-content">
+            <div class="">
+              <uk-keyval noninsertable></uk-keyval>
+            </div>
+          </div>
+        </li>
+
+        <!-- Reactive with select -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>Attr: <code class="uk-codespan">reactive</code></span>
+            <span class="uk-accordion-icon"
+              ><uk-icon icon="chevron-down"></uk-icon
+            ></span>
+          </a>
+          <div class="uk-accordion-content">
+            <div class="">
+              <uk-keyval reactive>
+                <select hidden>
+                  <option value="val1" data-key="key1">Key 1</option>
+                  <option value="val2" data-key="key2">Key 2</option>
+                </select>
+              </uk-keyval>
+            </div>
+          </div>
+        </li>
+
+        <!-- Custom styling -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>Attr: <code class="uk-codespan">cls-custom</code></span>
+            <span class="uk-accordion-icon"
+              ><uk-icon icon="chevron-down"></uk-icon
+            ></span>
+          </a>
+          <div class="uk-accordion-content">
+            <div class="">
+              <uk-keyval
+                cls-custom='{"table":"uk-table-divider uk-table-sm","input":"uk-form-sm","button":"uk-btn-sm"}'
+              ></uk-keyval>
+            </div>
+          </div>
+        </li>
+
+        <!-- i18n -->
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>Attr: <code class="uk-codespan">i18n</code></span>
+            <span class="uk-accordion-icon"
+              ><uk-icon icon="chevron-down"></uk-icon
+            ></span>
+          </a>
+          <div class="uk-accordion-content">
+            <div class="">
+              <uk-keyval
+                i18n='{"header-key":"Clave","header-value":"Valor","placeholder-key":"Ingrese clave","placeholder-value":"Ingrese valor"}'
+              ></uk-keyval>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>

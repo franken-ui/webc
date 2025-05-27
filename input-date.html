@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Input Date</title>
+    <link rel="stylesheet" href="/fonts/geist-font/style.css" />
+    <link rel="stylesheet" href="./tw.css" />
+    <script type="module" src="/src/js/core.ts"></script>
+    <script type="module" src="/src/js/icon.ts"></script>
+    <script>
+      const htmlElement = document.documentElement;
+
+      const __FRANKEN__ = JSON.parse(
+        localStorage.getItem('__FRANKEN__') || '{}',
+      );
+
+      if (
+        __FRANKEN__.mode === 'dark' ||
+        (!__FRANKEN__.mode &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches)
+      ) {
+        htmlElement.classList.add('dark');
+      } else {
+        htmlElement.classList.remove('dark');
+      }
+
+      htmlElement.classList.add(__FRANKEN__.theme || 'uk-theme-zinc');
+      htmlElement.classList.add(__FRANKEN__.radii || 'uk-radii-md');
+      htmlElement.classList.add(__FRANKEN__.shadows || 'uk-shadows-sm');
+      htmlElement.classList.add(__FRANKEN__.font || 'uk-font-sm');
+      htmlElement.classList.add(__FRANKEN__.chart || 'uk-chart-default');
+    </script>
+  </head>
+  <body class="bg-background font-geist-sans text-foreground antialiased">
+    <div class="uk-container my-10">
+      <div class="mb-2 flex justify-center">
+        <a
+          class="uk-focus-visible text-muted-foreground inline-flex justify-between gap-x-2"
+          href="/"
+        >
+          <uk-icon icon="arrow-left"></uk-icon>
+          <span class="uk-text-small">Back</span>
+        </a>
+      </div>
+      <h1 class="uk-h1 mb-6 text-center">Input Date</h1>
+
+      <ul class="uk-accordion" data-uk-accordion>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            Basic
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-date cls-custom="uk-input-fake"></uk-input-date>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">display-format</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-date today display-format="YYYY-MM-DD"></uk-input-date>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">with-time</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-date today with-time></uk-input-date>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">require-time</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-date today require-time></uk-input-date>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">drop</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-date
+                today
+                drop="mode: hover; animation: uk-anmt-fade"
+              ></uk-input-date>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">icon</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-date today icon="calendar"></uk-input-date>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">today</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-date today></uk-input-date>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">jumpable</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-date jumpable></uk-input-date>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">starts-with</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-date starts-with="1"></uk-input-date>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">disabled-dates</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-date
+                disabled-dates="2022-07-25,2022-08-01,2022-08-15"
+                view-date="2022-07-01"
+              ></uk-input-date>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">marked-dates</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-date
+                marked-dates="2022-07-25,2022-08-01,2022-08-15"
+                view-date="2022-07-01"
+              ></uk-input-date>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">view-date</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-date view-date="2023-06-30"></uk-input-date>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">min</code>,
+              <code class="uk-codespan">max</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-date
+                min="2022-01-01"
+                max="2022-12-31"
+                view-date="2022-07-01"
+              ></uk-input-date>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">value</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-date value="2022-07-01"></uk-input-date>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">name</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-date name="date" value="2022-07-01"></uk-input-date>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">i18n</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-date
+                i18n="weekdays: Sunnudagur, Mánadagur, Týsdagur, Mikudagur, Hósdagur, Fríggjadagur, Leygardagur; months: Januar, Februar, Mars, Apríl, Mai, Juni, Juli, August, September, Oktobur, November, Desember"
+                value="2022-07-01"
+                jumpable
+              ></uk-input-date>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">cls-custom</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-date
+                disabled-dates="2022-07-25,2022-08-01,2022-08-15"
+                view-date="2022-07-01"
+              ></uk-input-date>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
+              <code class="uk-codespan">weekday-abbr-length</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-date weekday-abbr-length="2"></uk-input-date>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Event:
+              <code class="uk-codespan">uk-calendar:change</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-date id="date" value="2022-07-01"></uk-input-date>
+            </div>
+
+            <script>
+              document
+                .getElementById('date')
+                .addEventListener('uk-calendar:change', e => {
+                  console.log(e.detail);
+                });
+            </script>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>

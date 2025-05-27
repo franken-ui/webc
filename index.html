@@ -2,15 +2,81 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + Lit + TS</title>
-    <link rel="stylesheet" href="./src/index.css" />
-    <script type="module" src="/src/my-element.ts"></script>
+    <title>Franken UI</title>
+    <link rel="stylesheet" href="/fonts/geist-font/style.css" />
+    <link rel="stylesheet" href="./tw.css" />
+    <script type="module" src="/src/js/core.ts"></script>
+    <script type="module" src="/src/js/icon.ts"></script>
+    <script>
+      const htmlElement = document.documentElement;
+
+      const __FRANKEN__ = JSON.parse(
+        localStorage.getItem('__FRANKEN__') || '{}',
+      );
+
+      if (
+        __FRANKEN__.mode === 'dark' ||
+        (!__FRANKEN__.mode &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches)
+      ) {
+        htmlElement.classList.add('dark');
+      } else {
+        htmlElement.classList.remove('dark');
+      }
+
+      htmlElement.classList.add(__FRANKEN__.theme || 'uk-theme-zinc');
+      htmlElement.classList.add(__FRANKEN__.radii || 'uk-radii-md');
+      htmlElement.classList.add(__FRANKEN__.shadows || 'uk-shadows-sm');
+      htmlElement.classList.add(__FRANKEN__.font || 'uk-font-sm');
+      htmlElement.classList.add(__FRANKEN__.chart || 'uk-chart-default');
+    </script>
   </head>
-  <body>
-    <my-element>
-      <h1>Vite + Lit</h1>
-    </my-element>
+  <body class="bg-background font-geist-sans text-foreground antialiased">
+    <div class="uk-container my-10">
+      <h1 class="uk-h1 mb-6 text-center">Franken UI</h1>
+
+      <ul class="uk-list uk-list-hyphen">
+        <li>
+          <a class="uk-link" href="/calendar">Calendar</a>
+        </li>
+        <li>
+          <a class="uk-link" href="/chart">Chart</a>
+        </li>
+        <li>
+          <a class="uk-link" href="/command">Command</a>
+        </li>
+        <li>
+          <a class="uk-link" href="/input-date">Input Date</a>
+        </li>
+        <li>
+          <a class="uk-link" href="/input-pin">Input PIN</a>
+        </li>
+        <li>
+          <a class="uk-link" href="/input-range">Input Range</a>
+        </li>
+        <li>
+          <a class="uk-link" href="/input-tag">Input Tag</a>
+        </li>
+        <li>
+          <a class="uk-link" href="/input-time">Input Time</a>
+        </li>
+        <li>
+          <a class="uk-link" href="/keyval">Keyval</a>
+        </li>
+        <li>
+          <a class="uk-link" href="/lsh">LSH</a>
+        </li>
+        <li>
+          <a class="uk-link" href="/rte">Rich Text Editor</a>
+        </li>
+        <li>
+          <a class="uk-link" href="/select">Select</a>
+        </li>
+        <li>
+          <a class="uk-link" href="/theme-switcher">Theme Switcher</a>
+        </li>
+      </ul>
+    </div>
   </body>
 </html>
