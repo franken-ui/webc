@@ -61,8 +61,11 @@ export class InputDate extends BaseCalendar {
         const date = validateDate(this.value);
         const hours = date.getHours();
         const minutes = date.getMinutes();
+        const year = date.getFullYear();
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
 
-        this.$date = date.toISOString().slice(0, 10);
+        this.$date = `${year}-${month}-${day}`;
         this.$time = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
       } catch (error) {
         console.error(error);
