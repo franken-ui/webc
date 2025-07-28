@@ -26,10 +26,10 @@
       'Noto Color Emoji';
   }
   .border-border {
-    border-color: hsl(var(--border));
+    border-color: hsl(var(--border) / var(--border-alpha, 1));
   }
   .border-input {
-    border-color: hsl(var(--input));
+    border-color: hsl(var(--input) / var(--input-alpha, 1));
   }
   .bg-accent,
   .hover\:bg-accent:hover {
@@ -53,7 +53,7 @@
   }
   .bg-destructive,
   .hover\:bg-destructive:hover {
-    background-color: hsl(var(--destructive));
+    background-color: hsl(var(--destructive) / var(--destructive-alpha, 1));
   }
   .bg-destructive-foreground,
   .hover\:bg-destructive-foreground:hover {
@@ -117,7 +117,7 @@
   }
   .hover\:text-destructive:hover,
   .text-destructive {
-    color: hsl(var(--destructive));
+    color: hsl(var(--destructive) / var(--destructive-alpha, 1));
   }
   .hover\:text-destructive-foreground:hover,
   .text-destructive-foreground {

@@ -11,7 +11,7 @@
     "build:rte": "tsc && vite -c config/rte.js build && rm -f static/rte.iife.js && [ -f dist/js/rte.iife.js ] && mv dist/js/rte.iife.js static/ || true"
   },
   "dependencies": {
-    "@franken-ui/upstream": "^3.23.9",
+    "@franken-ui/upstream": "^3.23.11",
     "@tiptap/core": "^2.22.3",
     "@tiptap/extension-character-count": "^2.22.3",
     "@tiptap/extension-link": "^2.22.3",
