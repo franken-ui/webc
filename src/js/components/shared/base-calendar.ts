@@ -129,7 +129,8 @@ export abstract class BaseCalendar extends Input {
    * @returns Date object set to the first day of the viewed month.
    */
   protected get $viewDate(): Date {
-    const date = new Date(this['view-date']);
+    const [year, month, day] = this['view-date'].split('-').map(Number);
+    const date = new Date(year, month - 1, day);
 
     if (date.getDate() !== 1) {
       date.setDate(1);

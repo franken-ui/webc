@@ -320,3 +320,31 @@ export function titleCase(str: string): string {
         .join(' ')
     : '';
 }
+
+/**
+ * Converts a date string to a JavaScript Date object in local timezone
+ *
+ * Supports two formats:
+ * - Date only: "YYYY-MM-DD" (e.g., "2024-03-15")
+ * - Date with time: "YYYY-MM-DDTHH:MM" (e.g., "2024-03-15T14:30")
+ *
+ * @param {string} dateString - The date string to parse
+ * @returns {Date} A Date object representing the parsed date in local timezone
+ */
+export function parseDateString(dateString: string): Date {
+  if (dateString.includes('T')) {
+    // Handle datetime strings (YYYY-MM-DDTHH:MM)
+    const [datePart, timePart] = dateString.split('T');
+    const [year, month, day] = datePart.split('-').map(Number);
+    const [hours, minutes] = timePart.split(':').map(Number);
+
+    // Create date in local timezone
+    return new Date(year, month - 1, day, hours, minutes);
+  } else {
+    // Handle date-only strings (YYYY-MM-DD)
+    const [year, month, day] = dateString.split('-').map(Number);
+
+    // Create date in local timezone (not UTC)
+    return new Date(year, month - 1, day);
+  }
+}

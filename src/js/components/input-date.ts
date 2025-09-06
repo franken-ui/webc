@@ -1,6 +1,11 @@
 import { html, type PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { formatDate, validateDate, type DateLocales } from '../helpers/common';
+import {
+  formatDate,
+  parseDateString,
+  validateDate,
+  type DateLocales,
+} from '../helpers/common';
 import { BaseCalendar } from './shared/base-calendar';
 
 /**
@@ -196,8 +201,11 @@ export class InputDate extends BaseCalendar {
    */
   get $text(): string {
     if (this.$value !== '') {
+      // Parse date string as local time instead of UTC to avoid timezone offset issues
+      const $value = parseDateString(this.$value);
+
       return formatDate(
-        new Date(this.$value),
+        $value,
         this['display-format'],
         this.$locales as unknown as DateLocales,
       );
@@ -269,8 +277,10 @@ export class InputDate extends BaseCalendar {
         const hours = date.getHours();
         const minutes = date.getMinutes();
 
-        this.$date = date.toISOString().slice(0, 10);
-        this.$time = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        // Use local date string instead of UTC
+        const pad = (n: number) => n.toString().padStart(2, '0');
+        this.$date = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+        this.$time = `${pad(hours)}:${pad(minutes)}`;
       } catch (error) {
         console.error('Failed to initialize date value:', error);
       }
