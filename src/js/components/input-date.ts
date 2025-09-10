@@ -273,14 +273,18 @@ export class InputDate extends BaseCalendar {
   protected initializeValue(): void {
     if (this.value) {
       try {
-        const date = validateDate(this.value);
-        const hours = date.getHours();
-        const minutes = date.getMinutes();
+        validateDate(this.value);
 
-        // Use local date string instead of UTC
-        const pad = (n: number) => n.toString().padStart(2, '0');
-        this.$date = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-        this.$time = `${pad(hours)}:${pad(minutes)}`;
+        const hasTime = this.value.includes('T');
+
+        if (!hasTime) {
+          this.$date = this.value;
+        } else {
+          const [datePart, timePart] = this.value.split('T');
+
+          this.$date = datePart;
+          this.$time = timePart;
+        }
       } catch (error) {
         console.error('Failed to initialize date value:', error);
       }
