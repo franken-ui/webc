@@ -91,6 +91,17 @@ export class InputDate extends BaseCalendar {
   @property({ type: Boolean })
   'with-time': boolean = false;
 
+    /**
+   * Clock format, either '12h' or '24h'. It's used to configure the time input when with-time is enabled.
+   * @default '12h'
+   * @example
+   * ```html
+   * <uk-input-date with-time today clock="12h"></uk-input-date>
+   * ```
+   */
+  @property({ type: String })
+  clock: '12h' | '24h' = '12h';
+
   /**
    * Whether time selection is required when with-time is enabled.
    * Only applies when with-time is true.
@@ -383,6 +394,7 @@ export class InputDate extends BaseCalendar {
           .required=${this['require-time']}
           .i18n="${JSON.stringify(this.$i18n)}"
           .value="${this.$time as string}"
+          .clock="${this.clock}"
         ></uk-input-time>
       </div>
     `;
