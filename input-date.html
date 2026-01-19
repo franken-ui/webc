@@ -113,6 +113,42 @@
           <a href="#" class="uk-accordion-title">
             <span>
               Attr:
+              <code class="uk-codespan">with-time 24h</code>
+            </span>
+            <span class="uk-accordion-icon">
+              <uk-icon icon="chevron-down"></uk-icon>
+            </span>
+          </a>
+          <div class="uk-accordion-content" hidden>
+            <div class="">
+              <uk-input-date today with-time clock="24h"></uk-input-date>
+            </div>
+            <div class="mt-4">
+              <uk-input-date
+                name="start-date"
+                cls-custom="uk-input-fake"
+                value="2025-07-20T00:00"
+                display-format="DD/MM/YYYY HH:mm"
+                with-time
+                clock="24h"
+              ></uk-input-date>
+            </div>
+            <div class="mt-4">
+              <uk-input-date
+                name="end-date"
+                cls-custom="uk-input-fake"
+                value="2025-07-27T23:59"
+                display-format="DD/MM/YYYY HH:mm"
+                with-time
+                clock="24h"
+              ></uk-input-date>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="uk-accordion-title">
+            <span>
+              Attr:
               <code class="uk-codespan">require-time</code>
             </span>
             <span class="uk-accordion-icon">

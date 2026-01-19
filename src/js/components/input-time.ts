@@ -13,14 +13,14 @@ type Cls = {
 };
 
 /**
- * A time input component with separate hour/minute fields and AM/PM selector.
+ * A time input component with separate hour/minute fields and AM/PM selector (for 12h clock).
  *
  * @element uk-input-time
  * @extends {Input}
  *
  * Features:
- * - 12-hour format with AM/PM
- * - Separate hour (1-12) and minute (0-59) inputs
+ * - 12-hour format with AM/PM or 24-hour format
+ * - Separate hour (1-12 for 12h clock or 0-23 for 24h clock) and minute (0-59) inputs
  * - Auto-current time option
  * - Input validation and formatting
  * - Keyboard navigation
@@ -34,6 +34,7 @@ type Cls = {
  *   name="appointment-time"
  *   now
  *   required
+ *   clock="12h"
  *   autofocus>
  * </uk-input-time>
  * ```
@@ -110,7 +111,7 @@ export class InputTime extends Input {
   };
 
   /**
-   * Hour value (1-12). Undefined if not set.
+   * Hour value (1-12 or 0-23, depending on the clock). Undefined if not set.
    *
    * @internal
    */
@@ -132,6 +133,17 @@ export class InputTime extends Input {
    */
   @state()
   $meridiem: 'am' | 'pm' = 'am';
+
+  /**
+   * Clock format, either '12h' or '24h'.
+   * @default '12h'
+   * @example
+   * ```html
+   * <uk-input-time clock="12h"></uk-input-time>
+   * ```
+   */
+  @property({ type: String })
+  clock: '12h' | '24h' = '12h';
 
   /**
    * Returns the hour as a zero-padded string (e.g., '09').
@@ -158,13 +170,15 @@ export class InputTime extends Input {
    * @returns Time string in 24-hour format or empty string
    */
   get $value(): string {
-    if (!this.$hour) return '';
+    if (this.$hour === undefined || this.$hour === null ) return '';
 
     let hour = this.$hour;
-    if (this.$meridiem === 'pm') {
-      hour = this.$hour === 12 ? 12 : this.$hour + 12;
-    } else {
-      hour = this.$hour === 12 ? 0 : this.$hour;
+    if (this.clock === '12h') {
+      if (this.$meridiem === 'pm') {
+        hour = this.$hour === 12 ? 12 : this.$hour + 12;
+      } else {
+        hour = this.$hour === 12 ? 0 : this.$hour;
+      }
     }
 
     return `${hour.toString().padStart(2, '0')}:${this.$min.toString().padStart(2, '0')}`;
@@ -220,7 +234,12 @@ export class InputTime extends Input {
       const validatedTime = validateTime(this.value);
       const [hours, minutes] = validatedTime.split(':').map(Number);
 
-      this.$hour = hours % 12 || 12;
+      if (this.clock === '12h') {
+        this.$hour = hours % 12 || 12;
+      } else {
+        this.$hour = hours;
+      }
+
       this.$min = minutes;
       this.$meridiem = hours < 12 ? 'am' : 'pm';
     } catch (error) {
@@ -235,7 +254,13 @@ export class InputTime extends Input {
    */
   private setCurrentTime(): void {
     const date = new Date();
-    this.$hour = date.getHours() % 12 || 12;
+
+    if (this.clock === '12h') {
+      this.$hour = date.getHours() % 12 || 12;
+    } else {
+      this.$hour = date.getHours();
+    }
+
     this.$min = date.getMinutes();
     this.$meridiem = date.getHours() < 12 ? 'am' : 'pm';
   }
@@ -255,8 +280,10 @@ export class InputTime extends Input {
 
     switch (state) {
       case '$hour':
-        if (numValue <= 12) {
+        if (this.clock === '12h' && numValue <= 12) {
           this.$hour = numValue;
+        } else {
+          this.$hour = numValue <= 23 ? numValue : 23;
         }
         break;
       case '$min':
@@ -290,7 +317,7 @@ export class InputTime extends Input {
           return;
         }
 
-        if (numValue > 12) {
+        if (this.clock === '12h' && numValue > 12) {
           this.$hour = 12;
           input.value = '12';
         } else {
@@ -387,21 +414,10 @@ export class InputTime extends Input {
    * ```
    */
   render() {
-    return html`
-      <div data-host-inner class="uk-input-time">
-        ${this.renderInput({
-          min: 1,
-          max: 12,
-          state: '$hour',
-          key: '$HH',
-        })}
-        <span>&colon;</span>
-        ${this.renderInput({
-          min: 0,
-          max: 59,
-          state: '$min',
-          key: '$MM',
-        })}
+    let clockButtonHTML = html``;
+
+    if (this.clock === '12h') {
+      clockButtonHTML = html`
         <button
           data-key="meridiem"
           class="${this.$cls.input || ''} uk-input-fake"
@@ -420,6 +436,25 @@ export class InputTime extends Input {
         >
           ${this.$locales[this.$meridiem]}
         </button>
+      `;
+    }
+
+    return html`
+      <div data-host-inner class="uk-input-time">
+        ${this.renderInput({
+          min: this.clock === '12h' ? 1 : 0,
+          max: this.clock === '12h' ? 12 : 23,
+          state: '$hour',
+          key: '$HH',
+        })}
+        <span>&colon;</span>
+        ${this.renderInput({
+          min: 0,
+          max: 59,
+          state: '$min',
+          key: '$MM',
+        })}
+        ${clockButtonHTML}
         ${this.renderHidden()}
       </div>
     `;
