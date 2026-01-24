@@ -185,6 +185,8 @@ export class InputPin extends Input {
       ] as HTMLInputElement;
       currentInput?.blur();
     }
+
+    this.emit();
   }
 
   /**
